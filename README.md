@@ -101,4 +101,3 @@ Bagi pengguna Hostinger / Shared Hosting lain tanpa kebebasan mengganti *Documen
    php artisan storage:link
    ```
 
-Beres! Aplikasi kebanggaan karyawan perusahaan sudah online.
