@@ -1,59 +1,104 @@
-<p align="center"><a href="https://laravel.com" target="_blank"><img src="https://raw.githubusercontent.com/laravel/art/master/logo-lockup/5%20SVG/2%20CMYK/1%20Full%20Color/laravel-logolockup-cmyk-red.svg" width="400" alt="Laravel Logo"></a></p>
+# Sistem Absensi Wajah - PT Serunting Sakti Jaya
 
-<p align="center">
-<a href="https://github.com/laravel/framework/actions"><img src="https://github.com/laravel/framework/workflows/tests/badge.svg" alt="Build Status"></a>
-<a href="https://packagist.org/packages/laravel/framework"><img src="https://img.shields.io/packagist/dt/laravel/framework" alt="Total Downloads"></a>
-<a href="https://packagist.org/packages/laravel/framework"><img src="https://img.shields.io/packagist/v/laravel/framework" alt="Latest Stable Version"></a>
-<a href="https://packagist.org/packages/laravel/framework"><img src="https://img.shields.io/packagist/l/laravel/framework" alt="License"></a>
-</p>
+Aplikasi presensi (absensi) modern berbasis **Pengenalan Wajah Berbasis AI (Face Recognition)** dan **Geo-Location**. Dibangun secara khusus untuk lingkungan korporat **PT Serunting Sakti Jaya**, aplikasi ini menjamin keaslian data absensi karyawan dan mencegah kecurangan.
 
-## About Laravel
+## 🌟 Fitur Utama
 
-Laravel is a web application framework with expressive, elegant syntax. We believe development must be an enjoyable and creative experience to be truly fulfilling. Laravel takes the pain out of development by easing common tasks used in many web projects, such as:
+- **Pendaftaran Biometrik Wajah**: Semua karyawan diwajibkan mendaftar dengan memindai foto wajah secara _real-time_ via web-camera untuk disimpan sebagai _Master Data_.
+- **Validasi Absensi Berbasis AI**: Karyawan hanya bisa *Check-In* jika wajahnya cocok dengan foto rujukan di sistem (Didukung oleh library `face-api.js` komputasi AI dilakukan secara mandiri di sisi-klien (*browser* HP/Laptop pengguna) agar server bebas dari antrean pemrosesan berat).
+- **Desain UI/UX Ppremium**: Antarmuka korporat profesional yang dilengkapi dukungan *Light Mode* dan *Dark Mode*, responsif pada seluruh ukuran layar.
+- **Lapisan Keamanan Hosting**: Modifikasi sistematis `.htaccess` yang menghalangi pencuri untuk mengakses konfigurasi `.env` dan direktori vital Laravel pada lingkungan asrama / *Shared Hosting*.
 
-- [Simple, fast routing engine](https://laravel.com/docs/routing).
-- [Powerful dependency injection container](https://laravel.com/docs/container).
-- Multiple back-ends for [session](https://laravel.com/docs/session) and [cache](https://laravel.com/docs/cache) storage.
-- Expressive, intuitive [database ORM](https://laravel.com/docs/eloquent).
-- Database agnostic [schema migrations](https://laravel.com/docs/migrations).
-- [Robust background job processing](https://laravel.com/docs/queues).
-- [Real-time event broadcasting](https://laravel.com/docs/broadcasting).
+## 🛠 Tech Stack (Teknologi)
 
-Laravel is accessible, powerful, and provides tools required for large, robust applications.
+- **Backend**: Laravel 11 (PHP 8.2+) / MySQL 8+
+- **Frontend**: Blade Templating, Vanilla CSS
+- **Kecerdasan Buatan**: Face-api.js Framework (via CDN)
 
-## Learning Laravel
+---
 
-Laravel has the most extensive and thorough [documentation](https://laravel.com/docs) and video tutorial library of all modern web application frameworks, making it a breeze to get started with the framework.
+## 🚀 Panduan Instalasi Lokal (Laragon / XAMPP)
 
-In addition, [Laracasts](https://laracasts.com) contains thousands of video tutorials on a range of topics including Laravel, modern PHP, unit testing, and JavaScript. Boost your skills by digging into our comprehensive video library.
+1. **Jalankan Instalasi Ekstensi / Dependensi:**
+   ```bash
+   composer install
+   npm install
+   ```
 
-You can also watch bite-sized lessons with real-world projects on [Laravel Learn](https://laravel.com/learn), where you will be guided through building a Laravel application from scratch while learning PHP fundamentals.
+2. **Pengaturan `.env`:**
+   Gandakan file `.env.example` ubah namanya menjadi `.env`, lalu buat *App Key* baru Anda melalui terminal:
+   ```bash
+   php artisan key:generate
+   ```
+   **Catatan:** Sesuaikan `DB_DATABASE`, `DB_USERNAME`, dan `DB_PASSWORD` dengan pengaturan MySQL lokal Anda.
 
-## Agentic Development
+3. **Migrasi Struktur Database (Penting!):**
+   Eksekusi perintah di bawah ini agar struktur tabel tercetak ke database MySQL Anda:
+   ```bash
+   php artisan migrate
+   ```
 
-Laravel's predictable structure and conventions make it ideal for AI coding agents like Claude Code, Cursor, and GitHub Copilot. Install [Laravel Boost](https://laravel.com/docs/ai) to supercharge your AI workflow:
+4. **Sistem Penautan Foto (Storage Link):**
+   Aplikasi menaruh foto biometrik ke wilayah rahasia (`storage/app/public/...`), maka Anda harus membuat lorong akses rahasia tersebut agar bisa diakses oleh Face API dengan mengetik:
+   ```bash
+   php artisan storage:link
+   ```
 
-```bash
-composer require laravel/boost --dev
+5. **Kompilasi Aset Antarmuka:**
+   Tarik file-file desain UI Anda dan manpatkan (*compile*) menjadi bentuk jadi siap-pakai minimalis untuk mesin produksi (hosting):
+   ```bash
+   npm run build
+   ```
 
-php artisan boost:install
-```
+## ☁️ Panduan Publikasi ke Shared Hosting (Hostinger)
 
-Boost provides your agent 15+ tools and skills that help agents build Laravel applications while following best practices.
+Bagi pengguna Hostinger / Shared Hosting lain tanpa kebebasan mengganti *Document Root*. Apabila semua jeroan folder `public/` dilepaskan bebas di `public_html/`:
 
-## Contributing
+1. **Memberi Arah Baru Pada Laravel (`index.php`)**
+   Carilah tempat tertulisnya:
+   ```php
+   $app = require_once __DIR__.'/bootstrap/app.php';
+   ```
+   Tepat di bawahnya sisipkan komando per-rute-an spesifik berikut:
+   ```php
+   $app->usePublicPath(__DIR__);
+   ```
 
-Thank you for considering contributing to the Laravel framework! The contribution guide can be found in the [Laravel documentation](https://laravel.com/docs/contributions).
+2. **Kompilasi Folder `build`:**
+   Jangan lupa Anda harus menyeret / meng-upload _folder_ hasil `build` (**Point Panduan Lokal ke-5**) ke `public_html/` sebagai penopang *stylesheet*.
 
-## Code of Conduct
+3. **Proteksi File Rahasia (`.htaccess` WAJIB):**
+   Timpa file `.htaccess` terdalam di root (tempat `.env` bernaung bersama *public_html*) dengan:
 
-In order to ensure that the Laravel community is welcoming to all, please review and abide by the [Code of Conduct](https://laravel.com/docs/contributions#code-of-conduct).
+   ```apache
+   <IfModule mod_rewrite.c>
+       Options -Indexes
+       RewriteEngine On
 
-## Security Vulnerabilities
+       # Proteksi file krusial dari maling
+       <FilesMatch "^\.env|composer\.json|package\.json|\.gitignore">
+           Order allow,deny
+           Deny from all
+       </FilesMatch>
 
-If you discover a security vulnerability within Laravel, please send an e-mail to Taylor Otwell via [taylor@laravel.com](mailto:taylor@laravel.com). All security vulnerabilities will be promptly addressed.
+       # Kunci laci arsip utama Laravel agar tidak bocor
+       RedirectMatch 404 ^/(app|bootstrap|config|database|resources|routes|storage|tests|vendor)/
 
-## License
+       # Pengalir arus HTTP biasa menuju file pintu gerbang index.php
+       RewriteCond %{HTTP:Authorization} .
+       RewriteRule .* - [E=HTTP_AUTHORIZATION:%{HTTP:Authorization}]
+       RewriteCond %{REQUEST_FILENAME} !-d
+       RewriteCond %{REQUEST_FILENAME} !-f
+       RewriteRule ^ index.php [L]
+   </IfModule>
+   ```
 
-The Laravel framework is open-sourced software licensed under the [MIT license](https://opensource.org/licenses/MIT).
-"# absensi_pt_serunting_sakti_jaya" 
+4. **Penyegaran Sistem Internal via SSH:**
+   Masuklah ke SSH/Terminal Hosting Anda:
+   ```bash
+   php artisan config:clear
+   php artisan cache:clear
+   php artisan storage:link
+   ```
+
+Beres! Aplikasi kebanggaan karyawan perusahaan sudah online.
