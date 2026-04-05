@@ -1,6 +1,6 @@
-# Sistem Absensi Wajah - PT Serunting Sakti Jaya
+# Sistem Absensi Wajah 
 
-Aplikasi presensi (absensi) modern berbasis **Pengenalan Wajah Berbasis AI (Face Recognition)** dan **Geo-Location**. Dibangun secara khusus untuk lingkungan korporat **PT Serunting Sakti Jaya**, aplikasi ini menjamin keaslian data absensi karyawan dan mencegah kecurangan.
+Aplikasi presensi (absensi) modern berbasis **Pengenalan Wajah Berbasis AI (Face Recognition)** dan **Geo-Location**. aplikasi ini menjamin keaslian data absensi karyawan dan mencegah kecurangan.
 
 ## 🌟 Fitur Utama
 
