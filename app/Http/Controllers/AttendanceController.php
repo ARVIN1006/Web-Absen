@@ -12,8 +12,8 @@ class AttendanceController extends Controller
 {
     public function index()
     {
-        $company = CompanySetting::first();
-        return view('attendance.index', compact('company'));
+        $locations = CompanySetting::all();
+        return view('attendance.index', compact('locations'));
     }
 
     public function store(Request $request)
@@ -25,25 +25,35 @@ class AttendanceController extends Controller
             'type' => 'required|in:in,out',
         ]);
 
-        $company = CompanySetting::first();
-        if (!$company) {
+        $locations = CompanySetting::all();
+        if ($locations->isEmpty()) {
             return response()->json(['success' => false, 'message' => 'Company settings not found.'], 404);
         }
 
-        // 1. Geolocation Verification (Haversine Formula)
-        $distance = $this->calculateDistance(
-            $request->latitude,
-            $request->longitude,
-            $company->latitude,
-            $company->longitude
-        );
+        $minDistance = PHP_INT_MAX;
+        $closestLocation = null;
+
+        // Find the closest location
+        foreach ($locations as $loc) {
+            $distance = $this->calculateDistance(
+                $request->latitude,
+                $request->longitude,
+                $loc->latitude,
+                $loc->longitude
+            );
+            if ($distance < $minDistance) {
+                $minDistance = $distance;
+                $closestLocation = $loc;
+            }
+        }
 
         $status = 'valid';
-        if ($distance > $company->radius) {
+        if ($minDistance > $closestLocation->radius) {
             return response()->json([
                 'success' => false,
-                'message' => 'You are outside the company radius ('.round($distance).'m). Attendance is not valid.',
-                'distance' => $distance
+                'message' => 'Anda berada di luar area ' . $closestLocation->name . ' (' . round($minDistance) . 'm).',
+                'distance' => $minDistance,
+                'closestLocation' => $closestLocation->name
             ], 403);
         }
 

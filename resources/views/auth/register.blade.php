@@ -368,6 +368,14 @@ async function loadModels() {
     }
 }
 function startCamera() {
+    if(!navigator.mediaDevices || !navigator.mediaDevices.getUserMedia) {
+        loading.innerHTML = `
+            <div style="text-align:center;padding:16px;">
+                <p style="color:#ef4444;font-size:12px;font-weight:700;margin-bottom:4px;">&#10060; Browser Tidak Mendukung</p>
+                <p style="color:#9ca3af;font-size:11px;line-height:1.4;">Kamera butuh <b>HTTPS</b> atau <b>localhost</b>.</p>
+            </div>`;
+        return;
+    }
     navigator.mediaDevices.getUserMedia({ video:{ facingMode:'user' } })
     .then(stream => {
         video.srcObject = stream;

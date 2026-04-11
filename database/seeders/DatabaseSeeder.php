@@ -15,10 +15,20 @@ class DatabaseSeeder extends Seeder
      */
     public function run(): void
     {
-        // Create default admin/test user
+        // Create default admin user
+        User::factory()->create([
+            'name'  => 'Admin System',
+            'email' => 'admin@admin.com',
+            'password' => bcrypt('password'),
+            'role' => 'admin',
+        ]);
+
+        // Create default test user
         User::factory()->create([
             'name'  => 'Test User',
             'email' => 'test@example.com',
+            'password' => bcrypt('password'),
+            'role' => 'employee',
         ]);
 
         // Seed company location settings

@@ -65,7 +65,7 @@
         <p>PT Serunting Sakti Jaya &mdash; Pastikan wajah &amp; lokasi terdeteksi dengan benar.</p>
     </div>
 
-    @if(!$company)
+    @if($locations->isEmpty())
     <div style="background:rgba(239,68,68,0.1);border:1px solid rgba(239,68,68,0.2);border-radius:14px;padding:16px;color:#ef4444;text-align:center;font-size:13.5px;">
         Pengaturan lokasi perusahaan belum dikonfigurasi. Hubungi administrator.
     </div>
@@ -112,9 +112,8 @@
                 <div id="locText" style="font-size:13.5px;font-weight:500;color:var(--text-main);">Mengambil koordinat GPS...</div>
                 <div id="distInfo" style="font-size:11.5px;color:var(--text-muted-dark);margin-top:4px;display:none;"></div>
                 <div style="border-top:1px solid var(--border-line);margin-top:12px;padding-top:10px;">
-                    <div style="font-size:11px;color:var(--text-muted-dark);">Kantor: <span style="color:var(--text-main);">{{ $company->name }}</span></div>
-                    <div style="font-size:11px;color:var(--text-muted-dark);margin-top:3px;">Alamat: <span style="color:var(--text-main);font-size:10.5px;">Ruko Pesona Batavia, Kemang, Bogor</span></div>
-                    <div style="font-size:11px;color:var(--text-muted-dark);margin-top:3px;">Radius sah: <span style="color:#f59e0b;font-weight:500;">{{ $company->radius }} meter</span></div>
+                    <div style="font-size:11px;color:var(--text-muted-dark);">Cabang Terdekat: <span style="color:var(--text-main);" id="closestBranchName">-</span></div>
+                    <div style="font-size:11px;color:var(--text-muted-dark);margin-top:3px;">Radius sah: <span style="color:#f59e0b;font-weight:500;" id="closestBranchRadius">- meter</span></div>
                 </div>
             </div>
 
@@ -172,11 +171,7 @@ let isLocationValid = false;
 let userLocation    = null;
 let faceMatcher     = null;
 
-const company = {
-    lat:    {{ $company->latitude }},
-    lng:    {{ $company->longitude }},
-    radius: {{ $company->radius }}
-};
+const locations = @json($locations);
 
 /* Load models and reference face */
 async function loadModels() {
@@ -199,7 +194,7 @@ async function loadModels() {
 async function loadReferenceFace() {
     @if(auth()->user()->face_reference_path)
     try {
-        const refImgUrl = '{{ asset("storage/".auth()->user()->face_reference_path) }}';
+        const refImgUrl = '/storage/{{ auth()->user()->face_reference_path }}';
         const img = await faceapi.fetchImage(refImgUrl);
         const refDetection = await faceapi.detectSingleFace(img, new faceapi.TinyFaceDetectorOptions()).withFaceLandmarks().withFaceDescriptor();
         if (refDetection) {
@@ -218,6 +213,15 @@ async function loadReferenceFace() {
 
 /* Camera */
 function startCamera() {
+    if(!navigator.mediaDevices || !navigator.mediaDevices.getUserMedia) {
+        loading.innerHTML = `
+            <div style="text-align:center;padding:16px;">
+                <p style="color:#ef4444;font-size:14px;font-weight:700;margin-bottom:8px;">&#10060; Browser Tidak Siap</p>
+                <p style="color:#9ca3af;font-size:12px;line-height:1.5;">Kamera memerlukan <b>HTTPS</b> atau <b>localhost</b>.<br>Gunakan alamat <u>http://127.0.0.1:8000</u> jika sedang menjalankan server lokal.</p>
+            </div>`;
+        return;
+    }
+
     navigator.mediaDevices.getUserMedia({ video:{ facingMode:'user', width:{ideal:640}, height:{ideal:480} } })
         .then(stream => {
             video.srcObject = stream;
@@ -238,7 +242,11 @@ function startCamera() {
 async function runFaceDetection() {
     setInterval(async () => {
         if (!faceMatcher) {
-            setFaceStatus(false, 'Data Wajah Error');
+            @if(!auth()->user()->face_reference_path)
+                setFaceStatus(false, 'Belum Daftar Wajah');
+            @else
+                setFaceStatus(false, 'Data Wajah Gagal Diproses');
+            @endif
             updateReadiness();
             return;
         }
@@ -248,9 +256,15 @@ async function runFaceDetection() {
                                .withFaceLandmarks()
                                .withFaceDescriptor();
                                
+        const displaySize = { width: video.videoWidth, height: video.videoHeight };
+        faceapi.matchDimensions(canvas, displaySize);
         canvas.getContext('2d').clearRect(0,0,canvas.width,canvas.height);
 
         if (d) {
+            // Menggambar jaring (landmarks) di wajah secara realtime
+            const resizedDetections = faceapi.resizeResults(d, displaySize);
+            faceapi.draw.drawFaceLandmarks(canvas, resizedDetections, { drawLines: true, color: 'rgba(16, 185, 129, 0.7)', lineWidth: 1.5 });
+
             const match = faceMatcher.findBestMatch(d.descriptor);
             if (match.label !== 'unknown') {
                 setFaceStatus(true, 'Wajah Cocok ('+Math.round((1-match.distance)*100)+'%)');
@@ -261,7 +275,7 @@ async function runFaceDetection() {
             setFaceStatus(false, 'Tidak Terdeteksi');
         }
         updateReadiness();
-    }, 800); // 800ms to reduce CPU load since descriptor calculation is heavy
+    }, 400); // Dipercepat 400ms agar tracking landmark lebih mulus
 }
 
 function setFaceStatus(isValid, text) {
@@ -293,11 +307,26 @@ function initGeolocation() {
     }
     navigator.geolocation.getCurrentPosition(pos => {
         userLocation = { lat: pos.coords.latitude, lng: pos.coords.longitude };
-        const dist   = haversine(userLocation.lat, userLocation.lng, company.lat, company.lng);
-        isLocationValid = dist <= company.radius;
+        
+        let minDistance = Infinity;
+        let closestLocation = null;
+
+        // Mencari cabang terdekat
+        locations.forEach(loc => {
+            const dist = haversine(userLocation.lat, userLocation.lng, parseFloat(loc.latitude), parseFloat(loc.longitude));
+            if (dist < minDistance) {
+                minDistance = dist;
+                closestLocation = loc;
+            }
+        });
+
+        isLocationValid = minDistance <= closestLocation.radius;
+
+        document.getElementById('closestBranchName').textContent = closestLocation.name;
+        document.getElementById('closestBranchRadius').textContent = closestLocation.radius + ' meter';
 
         distInfo.style.display = 'block';
-        distInfo.textContent   = 'Jarak dari kantor: ' + Math.round(dist) + ' meter';
+        distInfo.textContent   = 'Jarak GPS: ' + Math.round(minDistance) + ' meter';
 
         if (isLocationValid) {
             locText.innerHTML           = '<span style="color:#059669;font-weight:600;">&#10004; Lokasi Sah</span>';
@@ -311,7 +340,7 @@ function initGeolocation() {
                locDot.style.background = '#34d399';
             }
         } else {
-            locText.innerHTML           = '<span style="color:#dc2626;font-weight:600;">&#10008; Di Luar Area (' + Math.round(dist) + 'm)</span>';
+            locText.innerHTML           = '<span style="color:#dc2626;font-weight:600;">&#10008; Di Luar Area</br><span style="font-size:11px;">(' + Math.round(minDistance) + 'm dari ' + closestLocation.name + ')</span></span>';
             locBadge.style.background   = 'rgba(239,68,68,0.15)';
             locBadge.style.color        = '#dc2626';
             locDot.style.background     = '#dc2626';
@@ -339,10 +368,15 @@ function updateReadiness() {
         if(document.documentElement.getAttribute('data-theme') === 'dark') document.getElementById('stR').style.color = '#34d399';
     } else {
         const m = [];
-        if (!isFaceDetected)  m.push('wajah terdeteksi');
-        if (!isLocationValid) m.push(userLocation ? 'berada di lokasi kantor' : 'izin lokasi GPS');
-        overallStatus.textContent = 'Membutuhkan: ' + m.join(' & ') + '.';
-        overallStatus.style.color = 'var(--text-muted)';
+        if (!isFaceDetected) {
+            @if(!auth()->user()->face_reference_path)
+                m.push('Harus mendaftar/update foto wajah di Profil');
+            @else
+                m.push('wajah terdeteksi cocok');
+            @endif
+        }
+        if (!isLocationValid) m.push(userLocation ? 'berada dalam radius lokasi kantor' : 'izin lokasi GPS');
+        overallStatus.innerHTML = '<span style="color:#ef4444;font-weight:600;">Membutuhkan: <br>' + m.join('<br>') + '</span>';
     }
 }
 
