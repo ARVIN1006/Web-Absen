@@ -25,12 +25,16 @@ class EmployeeController extends Controller
     public function store(Request $request)
     {
         $request->validate([
-            'name' => 'required',
+            'name' => 'required|string|max:255',
             'email' => 'required|email|unique:users,email',
             'password' => 'required|min:6',
             'position_id' => 'required|exists:positions,id',
             'department_id' => 'nullable|exists:departments,id',
             'work_shift_id' => 'nullable|exists:work_shifts,id',
+            'phone_number' => 'nullable|string',
+            'nik' => 'nullable|string|max:20',
+            'joined_at' => 'nullable|date',
+            'gender' => 'nullable|in:male,female',
         ]);
 
         User::create([
@@ -40,6 +44,14 @@ class EmployeeController extends Controller
             'position_id' => $request->position_id,
             'department_id' => $request->department_id,
             'work_shift_id' => $request->work_shift_id,
+            'phone_number' => $request->phone_number,
+            'address' => $request->address,
+            'gender' => $request->gender,
+            'birth_date' => $request->birth_date,
+            'nik' => $request->nik,
+            'npwp' => $request->npwp,
+            'joined_at' => $request->joined_at,
+            'contract_end_at' => $request->contract_end_at,
             'role' => 'employee',
         ]);
 
@@ -57,7 +69,7 @@ class EmployeeController extends Controller
     public function update(Request $request, User $employee)
     {
         $request->validate([
-            'name' => 'required',
+            'name' => 'required|string|max:255',
             'email' => 'required|email|unique:users,email,' . $employee->id,
             'position_id' => 'required|exists:positions,id',
             'department_id' => 'nullable|exists:departments,id',
@@ -65,7 +77,11 @@ class EmployeeController extends Controller
             'password' => 'nullable|min:6',
         ]);
 
-        $data = $request->only('name', 'email', 'position_id', 'department_id', 'work_shift_id');
+        $data = $request->only([
+            'name', 'email', 'position_id', 'department_id', 'work_shift_id',
+            'phone_number', 'address', 'gender', 'birth_date', 'nik', 'npwp', 
+            'joined_at', 'contract_end_at'
+        ]);
         
         if ($request->filled('password')) {
             $data['password'] = bcrypt($request->password);

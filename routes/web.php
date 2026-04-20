@@ -96,6 +96,7 @@ Route::prefix('admin')->name('admin.')->middleware(['auth', 'admin'])->group(fun
     Route::post('kpi', [\App\Http\Controllers\Admin\KpiController::class, 'store'])->name('kpi.store');
 
     // Announcements
+    Route::patch('announcements/{announcement}/toggle', [\App\Http\Controllers\Admin\AnnouncementController::class, 'toggle'])->name('announcements.toggle');
     Route::resource('announcements', \App\Http\Controllers\Admin\AnnouncementController::class)->except(['show', 'create', 'edit']);
 
     // Centralized Approvals
