@@ -10,7 +10,7 @@ class AttendanceController extends Controller
 {
     public function index(Request $request)
     {
-        $query = Attendance::with('user')->latest();
+        $query = Attendance::with(['user.position'])->latest();
 
         if ($request->filled('start_date')) {
             $query->whereDate('created_at', '>=', $request->start_date);
@@ -27,5 +27,11 @@ class AttendanceController extends Controller
         $attendances = $query->paginate(20);
 
         return view('admin.attendances', compact('attendances'));
+    }
+
+    public function destroy(Attendance $attendance)
+    {
+        $attendance->delete();
+        return redirect()->route('admin.attendances.index')->with('success', 'Data absensi berhasil dihapus.');
     }
 }

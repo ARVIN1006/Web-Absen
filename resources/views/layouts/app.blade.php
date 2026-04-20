@@ -9,7 +9,7 @@
     <meta name="apple-mobile-web-app-capable" content="yes">
     <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
 
-    <title>{{ config('app.name', 'PT Serunting Sakti Jaya') }} – Absensi</title>
+    <title>{{ config('app.name') }} – Absensi</title>
 
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
@@ -26,7 +26,7 @@
     <style>
         :root {
             --bg-body: #0f1117;
-            --bg-nav: #12151f;
+            --bg-sidebar: #12151f;
             --bg-glass: rgba(255,255,255,0.05);
             --border-glass: rgba(255,255,255,0.08);
             --text-main: #ffffff;
@@ -38,10 +38,11 @@
             --shadow-drop: rgba(0,0,0,0.5);
             --icon-color: #ffffff;
             --logo-text: #ffffff;
+            --sidebar-width: 260px;
         }
         [data-theme="light"] {
             --bg-body: #f3f4f6;
-            --bg-nav: #ffffff;
+            --bg-sidebar: #ffffff;
             --bg-glass: #ffffff;
             --border-glass: #e5e7eb;
             --text-main: #111827;
@@ -56,260 +57,363 @@
         }
 
         *, *::before, *::after { box-sizing: border-box; -webkit-tap-highlight-color: transparent; }
-        body { margin:0; background:var(--bg-body); color:var(--text-main); font-family:'Inter',sans-serif; transition: background 0.3s, color 0.3s; }
+        body { margin:0; background:var(--bg-body); color:var(--text-main); font-family:'Inter',sans-serif; transition: background 0.3s, color 0.3s; overflow-x: hidden; }
+        
+        /* Global Select & Option visibility fix */
+        select option {
+            background-color: #1a1d27;
+            color: #ffffff;
+        }
+        [data-theme="light"] select option {
+            background-color: #ffffff;
+            color: #111827;
+        }
+
         .glass { background:var(--bg-glass); backdrop-filter:blur(16px); -webkit-backdrop-filter:blur(16px); border:1px solid var(--border-glass); transition: all 0.3s; }
 
-        /* ─── Desktop top navbar ─── */
-        .nav-desktop {
-            display: flex; align-items: center; justify-content: space-between;
-            padding: 0 24px; height: 60px; background: var(--bg-nav);
+        /* ─── Layout ─── */
+        .app-container { display: flex; min-height: 100vh; }
+        .main-content { flex: 1; min-width: 0; display: flex; flex-direction: column; transition: all 0.3s; }
+
+        /* ─── Sidebar ─── */
+        .sidebar {
+            width: var(--sidebar-width);
+            background: var(--bg-sidebar);
+            border-right: 1px solid var(--border-line);
+            height: 100vh;
+            position: fixed;
+            top: 0;
+            left: 0;
+            z-index: 1000;
+            display: flex;
+            flex-direction: column;
+            transition: transform 0.3s ease;
+        }
+
+        .sidebar-header {
+            padding: 24px;
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            text-decoration: none;
             border-bottom: 1px solid var(--border-line);
-            position: sticky; top: 0; z-index: 100; transition: background 0.3s, border-color 0.3s;
         }
-        .nav-desktop .nav-left  { display:flex; align-items:center; gap:8px; }
-        .nav-desktop .nav-links { display:flex; align-items:center; gap:4px; margin-left:28px; }
-        .nav-desktop .nav-link  { display:flex; align-items:center; gap:6px; padding:7px 14px; border-radius:10px; text-decoration:none; font-size:13.5px; font-weight:500; color:var(--text-muted); transition:all .15s; white-space:nowrap; }
-        .nav-desktop .nav-link:hover  { background:var(--hover-bg); color:var(--text-main); }
-        .nav-desktop .nav-link.active { background:rgba(59,130,246,0.12); color:#3b82f6; }
-        .nav-desktop .nav-right { display:flex; align-items:center; gap:12px; }
-        .nav-user-name  { font-size:13px; font-weight:600; color:var(--text-main); }
-        .nav-user-email { font-size:11px; color:var(--text-muted-dark); }
-        .avatar-btn { width:36px;height:36px;border-radius:50%;border:none;cursor:pointer;font-weight:700;font-size:14px;color:#fff;background:linear-gradient(135deg,#3b82f6,#10b981);flex-shrink:0; }
-        .dropdown-menu { position:absolute;right:0;top:calc(100% + 8px);width:192px;background:var(--dropdown-bg);border:1px solid var(--border-glass);border-radius:14px;padding:6px;z-index:200;box-shadow:0 16px 40px var(--shadow-drop);transition:all 0.3s; }
-        .dropdown-item { display:flex;align-items:center;gap:8px;padding:9px 12px;border-radius:9px;font-size:13px;color:var(--text-main);text-decoration:none;cursor:pointer;background:none;border:none;width:100%;transition:background .15s; }
-        .dropdown-item:hover { background:var(--hover-bg); }
-        .dropdown-item.danger { color:#f87171; }
-        .dropdown-item.danger:hover { color:#ef4444; }
-        .dropdown-sep { height:1px;background:var(--border-line);margin:4px 0; }
-        .relative { position:relative; }
 
-        .btn-theme { background:none;border:none;color:var(--text-muted);padding:8px;border-radius:10px;cursor:pointer;transition:all 0.15s;display:flex;align-items:center;gap:6px;}
-        .btn-theme:hover { background:var(--hover-bg);color:var(--text-main); }
+        .sidebar-nav {
+            flex: 1;
+            padding: 20px 12px;
+            display: flex;
+            flex-direction: column;
+            gap: 4px;
+            overflow-y: auto;
+        }
 
-        /* ─── Mobile top bar ─── */
-        .nav-mobile {
-            display: none; align-items: center; justify-content: space-between;
-            padding: 0 16px; height: 54px; background: var(--bg-nav);
+        .nav-item {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            padding: 10px 14px;
+            border-radius: 12px;
+            color: var(--text-muted);
+            text-decoration: none;
+            font-size: 14px;
+            font-weight: 500;
+            transition: all 0.2s;
+        }
+        .nav-item:hover {
+            background: var(--hover-bg);
+            color: var(--text-main);
+        }
+        .nav-item.active {
+            background: rgba(59,130,246,0.1);
+            color: #3b82f6;
+        }
+        .nav-item svg { width: 18px; height: 18px; flex-shrink: 0; }
+
+        .nav-section-label {
+            font-size: 11px;
+            font-weight: 700;
+            color: var(--text-muted-dark);
+            text-transform: uppercase;
+            letter-spacing: 0.05em;
+            margin: 16px 14px 8px;
+        }
+
+        .sidebar-footer {
+            padding: 16px;
+            border-top: 1px solid var(--border-line);
+            display: flex;
+            flex-direction: column;
+            gap: 12px;
+        }
+
+        .user-profile {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            padding: 8px 12px;
+            border-radius: 12px;
+            background: var(--hover-bg);
+        }
+        .user-avatar {
+            width: 36px; height: 36px; border-radius: 50%;
+            background: linear-gradient(135deg,#3b82f6,#10b981);
+            display: flex; align-items: center; justify-content: center;
+            font-weight: 700; color: #fff; font-size: 14px;
+        }
+        .user-info { flex: 1; min-width: 0; }
+        .user-name { font-size: 13px; font-weight: 600; color: var(--text-main); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+        .user-email { font-size: 11px; color: var(--text-muted-dark); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+
+        /* ─── Mobile Top Bar ─── */
+        .mobile-header {
+            display: none;
+            align-items: center;
+            justify-content: space-between;
+            padding: 0 16px;
+            height: 56px;
+            background: var(--bg-sidebar);
             border-bottom: 1px solid var(--border-line);
-            position: sticky; top: 0; z-index: 100; transition: background 0.3s, border-color 0.3s;
+            position: sticky;
+            top: 0;
+            z-index: 900;
         }
 
-        /* ─── Mobile bottom nav ─── */
-        .bottom-nav {
-            display: none; position: fixed; bottom: 0; left: 0; right: 0;
-            height: calc(58px + env(safe-area-inset-bottom, 0px));
-            padding-bottom: env(safe-area-inset-bottom, 0px);
-            background: var(--bg-nav); border-top: 1px solid var(--border-line); z-index: 200; align-items: stretch; transition: background 0.3s, border-color 0.3s;
+        .sidebar-overlay {
+            display: none;
+            position: fixed;
+            inset: 0;
+            background: rgba(0,0,0,0.5);
+            backdrop-filter: blur(4px);
+            z-index: 950;
         }
-        .bn-item {
-            flex: 1; display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 3px;
-            text-decoration: none; color: var(--text-muted-dark); font-size: 10px; font-weight: 500; padding: 8px 0 6px; transition: color .15s;
-        }
-        .bn-item:hover, .bn-item.active { color: #3b82f6; }
-        .bn-item svg { width:22px;height:22px;flex-shrink:0; }
-        .bn-fab {
-            flex: 1; display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 2px;
-            text-decoration: none; color: var(--text-main); font-size: 10px; font-weight: 600; padding-bottom: 4px;
-        }
-        .bn-fab-icon {
-            width: 46px; height: 46px; border-radius: 14px; background: linear-gradient(135deg,#3b82f6,#10b981);
-            display: flex; align-items: center; justify-content: center; box-shadow: 0 4px 16px rgba(59,130,246,0.4);
-            margin-top: -20px; flex-shrink: 0;
-        }
-        .bn-fab-icon svg { width:22px;height:22px; color: #fff;}
-        .bn-fab:active .bn-fab-icon { transform:scale(0.92); }
 
-        /* ─── Page content padding ─── */
-        .page-wrap { min-height:100vh; display:flex; flex-direction:column; }
+        /* ─── Desktop content offset ─── */
+        @media (min-width: 1024px) {
+            .main-content { padding-left: var(--sidebar-width); }
+        }
 
-        /* ─── Mobile breakpoint ─── */
-        @media (max-width: 767px) {
-            .nav-desktop { display: none !important; }
-            .nav-mobile  { display: flex !important; }
-            .bottom-nav  { display: flex !important; }
-            main { padding-bottom: calc(64px + env(safe-area-inset-bottom, 0px)); }
+        /* ─── Mobile adjustment ─── */
+        @media (max-width: 1023px) {
+            .sidebar { transform: translateX(-100%); }
+            .sidebar.open { transform: translateX(0); }
+            .mobile-header { display: flex; }
+            .sidebar-overlay.show { display: block; }
         }
     </style>
 </head>
 <body>
-<div class="page-wrap">
-    {{-- DEMO MODE BANNER --}}
-    <div style="background: linear-gradient(to right, #3b82f6, #8b5cf6); color: white; text-align: center; padding: 6px; font-size: 11px; font-weight: 700; letter-spacing: 0.05em; text-transform: uppercase; z-index: 9999; position: relative;">
-        Demo Mode: Sistem Absensi & HRD Management
-    </div>
+    {{-- SIDEBAR OVERLAY --}}
+    <div id="sidebarOverlay" class="sidebar-overlay" onclick="toggleSidebar()"></div>
 
-    {{-- DESKTOP NAV --}}
-    <nav class="nav-desktop">
-        <div class="nav-left">
-            <a href="{{ route('dashboard') }}" style="display:flex;align-items:center;gap:10px;text-decoration:none;">
-                <div style="width:34px;height:34px;display:flex;align-items:center;justify-content:center;flex-shrink:0;">
-                    <img src="{{ asset('assets/images/logo.png') }}" alt="Logo" style="max-width:100%;height:100%;object-fit:contain;">
-                </div>
+    <div class="app-container">
+        {{-- SIDEBAR --}}
+        <aside id="sidebar" class="sidebar">
+            <a href="{{ route('dashboard') }}" class="sidebar-header">
+                <img src="{{ asset('assets/images/logo.png') }}" alt="Logo" style="width:32px;height:32px;object-fit:contain;">
                 <div>
-                    <div style="font-size:13px;font-weight:700;color:var(--logo-text);line-height:1.1;transition:color 0.3s;">PT Serunting Sakti Jaya</div>
-                    <div style="font-size:11px;color:var(--text-muted-dark);line-height:1.1;transition:color 0.3s;">Sistem Absensi</div>
+                    <div style="font-size:14px;font-weight:700;color:var(--logo-text);line-height:1.2;">{{ config('app.name') }}</div>
+                    <div style="font-size:11px;color:var(--text-muted-dark);line-height:1.2;">Sistem Absensi</div>
                 </div>
             </a>
-            <div class="nav-links">
-                <a href="{{ route('dashboard') }}" class="nav-link {{ request()->routeIs('dashboard') ? 'active' : '' }}">
-                    <svg style="width:15px;height:15px;flex-shrink:0;" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 12l2-2m0 0l7-7 7 7M5 10v10a1 1 0 001 1h3m10-11l2 2m-2-2v10a1 1 0 01-1 1h-3m-6 0a1 1 0 001-1v-4a1 1 0 011-1h2a1 1 0 011 1v4a1 1 0 001 1m-6 0h6"/></svg>
+
+            <nav class="sidebar-nav">
+                <div class="nav-section-label">Main Menu</div>
+                <a href="{{ route('dashboard') }}" class="nav-item {{ request()->routeIs('dashboard') ? 'active' : '' }}">
+                    <svg fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 12l2-2m0 0l7-7 7 7M5 10v10a1 1 0 001 1h3m10-11l2 2m-2-2v10a1 1 0 01-1 1h-3m-6 0a1 1 0 001-1v-4a1 1 0 011-1h2a1 1 0 011 1v4a1 1 0 001 1m-6 0h6"/></svg>
                     Dashboard
                 </a>
-                <a href="{{ route('attendance.index') }}" class="nav-link {{ request()->routeIs('attendance.*') ? 'active' : '' }}">
-                    <svg style="width:15px;height:15px;flex-shrink:0;" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 9a2 2 0 012-2h.93a2 2 0 001.664-.89l.812-1.22A2 2 0 0110.07 4h3.86a2 2 0 011.664.89l.812 1.22A2 2 0 0018.07 7H19a2 2 0 012 2v9a2 2 0 01-2 2H5a2 2 0 01-2-2V9z"/><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 13a3 3 0 11-6 0 3 3 0 016 0z"/></svg>
+                <a href="{{ route('attendance.index') }}" class="nav-item {{ request()->routeIs('attendance.*') ? 'active' : '' }}">
+                    <svg fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 9a2 2 0 012-2h.93a2 2 0 001.664-.89l.812-1.22A2 2 0 0110.07 4h3.86a2 2 0 011.664.89l.812 1.22A2 2 0 0018.07 7H19a2 2 0 012 2v9a2 2 0 01-2 2H5a2 2 0 01-2-2V9z"/><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 13a3 3 0 11-6 0 3 3 0 016 0z"/></svg>
                     Absensi
                 </a>
-            </div>
-        </div>
-        <div class="nav-right">
-            <button class="btn-theme" onclick="toggleTheme()" aria-label="Toggle Theme">
-                <svg class="icon-sun" style="width:18px;height:18px;display:none;" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 3v1m0 16v1m9-9h-1M4 12H3m15.364 6.364l-.707-.707M6.343 6.343l-.707-.707m12.728 0l-.707.707M6.343 17.657l-.707.707M16 12a4 4 0 11-8 0 4 4 0 018 0z" /></svg>
-                <svg class="icon-moon" style="width:18px;height:18px;display:none;" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M20.354 15.354A9 9 0 018.646 3.646 9.003 9.003 0 0012 21a9.003 9.003 0 008.354-5.646z" /></svg>
-            </button>
-            <div style="text-align:right;">
-                <div class="nav-user-name">{{ Auth::user()->name }}</div>
-                <div class="nav-user-email">{{ Auth::user()->email }}</div>
-            </div>
-            <div class="relative" id="desktopDropWrap">
-                <button class="avatar-btn" onclick="toggleDrop('desktopDrop')">
-                    {{ strtoupper(substr(Auth::user()->name,0,1)) }}
-                </button>
-                <div id="desktopDrop" class="dropdown-menu" style="display:none;">
-                    <a href="{{ route('profile.edit') }}" class="dropdown-item">
-                        <svg style="width:15px;height:15px;" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z"/></svg>
-                        Profil Saya
-                    </a>
-                    @if(Auth::user()->isAdmin())
-                    <a href="{{ route('admin.dashboard') }}" class="dropdown-item">
-                        <svg style="width:15px;height:15px;" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10.325 4.317c.426-1.756 2.924-1.756 3.35 0a1.724 1.724 0 002.573 1.066c1.543-.94 3.31.826 2.37 2.37a1.724 1.724 0 001.065 2.572c1.756.426 1.756 2.924 0 3.35a1.724 1.724 0 00-1.066 2.573c.94 1.543-.826 3.31-2.37 2.37a1.724 1.724 0 00-2.572 1.065c-.426 1.756-2.924 1.756-3.35 0a1.724 1.724 0 00-2.573-1.066c-1.543.94-3.31-.826-2.37-2.37a1.724 1.724 0 00-1.065-2.572c-1.756-.426-1.756-2.924 0-3.35a1.724 1.724 0 001.066-2.573c-.94-1.543.826-3.31 2.37-2.37.996.608 2.296.07 2.572-1.065z"/><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"/></svg>
-                        Admin Panel
-                    </a>
-                    @endif
-                    <div class="dropdown-sep"></div>
-                    <form method="POST" action="{{ route('logout') }}" style="margin:0;">
-                        @csrf
-                        <button type="submit" class="dropdown-item danger">
-                            <svg style="width:15px;height:15px;" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 16l4-4m0 0l-4-4m4 4H7m6 4v1a3 3 0 01-3 3H6a3 3 0 01-3-3V7a3 3 0 013-3h4a3 3 0 013 3v1"/></svg>
-                            Keluar
-                        </button>
-                    </form>
-                </div>
-            </div>
-        </div>
-    </nav>
+                <a href="{{ route('profile.index') }}" class="nav-item {{ request()->routeIs('profile.*') ? 'active' : '' }}">
+                    <svg fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z"/></svg>
+                    Profil Saya
+                </a>
 
-    {{-- MOBILE TOP BAR --}}
-    <nav class="nav-mobile">
-        <a href="{{ route('dashboard') }}" style="display:flex;align-items:center;gap:8px;text-decoration:none;">
-            <div style="width:30px;height:30px;display:flex;align-items:center;justify-content:center;flex-shrink:0;">
-                <img src="{{ asset('assets/images/logo.png') }}" alt="Logo" style="max-width:100%;height:100%;object-fit:contain;">
-            </div>
-            <div>
-                <div style="font-size:12px;font-weight:700;color:var(--logo-text);line-height:1.1;transition:color 0.3s;">PT Serunting Sakti Jaya</div>
-                <div style="font-size:10px;color:var(--text-muted-dark);line-height:1.1;transition:color 0.3s;">Sistem Absensi</div>
-            </div>
-        </a>
-        <div style="display:flex;align-items:center;gap:10px;">
-            <button class="btn-theme p-0" onclick="toggleTheme()" aria-label="Toggle Theme" style="padding:6px;">
-                <svg class="icon-sun" style="width:18px;height:18px;display:none;" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 3v1m0 16v1m9-9h-1M4 12H3m15.364 6.364l-.707-.707M6.343 6.343l-.707-.707m12.728 0l-.707.707M6.343 17.657l-.707.707M16 12a4 4 0 11-8 0 4 4 0 018 0z" /></svg>
-                <svg class="icon-moon" style="width:18px;height:18px;display:none;" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M20.354 15.354A9 9 0 018.646 3.646 9.003 9.003 0 0012 21a9.003 9.003 0 008.354-5.646z" /></svg>
-            </button>
-            <div class="relative" id="mobileDropWrap">
-                <button class="avatar-btn" style="width:32px;height:32px;font-size:13px;" onclick="toggleDrop('mobileDrop')">
-                    {{ strtoupper(substr(Auth::user()->name,0,1)) }}
+                <div class="nav-section-label" style="margin-top: 16px;">Layanan Mandiri</div>
+                <a href="{{ route('reimbursements.index') }}" class="nav-item {{ request()->routeIs('reimbursements.*') ? 'active' : '' }}">
+                    <svg fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8c-1.657 0-3 .895-3 2s1.343 2 3 2 3 .895 3 2-1.343 2-3 2m0-8c1.11 0 2.08.402 2.599 1M12 8V7m0 1v8m0 0v1m0-1c-1.11 0-2.08-.402-2.599-1M21 12a9 9 0 11-18 0 9 9 0 0118 0z"/></svg>
+                    Klaim Reimbursement
+                </a>
+                <a href="{{ route('payrolls.user_index') }}" class="nav-item {{ request()->routeIs('payrolls.user_index') ? 'active' : '' }}">
+                    <svg fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"/></svg>
+                    Slip Gaji Saya
+                </a>
+                <a href="{{ route('company-directory') }}" class="nav-item {{ request()->routeIs('company-directory') ? 'active' : '' }}">
+                    <svg fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 20h5v-2a3 3 0 00-5.356-1.857M17 20H7m10 0v-2c0-.656-.126-1.283-.356-1.857M7 20H2v-2a3 3 0 015.356-1.857M7 20v-2c0-.656.126-1.283.356-1.857m0 0a5.002 5.002 0 019.288 0M15 7a3 3 0 11-6 0 3 3 0 016 0zm6 3a2 2 0 11-4 0 2 2 0 014 0zM7 10a2 2 0 11-4 0 2 2 0 014 0z"/></svg>
+                    Direktori Karyawan
+                </a>
+
+                @if(Auth::user()->isAdmin())
+                <div class="nav-section-label" style="margin-top: 16px;">Main Menu</div>
+                <a href="{{ route('admin.dashboard') }}" class="nav-item {{ request()->routeIs('admin.dashboard') ? 'active' : '' }}">
+                    <svg fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 19v-6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2a2 2 0 002-2zm0 0V9a2 2 0 012-2h2a2 2 0 012 2v10m-6 0a2 2 0 002 2h2a2 2 0 002-2m0 0V5a2 2 0 012-2h2a2 2 0 012 2v14a2 2 0 01-2 2h-2a2 2 0 01-2-2z"/></svg>
+                    Admin Dashboard
+                </a>
+                <a href="{{ route('admin.approvals') }}" class="nav-item {{ request()->routeIs('admin.approvals') ? 'active' : '' }}">
+                    <svg fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2"/></svg>
+                    Pusat Persetujuan
+                </a>
+
+                <div class="nav-section-label" style="margin-top: 16px;">Manajemen Karyawan</div>
+                <a href="{{ route('admin.employees.index') }}" class="nav-item {{ request()->routeIs('admin.employees.*') ? 'active' : '' }}">
+                    <svg fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 20h5v-2a3 3 0 00-5.356-1.857M17 20H7m10 0v-2c0-.656-.126-1.283-.356-1.857M7 20H2v-2a3 3 0 015.356-1.857M7 20v-2c0-.656.126-1.283.356-1.857m0 0a5.002 5.002 0 019.288 0M15 7a3 3 0 11-6 0 3 3 0 016 0zm6 3a2 2 0 11-4 0 2 2 0 014 0zM7 10a2 2 0 11-4 0 2 2 0 014 0z"/></svg>
+                    Data Karyawan
+                </a>
+                <a href="{{ route('admin.positions.index') }}" class="nav-item {{ request()->routeIs('admin.positions.*') ? 'active' : '' }}">
+                    <svg fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 13.255A23.931 23.931 0 0112 15c-3.183 0-6.22-.62-9-1.745M16 6V4a2 2 0 00-2-2h-4a2 2 0 00-2 2v2m4 6h.01M5 20h14a2 2 0 002-2V8a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z"/></svg>
+                    Data Jabatan
+                </a>
+                <a href="{{ route('admin.departments.index') }}" class="nav-item {{ request()->routeIs('admin.departments.*') ? 'active' : '' }}">
+                    <svg fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 21V5a2 2 0 00-2-2H7a2 2 0 00-2 2v16m14 0h2m-2 0h-5m-9 0H3m2 0h5M9 7h1m-1 4h1m4-4h1m-1 4h1m-5 10v-5a1 1 0 011-1h2a1 1 0 011 1v5m-4 0h4"/></svg>
+                    Data Departemen
+                </a>
+                <a href="{{ route('admin.org-chart') }}" class="nav-item {{ request()->routeIs('admin.org-chart') ? 'active' : '' }}">
+                    <svg fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 19v-6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2a2 2 0 002-2zm0 0V9a2 2 0 012-2h2a2 2 0 012 2v10m-6 0a2 2 0 002 2h2a2 2 0 002-2m0 0V5a2 2 0 012-2h2a2 2 0 012 2v14a2 2 0 01-2 2h-2a2 2 0 01-2-2z"/></svg>
+                    Struktur Organisasi
+                </a>
+                <a href="{{ route('admin.work-shifts.index') }}" class="nav-item {{ request()->routeIs('admin.work-shifts.*') ? 'active' : '' }}">
+                    <svg fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z"/></svg>
+                    Shift Kerja
+                </a>
+
+                <div class="nav-section-label" style="margin-top: 16px;">Absensi & Keuangan</div>
+                <a href="{{ route('admin.attendances.index') }}" class="nav-item {{ request()->routeIs('admin.attendances.*') ? 'active' : '' }}">
+                    <svg fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 17v-2m3 2v-4m3 4v-6m2 10H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"/></svg>
+                    Laporan Absensi
+                </a>
+                <a href="{{ route('admin.reimbursements.index') }}" class="nav-item {{ request()->routeIs('admin.reimbursements.*') ? 'active' : '' }}">
+                    <svg fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8c-1.657 0-3 .895-3 2s1.343 2 3 2 3 .895 3 2-1.343 2-3 2m0-8c1.11 0 2.08.402 2.599 1M12 8V7m0 1v8m0 0v1m0-1c-1.11 0-2.08-.402-2.599-1M21 12a9 9 0 11-18 0 9 9 0 0118 0z"/></svg>
+                    Persetujuan Klaim
+                </a>
+                <a href="{{ route('admin.payrolls.index') }}" class="nav-item {{ request()->routeIs('admin.payrolls.*') ? 'active' : '' }}">
+                    <svg fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"/></svg>
+                    Manajemen Payroll
+                </a>
+                <a href="{{ route('admin.reports.labor-cost') }}" class="nav-item {{ request()->routeIs('admin.reports.labor-cost') ? 'active' : '' }}">
+                    <svg fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M11 3.055A9.001 9.001 0 1020.945 13H11V3.055z"/><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M20.488 9H15V3.512A9.025 9.025 0 0120.488 9z"/></svg>
+                    Biaya Tenaga Kerja
+                </a>
+                <a href="{{ route('admin.reports.performance-heatmap') }}" class="nav-item {{ request()->routeIs('admin.reports.performance-heatmap') ? 'active' : '' }}">
+                    <svg fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 19v-6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2a2 2 0 002-2zm0 0V9a2 2 0 012-2h2a2 2 0 012 2v10m-6 0a2 2 0 002 2h2a2 2 0 002-2m0 0V5a2 2 0 012-2h2a2 2 0 012 2v14a2 2 0 01-2 2h-2a2 2 0 01-2-2z"/></svg>
+                    Heatmap Performa
+                </a>
+
+                <div class="nav-section-label" style="margin-top: 16px;">Manajemen Kinerja</div>
+                <a href="{{ route('admin.kpi.index') }}" class="nav-item {{ request()->routeIs('admin.kpi.*') ? 'active' : '' }}">
+                    <svg fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 19v-6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2a2 2 0 002-2zm0 0V9a2 2 0 012-2h2a2 2 0 012 2v10m-6 0a2 2 0 002 2h2a2 2 0 002-2m0 0V5a2 2 0 012-2h2a2 2 0 012 2v14a2 2 0 01-2 2h-2a2 2 0 01-2-2z"/></svg>
+                    Penilaian KPI
+                </a>
+
+                <div class="nav-section-label" style="margin-top: 16px;">Cuti & Izin</div>
+                <a href="{{ route('admin.leave-requests.index') }}" class="nav-item {{ request()->routeIs('admin.leave-requests.*') ? 'active' : '' }}">
+                    <svg fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2-2v14a2 2 0 002 2z"/></svg>
+                    Pengajuan Cuti
+                </a>
+                <a href="{{ route('admin.leave-types.index') }}" class="nav-item {{ request()->routeIs('admin.leave-types.*') ? 'active' : '' }}">
+                    <svg fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 11H5m14 0a2 2 0 012 2v6a2 2 0 01-2 2H5a2 2 0 01-2-2v-6a2 2 0 012-2m14 0V9a2 2 0 00-2-2M5 11V9a2 2 0 012-2m0 0V5a2 2 0 012-2h6a2 2 0 012 2v2M7 7h10"/></svg>
+                    Tipe Cuti
+                </a>
+
+                <div class="nav-section-label" style="margin-top: 16px;">Informasi & Pengaturan</div>
+                <a href="{{ route('admin.announcements.index') }}" class="nav-item {{ request()->routeIs('admin.announcements.*') ? 'active' : '' }}">
+                    <svg fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M11 5.882V19.24a1.76 1.76 0 01-3.417.592l-2.147-6.15M18 13a3 3 0 100-6M5.436 13.683A4.001 4.001 0 017 6h1.832c4.1 0 7.625-1.234 9.168-3v14c-1.543-1.766-5.067-3-9.168-3H7a3.988 3.988 0 01-1.564-.317z"/></svg>
+                    Pusat Informasi
+                </a>
+                <a href="{{ route('admin.locations.index') }}" class="nav-item {{ request()->routeIs('admin.locations.*') ? 'active' : '' }}">
+                    <svg fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17.657 16.657L13.414 20.9a1.998 1.998 0 01-2.827 0l-4.244-4.243a8 8 0 1111.314 0z"/><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 11a3 3 0 11-6 0 3 3 0 016 0z"/></svg>
+                    Lokasi Kantor
+                </a>
+                @endif
+
+                <div class="nav-section-label" style="margin-top: 16px;">Bantuan</div>
+                <a href="{{ route('guide') }}" class="nav-item {{ request()->routeIs('guide') ? 'active' : '' }}" style="color: #34d399;">
+                    <svg fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 6.253v13m0-13C10.832 5.477 9.246 5 7.5 5S4.168 5.477 3 6.253v13C4.168 18.477 5.754 18 7.5 18s3.332.477 4.5 1.253m0-13C13.168 5.477 14.754 5 16.5 5c1.747 0 3.332.477 4.5 1.253v13C19.832 18.477 18.247 18 16.5 18c-1.746 0-3.332.477-4.5 1.253"></path></svg>
+                    Panduan Uji Coba
+                </a>
+            </nav>
+
+            <div class="sidebar-footer">
+                <button class="btn-theme" onclick="toggleTheme()" style="justify-content:center; width:100%; padding:10px; border:1px solid var(--border-line); border-radius:12px;">
+                    <span class="icon-sun" style="display:none; align-items:center; gap:8px;">
+                        <svg style="width:18px;height:18px;" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 3v1m0 16v1m9-9h-1M4 12H3m15.364 6.364l-.707-.707M6.343 6.343l-.707-.707m12.728 0l-.707.707M6.343 17.657l-.707.707M16 12a4 4 0 11-8 0 4 4 0 018 0z" /></svg>
+                        Light Mode
+                    </span>
+                    <span class="icon-moon" style="display:none; align-items:center; gap:8px;">
+                        <svg style="width:18px;height:18px;" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M20.354 15.354A9 9 0 018.646 3.646 9.003 9.003 0 0012 21a9.003 9.003 0 008.354-5.646z" /></svg>
+                        Dark Mode
+                    </span>
                 </button>
-                <div id="mobileDrop" class="dropdown-menu" style="display:none;min-width:176px;right:0;">
-                    <div style="padding:10px 12px 8px;border-bottom:1px solid var(--border-line);">
-                        <div style="font-size:13px;font-weight:600;color:var(--text-main);">{{ Auth::user()->name }}</div>
-                        <div style="font-size:11px;color:var(--text-muted-dark);overflow:hidden;text-overflow:ellipsis;white-space:nowrap;">{{ Auth::user()->email }}</div>
+
+                <div class="user-profile">
+                    <div class="user-avatar">
+                        {{ strtoupper(substr(Auth::user()->name,0,1)) }}
                     </div>
-                    <a href="{{ route('profile.edit') }}" class="dropdown-item" style="margin-top:4px;">
-                        <svg style="width:15px;height:15px;" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z"/></svg>
-                        Profil
-                    </a>
-                    @if(Auth::user()->isAdmin())
-                    <a href="{{ route('admin.dashboard') }}" class="dropdown-item">
-                        <svg style="width:15px;height:15px;" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10.325 4.317c.426-1.756 2.924-1.756 3.35 0a1.724 1.724 0 002.573 1.066c1.543-.94 3.31.826 2.37 2.37a1.724 1.724 0 001.065 2.572c1.756.426 1.756 2.924 0 3.35a1.724 1.724 0 00-1.066 2.573c.94 1.543-.826 3.31-2.37 2.37a1.724 1.724 0 00-2.572 1.065c-.426 1.756-2.924 1.756-3.35 0a1.724 1.724 0 00-2.573-1.066c-1.543.94-3.31-.826-2.37-2.37a1.724 1.724 0 00-1.065-2.572c-1.756-.426-1.756-2.924 0-3.35a1.724 1.724 0 001.066-2.573c-.94-1.543.826-3.31 2.37-2.37.996.608 2.296.07 2.572-1.065z"/><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"/></svg>
-                        Admin
-                    </a>
-                    @endif
-                    <div class="dropdown-sep"></div>
-                    <form method="POST" action="{{ route('logout') }}" style="margin:0;">
-                        @csrf
-                        <button type="submit" class="dropdown-item danger">
-                            <svg style="width:15px;height:15px;" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 16l4-4m0 0l-4-4m4 4H7m6 4v1a3 3 0 01-3 3H6a3 3 0 01-3-3V7a3 3 0 013-3h4a3 3 0 013 3v1"/></svg>
-                            Keluar
-                        </button>
-                    </form>
+                    <div class="user-info">
+                        <div class="user-name">{{ Auth::user()->name }}</div>
+                        <div class="user-email">{{ Auth::user()->email }}</div>
+                    </div>
                 </div>
+
+                <form method="POST" action="{{ route('logout') }}" style="margin:0;">
+                    @csrf
+                    <button type="submit" class="nav-item" style="width:100%; background:none; border:none; cursor:pointer; color:#f87171;">
+                        <svg fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 16l4-4m0 0l-4-4m4 4H7m6 4v1a3 3 0 01-3 3H6a3 3 0 01-3-3V7a3 3 0 013-3h4a3 3 0 013 3v1"/></svg>
+                        Keluar
+                    </button>
+                </form>
             </div>
+        </aside>
+
+        {{-- MAIN CONTENT AREA --}}
+        <div class="main-content">
+            {{-- MOBILE HEADER --}}
+            <header class="mobile-header">
+                <button onclick="toggleSidebar()" style="background:none; border:none; color:var(--text-main); padding:8px;">
+                    <svg style="width:24px;height:24px;" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h16M4 18h16"/></svg>
+                </button>
+                <div style="font-weight:700; font-size:15px;">{{ config('app.name') }}</div>
+                <div style="width:40px;"></div> {{-- Spacer --}}
+            </header>
+
+            {{-- DEMO MODE BANNER --}}
+            <div style="background: linear-gradient(to right, #3b82f6, #8b5cf6); color: white; text-align: center; padding: 6px; font-size: 11px; font-weight: 700; letter-spacing: 0.05em; text-transform: uppercase; z-index: 100; position: relative;">
+                Demo Mode: Sistem Absensi & HRD Management
+            </div>
+
+            <main style="padding: 24px;">
+                @yield('content')
+            </main>
         </div>
-    </nav>
+    </div>
 
-    {{-- PAGE CONTENT --}}
-    <main style="flex:1;">
-        @yield('content')
-    </main>
+    <script>
+    function toggleSidebar() {
+        const sidebar = document.getElementById('sidebar');
+        const overlay = document.getElementById('sidebarOverlay');
+        sidebar.classList.toggle('open');
+        overlay.classList.toggle('show');
+    }
 
-</div>
-
-{{-- MOBILE BOTTOM NAV --}}
-<nav class="bottom-nav">
-    <a href="{{ route('dashboard') }}" class="bn-item {{ request()->routeIs('dashboard') ? 'active' : '' }}">
-        <svg fill="none" stroke="currentColor" viewBox="0 0 24 24" style="width:22px;height:22px;flex-shrink:0;">
-            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 12l2-2m0 0l7-7 7 7M5 10v10a1 1 0 001 1h3m10-11l2 2m-2-2v10a1 1 0 01-1 1h-3m-6 0a1 1 0 001-1v-4a1 1 0 011-1h2a1 1 0 011 1v4a1 1 0 001 1m-6 0h6"/>
-        </svg>
-        Dashboard
-    </a>
-    <a href="{{ route('attendance.index') }}" class="bn-fab">
-        <div class="bn-fab-icon">
-            <svg fill="none" stroke="white" viewBox="0 0 24 24" style="width:22px;height:22px;flex-shrink:0;">
-                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 9a2 2 0 012-2h.93a2 2 0 001.664-.89l.812-1.22A2 2 0 0110.07 4h3.86a2 2 0 011.664.89l.812 1.22A2 2 0 0018.07 7H19a2 2 0 012 2v9a2 2 0 01-2 2H5a2 2 0 01-2-2V9z"/>
-                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 13a3 3 0 11-6 0 3 3 0 016 0z"/>
-            </svg>
-        </div>
-        Absensi
-    </a>
-    <a href="{{ route('profile.edit') }}" class="bn-item {{ request()->routeIs('profile.*') ? 'active' : '' }}">
-        <svg fill="none" stroke="currentColor" viewBox="0 0 24 24" style="width:22px;height:22px;flex-shrink:0;">
-            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z"/>
-        </svg>
-        Profil
-    </a>
-</nav>
-
-<script>
-function toggleDrop(id) {
-    var el = document.getElementById(id);
-    el.style.display = el.style.display === 'none' ? 'block' : 'none';
-}
-document.addEventListener('click', function(e) {
-    ['desktopDrop','mobileDrop'].forEach(function(id) {
-        var drop = document.getElementById(id);
-        var wrap = document.getElementById(id === 'desktopDrop' ? 'desktopDropWrap' : 'mobileDropWrap');
-        if (drop && wrap && !wrap.contains(e.target)) {
-            drop.style.display = 'none';
-        }
-    });
-});
-
-// Theme Logic
-function updateThemeIcons() {
-    const isLight = document.documentElement.getAttribute('data-theme') === 'light';
-    document.querySelectorAll('.icon-sun').forEach(el => el.style.display = isLight ? 'none' : 'block');
-    document.querySelectorAll('.icon-moon').forEach(el => el.style.display = isLight ? 'block' : 'none');
-}
-updateThemeIcons();
-
-function toggleTheme() {
-    const html = document.documentElement;
-    const isLight = html.getAttribute('data-theme') === 'light';
-    const newTheme = isLight ? 'dark' : 'light';
-    html.setAttribute('data-theme', newTheme);
-    localStorage.setItem('theme', newTheme);
-    document.querySelector('meta[name="theme-color"]').setAttribute('content', newTheme === 'light' ? '#f3f4f6' : '#0f1117');
+    // Theme Logic
+    function updateThemeIcons() {
+        const isLight = document.documentElement.getAttribute('data-theme') === 'light';
+        document.querySelectorAll('.icon-sun').forEach(el => el.style.display = isLight ? 'none' : 'flex');
+        document.querySelectorAll('.icon-moon').forEach(el => el.style.display = isLight ? 'flex' : 'none');
+    }
     updateThemeIcons();
-}
-</script>
+
+    function toggleTheme() {
+        const html = document.documentElement;
+        const isLight = html.getAttribute('data-theme') === 'light';
+        const newTheme = isLight ? 'dark' : 'light';
+        html.setAttribute('data-theme', newTheme);
+        localStorage.setItem('theme', newTheme);
+        document.querySelector('meta[name="theme-color"]').setAttribute('content', newTheme === 'light' ? '#f3f4f6' : '#0f1117');
+        updateThemeIcons();
+    }
+    </script>
 </body>
 </html>

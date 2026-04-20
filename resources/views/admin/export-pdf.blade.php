@@ -20,7 +20,7 @@
 <body>
 
     <div class="header">
-        <h1>PT Serunting Sakti Jaya</h1>
+        <h1>{{ config('app.name') }}</h1>
         <p>Laporan Rekapitulasi Absensi Karyawan</p>
         <p style="margin-top: 5px;"><strong>Periode:</strong> {{ $period }}</p>
     </div>
@@ -43,8 +43,8 @@
                 <td class="text-center">{{ $index + 1 }}</td>
                 <td>{{ $att->user->name }}</td>
                 <td>{{ $att->user->position ?? '-' }}</td>
-                <td>{{ $att->created_at->format('d M Y') }}</td>
-                <td>{{ $att->created_at->format('H:i:s') }}</td>
+                <td>{{ $att->created_at->translatedFormat('d F Y') }}</td>
+                <td>{{ $att->created_at->format('H:i') }}</td>
                 <td>{{ $att->type == 'in' ? 'Masuk' : 'Pulang' }}</td>
                 <td>
                     <span class="{{ $att->status == 'valid' ? 'badge-valid' : 'badge-invalid' }}">
@@ -64,7 +64,7 @@
     </table>
 
     <div class="footer">
-        <p>Dicetak pada: {{ now()->format('d M Y H:i:s') }}</p>
+        <p>Dicetak pada: {{ now()->translatedFormat('d F Y H:i') }} WIB</p>
     </div>
 
 </body>

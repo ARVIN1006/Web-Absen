@@ -4,6 +4,8 @@ namespace App\Http\Controllers\Auth;
 
 use App\Http\Controllers\Controller;
 use App\Models\User;
+use App\Models\Department;
+use App\Models\WorkShift;
 use Illuminate\Auth\Events\Registered;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
@@ -20,7 +22,20 @@ class RegisteredUserController extends Controller
      */
     public function create(): View
     {
-        return view('auth.register');
+        $departments = Department::orderBy('name')->get();
+        $positions = [
+            'Manager',
+            'Supervisor',
+            'Staff IT',
+            'Staff HRD',
+            'Staff Finance',
+            'Staff Marketing',
+            'Admin',
+            'Security',
+            'Driver',
+            'Office Boy'
+        ];
+        return view('auth.register', compact('departments', 'positions'));
     }
 
     /**
@@ -34,6 +49,7 @@ class RegisteredUserController extends Controller
             'name' => ['required', 'string', 'max:255'],
             'email' => ['required', 'string', 'lowercase', 'email', 'max:255', 'unique:'.User::class],
             'position' => ['required', 'string', 'max:100'],
+            'department_id' => ['required', 'exists:departments,id'],
             'password' => ['required', 'confirmed', Rules\Password::defaults()],
             'face_data' => ['required', 'string'], // base64 string
         ]);
@@ -53,6 +69,8 @@ class RegisteredUserController extends Controller
             'name' => $request->name,
             'email' => $request->email,
             'position' => $request->position,
+            'department_id' => $request->department_id,
+            'work_shift_id' => WorkShift::where('is_default', true)->first()?->id,
             'password' => Hash::make($request->password),
             'face_reference_path' => $imagePath,
         ]);

@@ -1,0 +1,333 @@
+<!DOCTYPE html>
+
+<html class="light" lang="en"><head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<title>Employee Dashboard - Lumina HRIS</title>
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&amp;family=Manrope:wght@400;700;800&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<script id="tailwind-config">
+        tailwind.config = {
+          darkMode: "class",
+          theme: {
+            extend: {
+              "colors": {
+                      "on-background": "#191b23",
+                      "secondary-fixed": "#dae2ff",
+                      "on-secondary-container": "#3e5181",
+                      "tertiary-fixed": "#ffdbcf",
+                      "surface-container-highest": "#e1e2ec",
+                      "primary-container": "#0056d2",
+                      "inverse-primary": "#b2c5ff",
+                      "background": "#faf8ff",
+                      "surface-container": "#ededf8",
+                      "on-error": "#ffffff",
+                      "secondary": "#4a5d8e",
+                      "on-surface-variant": "#424654",
+                      "on-error-container": "#93000a",
+                      "surface-dim": "#d9d9e4",
+                      "secondary-fixed-dim": "#b3c5fd",
+                      "surface-container-low": "#f2f3fe",
+                      "error-container": "#ffdad6",
+                      "surface-variant": "#e1e2ec",
+                      "surface-bright": "#faf8ff",
+                      "on-surface": "#191b23",
+                      "inverse-surface": "#2e3038",
+                      "tertiary-container": "#a93802",
+                      "outline-variant": "#c3c6d6",
+                      "on-primary-fixed-variant": "#0040a1",
+                      "on-primary-fixed": "#001847",
+                      "inverse-on-surface": "#f0f0fb",
+                      "primary": "#0040a1",
+                      "outline": "#737785",
+                      "error": "#ba1a1a",
+                      "secondary-container": "#b3c5fd",
+                      "on-tertiary-fixed-variant": "#812800",
+                      "on-tertiary": "#ffffff",
+                      "surface-tint": "#0056d2",
+                      "on-primary": "#ffffff",
+                      "surface-container-high": "#e7e7f2",
+                      "on-secondary-fixed": "#001847",
+                      "primary-fixed-dim": "#b2c5ff",
+                      "primary-fixed": "#dae2ff",
+                      "on-tertiary-fixed": "#380d00",
+                      "surface-container-lowest": "#ffffff",
+                      "on-secondary": "#ffffff",
+                      "tertiary-fixed-dim": "#ffb59b",
+                      "surface": "#faf8ff",
+                      "on-primary-container": "#ccd8ff",
+                      "tertiary": "#822800",
+                      "on-tertiary-container": "#ffcebd",
+                      "on-secondary-fixed-variant": "#324575"
+              },
+              "borderRadius": {
+                      "DEFAULT": "0.125rem",
+                      "lg": "0.25rem",
+                      "xl": "0.5rem",
+                      "full": "0.75rem"
+              },
+              "spacing": {},
+              "fontFamily": {
+                      "headline": [
+                              "Manrope"
+                      ],
+                      "body": [
+                              "Inter"
+                      ],
+                      "label": [
+                              "Inter"
+                      ]
+              }
+      },
+          },
+        }
+      </script>
+<style>
+        .material-symbols-outlined {
+          font-variation-settings: 'FILL' 0, 'wght' 400, 'GRAD' 0, 'opsz' 24;
+        }
+      </style>
+</head>
+<body class="bg-surface text-on-surface font-body min-h-screen flex selection:bg-primary selection:text-on-primary">
+<!-- SideNavBar -->
+<nav class="bg-surface-container-lowest border-r border-outline-variant/15 w-64 h-screen fixed left-0 top-0 flex flex-col z-50">
+<!-- Brand -->
+<div class="h-24 flex items-center px-8 border-b border-outline-variant/15">
+<span class="font-headline font-extrabold text-2xl tracking-tight text-primary">Lumina HRIS</span>
+</div>
+<!-- Org Header -->
+<div class="px-8 py-6 mb-4">
+<div class="flex items-center gap-4">
+<img alt="Organization Logo" class="w-12 h-12 rounded-lg object-cover" data-alt="minimalist geometric blue and white corporate logo on clean background" src="https://lh3.googleusercontent.com/aida-public/AB6AXuCJGRHXqRjXCzOF7t0ekTsVFAtZZsun5i32XrpmyPnL1jfIwZexjPzMnxJCa_WHQgmKlUh0R_owmb4g0CxKlDZCEoloVmJqv8PquJFXdtwIpiBOzs4GozhyznMilYvwSH_XrN2_ztTs_cyT9ibeLTJ87Fx8yTAKCIRNnfeqAbohkplo6u955YfuyNICTuesQuN-m_pvJqfynafpzwBPKCtkMC-l6ppcF-pr0BDgRvYhC1zsaxcov7OBzHgsl2sG1D0PV4KemZG4YhA"/>
+<div>
+<h2 class="font-headline font-bold text-on-surface">Global Corp</h2>
+<p class="font-body text-sm text-on-surface-variant">HR Admin</p>
+</div>
+</div>
+</div>
+<!-- Navigation Links -->
+<div class="flex-1 px-4 space-y-1">
+<a class="flex items-center gap-3 px-4 py-3 rounded-xl text-primary font-bold bg-surface-container-high transition-colors" href="#">
+<span class="material-symbols-outlined" style="font-variation-settings: 'FILL' 1;">dashboard</span>
+<span class="font-body text-sm">Dashboard</span>
+</a>
+<a class="flex items-center gap-3 px-4 py-3 rounded-xl text-on-surface-variant hover:bg-surface-container-low transition-colors" href="#">
+<span class="material-symbols-outlined">group</span>
+<span class="font-body text-sm">Directory</span>
+</a>
+<a class="flex items-center gap-3 px-4 py-3 rounded-xl text-on-surface-variant hover:bg-surface-container-low transition-colors" href="#">
+<span class="material-symbols-outlined">calendar_today</span>
+<span class="font-body text-sm">Time Off</span>
+</a>
+<a class="flex items-center gap-3 px-4 py-3 rounded-xl text-on-surface-variant hover:bg-surface-container-low transition-colors" href="#">
+<span class="material-symbols-outlined">payments</span>
+<span class="font-body text-sm">Payroll</span>
+</a>
+<a class="flex items-center gap-3 px-4 py-3 rounded-xl text-on-surface-variant hover:bg-surface-container-low transition-colors" href="#">
+<span class="material-symbols-outlined">insights</span>
+<span class="font-body text-sm">Performance</span>
+</a>
+<a class="flex items-center gap-3 px-4 py-3 rounded-xl text-on-surface-variant hover:bg-surface-container-low transition-colors" href="#">
+<span class="material-symbols-outlined">settings</span>
+<span class="font-body text-sm">Settings</span>
+</a>
+</div>
+<!-- CTA -->
+<div class="p-6 mt-auto border-t border-outline-variant/15">
+<button class="w-full py-3 px-4 rounded-xl bg-gradient-to-br from-primary to-primary-container text-on-primary font-body text-sm font-medium hover:opacity-90 transition-opacity flex justify-center items-center gap-2 shadow-[0_4px_14px_rgba(0,64,161,0.2)]">
+<span class="material-symbols-outlined">add</span>
+                Quick Action
+            </button>
+</div>
+</nav>
+<!-- Main Content Canvas -->
+<main class="ml-64 flex-1 flex flex-col min-h-screen">
+<!-- TopNavBar (Simplified for inside canvas) -->
+<header class="h-24 px-12 flex items-center justify-between bg-surface/80 backdrop-blur-xl sticky top-0 z-40">
+<div>
+<h1 class="font-headline font-bold text-2xl text-on-surface">Good Morning, Alex.</h1>
+<p class="font-body text-sm text-on-surface-variant mt-1">Here is your summary for today.</p>
+</div>
+<div class="flex items-center gap-6">
+<!-- Search -->
+<div class="relative bg-surface-container-low rounded-xl flex items-center px-4 py-2 w-64">
+<span class="material-symbols-outlined text-on-surface-variant text-sm mr-2">search</span>
+<input class="bg-transparent border-none outline-none text-sm font-body text-on-surface w-full placeholder-on-surface-variant focus:ring-0" placeholder="Search..." type="text"/>
+</div>
+<!-- Actions -->
+<div class="flex items-center gap-3">
+<button class="w-10 h-10 rounded-full bg-surface-container hover:bg-surface-container-high transition-colors flex items-center justify-center text-on-surface-variant relative">
+<span class="material-symbols-outlined">notifications</span>
+<span class="absolute top-2 right-2 w-2 h-2 bg-error rounded-full"></span>
+</button>
+<button class="w-10 h-10 rounded-full bg-surface-container hover:bg-surface-container-high transition-colors flex items-center justify-center text-on-surface-variant">
+<span class="material-symbols-outlined">mail</span>
+</button>
+<button class="w-10 h-10 rounded-full bg-surface-container hover:bg-surface-container-high transition-colors flex items-center justify-center text-on-surface-variant">
+<span class="material-symbols-outlined">help_outline</span>
+</button>
+</div>
+<!-- Profile -->
+<img alt="User profile photo" class="w-10 h-10 rounded-full object-cover ring-2 ring-surface-container-high cursor-pointer" data-alt="professional headshot of smiling man in casual business attire against clean background" src="https://lh3.googleusercontent.com/aida-public/AB6AXuCvtdqCJo0DijPepoSNjMU84uOFm1p7jl8b8MBGQs3iciPZBIDwoYbUlu7COKOiozYAvIo56ohiwPNFXXNPvUvvK5L7m2UExziqeDbO4kXK67qcNAElix70ecu_xFsAJRLNbH7lO_TOgonURzn40EV-D36RO-R9O3VBqpgCFFWP5_tZSAZJev27omcsP1oPRAVdYdt46h2SpH9laHl5f_-TX1ILqvUPzP9PGeFTe4LwQp0Xy3GD6zPIa-Y1CmzGqWdTdtE4-ioSTVM"/>
+</div>
+</header>
+<!-- Dashboard Content -->
+<div class="p-12 max-w-7xl mx-auto w-full flex-1">
+<!-- Bento Grid Layout -->
+<div class="grid grid-cols-12 gap-8">
+<!-- Left Column (Wider) -->
+<div class="col-span-12 lg:col-span-8 flex flex-col gap-8">
+<!-- Clock In Card (Glassmorphism/Gradient) -->
+<div class="bg-surface-container-lowest rounded-2xl p-8 relative overflow-hidden shadow-[0_8px_24px_rgba(25,27,35,0.03)]">
+<div class="absolute top-0 right-0 w-64 h-64 bg-primary-container/10 rounded-full blur-3xl -mr-10 -mt-10 pointer-events-none"></div>
+<div class="flex justify-between items-center relative z-10">
+<div>
+<h3 class="font-headline font-bold text-xl text-on-surface mb-1">Time &amp; Attendance</h3>
+<p class="font-body text-sm text-on-surface-variant mb-6">Current Shift: 9:00 AM - 5:00 PM</p>
+<div class="flex items-center gap-4">
+<button class="px-8 py-3 rounded-xl bg-gradient-to-br from-primary to-primary-container text-on-primary font-body text-sm font-medium hover:opacity-90 transition-opacity shadow-[0_4px_14px_rgba(0,64,161,0.2)]">
+                                        Clock In
+                                    </button>
+<span class="font-headline font-bold text-2xl text-primary">00:00:00</span>
+</div>
+</div>
+<div class="bg-surface-container-low p-6 rounded-2xl text-center min-w-[140px]">
+<span class="block font-body text-sm text-on-surface-variant mb-2">Today's Date</span>
+<span class="block font-headline font-bold text-xl text-on-surface">Oct 24</span>
+<span class="block font-body text-xs text-on-surface-variant mt-1">Thursday</span>
+</div>
+</div>
+</div>
+<!-- Professional Summary / Quick Stats -->
+<div class="grid grid-cols-3 gap-6">
+<div class="bg-surface-container-lowest rounded-2xl p-6 shadow-[0_8px_24px_rgba(25,27,35,0.03)]">
+<div class="w-10 h-10 rounded-xl bg-secondary-container flex items-center justify-center text-on-secondary-container mb-4">
+<span class="material-symbols-outlined">work</span>
+</div>
+<p class="font-body text-sm text-on-surface-variant mb-1">Current Role</p>
+<h4 class="font-headline font-bold text-lg text-on-surface">Senior Designer</h4>
+</div>
+<div class="bg-surface-container-lowest rounded-2xl p-6 shadow-[0_8px_24px_rgba(25,27,35,0.03)]">
+<div class="w-10 h-10 rounded-xl bg-primary-fixed flex items-center justify-center text-on-primary-fixed mb-4">
+<span class="material-symbols-outlined">account_balance_wallet</span>
+</div>
+<p class="font-body text-sm text-on-surface-variant mb-1">Next Payday</p>
+<h4 class="font-headline font-bold text-lg text-on-surface">Oct 31</h4>
+</div>
+<div class="bg-surface-container-lowest rounded-2xl p-6 shadow-[0_8px_24px_rgba(25,27,35,0.03)]">
+<div class="w-10 h-10 rounded-xl bg-tertiary-container/20 flex items-center justify-center text-tertiary-container mb-4">
+<span class="material-symbols-outlined">stars</span>
+</div>
+<p class="font-body text-sm text-on-surface-variant mb-1">Performance Rating</p>
+<h4 class="font-headline font-bold text-lg text-on-surface">Exceeds</h4>
+</div>
+</div>
+<!-- Quick Tasks -->
+<div class="bg-surface-container-lowest rounded-2xl p-8 shadow-[0_8px_24px_rgba(25,27,35,0.03)] flex-1">
+<div class="flex justify-between items-center mb-6">
+<h3 class="font-headline font-bold text-xl text-on-surface">Action Items</h3>
+<button class="text-primary font-body text-sm font-medium hover:underline">View All</button>
+</div>
+<div class="space-y-4">
+<!-- Task Item Urgent -->
+<div class="flex items-start gap-4 p-4 rounded-xl bg-surface hover:bg-surface-container-low transition-colors group">
+<div class="mt-1">
+<span class="material-symbols-outlined text-outline-variant group-hover:text-primary transition-colors">radio_button_unchecked</span>
+</div>
+<div class="flex-1">
+<div class="flex items-center gap-3 mb-1">
+<h4 class="font-headline font-bold text-sm text-on-surface">Complete Q3 Self-Assessment</h4>
+<span class="px-2 py-0.5 rounded-full bg-tertiary-container text-on-tertiary text-[10px] font-bold uppercase tracking-wider">Urgent</span>
+</div>
+<p class="font-body text-sm text-on-surface-variant">Performance review cycle ends tomorrow.</p>
+</div>
+<button class="opacity-0 group-hover:opacity-100 transition-opacity text-primary font-body text-sm font-medium">Review</button>
+</div>
+<!-- Task Item -->
+<div class="flex items-start gap-4 p-4 rounded-xl bg-surface hover:bg-surface-container-low transition-colors group">
+<div class="mt-1">
+<span class="material-symbols-outlined text-outline-variant group-hover:text-primary transition-colors">radio_button_unchecked</span>
+</div>
+<div class="flex-1">
+<h4 class="font-headline font-bold text-sm text-on-surface mb-1">Acknowledge New IT Policy</h4>
+<p class="font-body text-sm text-on-surface-variant">Read and sign the updated equipment guidelines.</p>
+</div>
+<button class="opacity-0 group-hover:opacity-100 transition-opacity text-primary font-body text-sm font-medium">Read</button>
+</div>
+</div>
+</div>
+</div>
+<!-- Right Column (Narrower) -->
+<div class="col-span-12 lg:col-span-4 flex flex-col gap-8">
+<!-- Leave Balance Widget -->
+<div class="bg-surface-container-low rounded-2xl p-8 relative overflow-hidden">
+<h3 class="font-headline font-bold text-xl text-on-surface mb-6">Time Off Balances</h3>
+<div class="space-y-6">
+<!-- PTO -->
+<div>
+<div class="flex justify-between items-end mb-2">
+<div>
+<h4 class="font-body text-sm font-medium text-on-surface">Paid Time Off</h4>
+</div>
+<div class="text-right">
+<span class="font-headline font-bold text-2xl text-primary block leading-none">14</span>
+<span class="font-body text-xs text-on-surface-variant">Days Left</span>
+</div>
+</div>
+<div class="h-2 w-full bg-surface-container-highest rounded-full overflow-hidden">
+<div class="h-full bg-primary rounded-full w-[60%]"></div>
+</div>
+</div>
+<!-- Sick Leave -->
+<div>
+<div class="flex justify-between items-end mb-2">
+<div>
+<h4 class="font-body text-sm font-medium text-on-surface">Sick Leave</h4>
+</div>
+<div class="text-right">
+<span class="font-headline font-bold text-xl text-on-surface block leading-none">8</span>
+<span class="font-body text-xs text-on-surface-variant">Days Left</span>
+</div>
+</div>
+<div class="h-2 w-full bg-surface-container-highest rounded-full overflow-hidden">
+<div class="h-full bg-secondary rounded-full w-[80%]"></div>
+</div>
+</div>
+</div>
+<button class="w-full mt-8 py-3 rounded-xl bg-surface-container-highest text-primary font-body text-sm font-medium hover:bg-surface-container-high transition-colors">
+                            Request Time Off
+                        </button>
+</div>
+<!-- Policy Updates / News -->
+<div class="bg-surface-container-lowest rounded-2xl p-8 shadow-[0_8px_24px_rgba(25,27,35,0.03)] flex-1">
+<h3 class="font-headline font-bold text-lg text-on-surface mb-6">Company Updates</h3>
+<div class="space-y-6">
+<div class="flex gap-4">
+<div class="w-12 h-12 rounded-xl bg-surface-container flex items-center justify-center text-on-surface-variant shrink-0">
+<span class="material-symbols-outlined">campaign</span>
+</div>
+<div>
+<h4 class="font-headline font-bold text-sm text-on-surface mb-1">Open Enrollment Begins</h4>
+<p class="font-body text-xs text-on-surface-variant mb-2">Review your benefits for the upcoming year starting next Monday.</p>
+<span class="font-body text-[10px] text-primary font-medium">Oct 20, 2023</span>
+</div>
+</div>
+<div class="flex gap-4">
+<div class="w-12 h-12 rounded-xl bg-surface-container flex items-center justify-center text-on-surface-variant shrink-0">
+<span class="material-symbols-outlined">celebration</span>
+</div>
+<div>
+<h4 class="font-headline font-bold text-sm text-on-surface mb-1">Q3 Town Hall Recording</h4>
+<p class="font-body text-xs text-on-surface-variant mb-2">Missed the all-hands? The recording and slides are now available.</p>
+<span class="font-body text-[10px] text-primary font-medium">Oct 18, 2023</span>
+</div>
+</div>
+</div>
+</div>
+</div>
+</div>
+</div>
+</main>
+</body></html>

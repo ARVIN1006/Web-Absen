@@ -10,7 +10,7 @@ use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Foundation\Auth\User as Authenticatable;
 use Illuminate\Notifications\Notifiable;
 
-#[Fillable(['name', 'email', 'password', 'position', 'face_reference_path', 'role', 'department_id', 'work_shift_id'])]
+#[Fillable(['name', 'email', 'password', 'role', 'position_id', 'department_id', 'work_shift_id', 'face_reference_path', 'phone_number', 'address', 'gender', 'birth_date', 'nik', 'npwp', 'joined_at', 'contract_end_at'])]
 #[Hidden(['password', 'remember_token'])]
 class User extends Authenticatable
 {
@@ -40,8 +40,43 @@ class User extends Authenticatable
         return $this->belongsTo(Department::class);
     }
 
+    public function position()
+    {
+        return $this->belongsTo(Position::class);
+    }
+
     public function workShift()
     {
         return $this->belongsTo(WorkShift::class);
+    }
+
+    public function reimbursements()
+    {
+        return $this->hasMany(Reimbursement::class);
+    }
+
+    public function payrolls()
+    {
+        return $this->hasMany(Payroll::class);
+    }
+
+    public function attendances()
+    {
+        return $this->hasMany(Attendance::class);
+    }
+
+    public function leaveRequests()
+    {
+        return $this->hasMany(LeaveRequest::class);
+    }
+
+    public function approvedLeaveRequests()
+    {
+        return $this->hasMany(LeaveRequest::class, 'approved_by');
+    }
+
+    public function kpiScores()
+    {
+        return $this->hasMany(KpiScore::class);
     }
 }

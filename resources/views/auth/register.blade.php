@@ -6,7 +6,7 @@
     <meta name="theme-color" content="#0f1117">
     <meta name="mobile-web-app-capable" content="yes">
     <meta name="apple-mobile-web-app-capable" content="yes">
-    <title>Daftar Akun – PT Serunting Sakti Jaya</title>
+    <title>Daftar Akun – {{ config('app.name') }}</title>
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
     @vite(['resources/css/app.css', 'resources/js/app.js'])
@@ -103,6 +103,23 @@
         .field input{width:100%;background:var(--input-bg);border:1.5px solid var(--border-card);border-radius:12px;padding:12px 14px;color:var(--text-main);font-size:14.5px;font-family:'Inter',sans-serif;outline:none;transition:all .2s;}
         .field input::placeholder { color: var(--text-muted-dark); }
         .field input:focus{border-color:var(--border-focus);box-shadow:0 0 0 3px rgba(16,185,129,0.15); background: var(--bg-body);}
+        .field select{
+            width:100%;background:var(--input-bg);border:1.5px solid var(--border-card);border-radius:12px;padding:12px 14px;color:var(--text-main);font-size:14.5px;font-family:'Inter',sans-serif;outline:none;transition:all .2s;
+            appearance: none;
+            background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' fill='none' viewBox='0 0 24 24' stroke='%239ca3af'%3E%3Cpath stroke-linecap='round' stroke-linejoin='round' stroke-width='2' d='M19 9l-7 7-7-7'%3E%3C/path%3E%3C/svg%3E");
+            background-repeat: no-repeat;
+            background-position: right 14px center;
+            background-size: 16px;
+        }
+        select option {
+            background-color: #1a1d27;
+            color: #ffffff;
+        }
+        [data-theme="light"] select option {
+            background-color: #ffffff;
+            color: #111827;
+        }
+        .field select:focus{border-color:var(--border-focus);box-shadow:0 0 0 3px rgba(16,185,129,0.15); background: var(--bg-body);}
         .field .pw-wrap{position:relative;}
         .field .pw-wrap input{padding-right:46px;}
         .field .eye-btn{position:absolute;right:14px;top:50%;transform:translateY(-50%);background:none;border:none;cursor:pointer;color:var(--text-muted-dark);padding:4px;display:flex;align-items:center;}
@@ -171,11 +188,11 @@
                 <img src="{{ asset('assets/images/logo.png') }}" alt="Logo">
             </div>
             <h1>Daftar Akun<br>Karyawan Baru</h1>
-            <p>Buat akun untuk mulai menggunakan sistem absensi digital PT Serunting Sakti Jaya.</p>
+            <p>Buat akun untuk mulai menggunakan sistem absensi digital {{ config('app.name') }}.</p>
 
             <div class="notice">
                 <div class="notice-title">&#128274; Informasi Penting</div>
-                <p>Pendaftaran akun hanya diperuntukkan bagi karyawan PT Serunting Sakti Jaya. Sistem memerlukan foto wajah Anda sebagai standar validasi biometrik absen harian.</p>
+                <p>Pendaftaran akun hanya diperuntukkan bagi karyawan {{ config('app.name') }}. Sistem memerlukan foto wajah Anda sebagai standar validasi biometrik absen harian.</p>
             </div>
         </div>
     </div>
@@ -195,7 +212,7 @@
                 <div style="width:60px;margin:0 auto 10px;display:flex;justify-content:center;">
                     <img src="{{ asset('assets/images/logo.png') }}" alt="Logo" style="max-width:100%;height:auto;object-fit:contain;">
                 </div>
-                <div style="font-size:15px;font-weight:700;color:var(--text-main);">PT Serunting Sakti Jaya</div>
+                <div style="font-size:15px;font-weight:700;color:var(--text-main);">{{ config('app.name') }}</div>
                 <div style="font-size:11px;color:var(--text-muted-dark);margin-top:2px;">Pendaftaran dengan Wajah</div>
             </div>
 
@@ -218,8 +235,28 @@
 
                         <div class="field">
                             <label for="position">Jabatan / Posisi</label>
-                            <input id="position" type="text" name="position" value="{{ old('position') }}" required placeholder="Mis. Staff IT, HRD, dll">
+                            <select id="position" name="position" required>
+                                <option value="" disabled selected>Pilih Jabatan</option>
+                                @foreach($positions as $pos)
+                                    <option value="{{ $pos }}" {{ old('position') == $pos ? 'selected' : '' }}>
+                                        {{ $pos }}
+                                    </option>
+                                @endforeach
+                            </select>
                             @error('position')<div class="field-error">{{ $message }}</div>@enderror
+                        </div>
+
+                        <div class="field">
+                            <label for="department_id">Departemen</label>
+                            <select id="department_id" name="department_id" required>
+                                <option value="" disabled selected>Pilih Departemen</option>
+                                @foreach($departments as $dept)
+                                    <option value="{{ $dept->id }}" {{ old('department_id') == $dept->id ? 'selected' : '' }}>
+                                        {{ $dept->name }}
+                                    </option>
+                                @endforeach
+                            </select>
+                            @error('department_id')<div class="field-error">{{ $message }}</div>@enderror
                         </div>
 
                         <div class="field">
@@ -299,7 +336,7 @@
             </div>
 
             <div class="copyright">
-                &copy; {{ date('Y') }} PT Serunting Sakti Jaya. Semua hak dilindungi.
+                &copy; {{ date('Y') }} {{ config('app.name') }}. Semua hak dilindungi.
             </div>
         </div>
     </div>

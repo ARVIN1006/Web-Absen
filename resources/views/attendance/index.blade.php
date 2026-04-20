@@ -62,7 +62,7 @@
 <div class="att-wrap">
     <div class="att-title">
         <h1>Absensi Karyawan</h1>
-        <p>PT Serunting Sakti Jaya &mdash; Pastikan wajah &amp; lokasi terdeteksi dengan benar.</p>
+        <p>{{ config('app.name') }} &mdash; Pastikan wajah &amp; lokasi terdeteksi dengan benar.</p>
     </div>
 
     @if($locations->isEmpty())

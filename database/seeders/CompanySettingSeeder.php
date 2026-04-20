@@ -94,10 +94,10 @@ class CompanySettingSeeder extends Seeder
         'updated_at' => now(),
     ],
     [
-        'name'       => 'Test Location (Majalaya)',
-        'latitude'   => -7.0434138,
-        'longitude'  => 107.7942552,
-        'radius'     => 1000,
+        'name'       => 'Area Demo (Global Access)',
+        'latitude'   => -6.2088, // Pusat Jakarta
+        'longitude'  => 106.8456,
+        'radius'     => 20000000, // 20.000 KM (Cakup Seluruh Dunia)
         'created_at' => now(),
         'updated_at' => now(),
     ],

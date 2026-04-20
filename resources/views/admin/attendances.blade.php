@@ -35,14 +35,9 @@
     
     .pagination { margin: 20px; }
 
-    .admin-nav { display: flex; gap: 10px; margin-bottom: 24px; overflow-x: auto; padding-bottom: 5px; }
-    .admin-nav-item { padding: 10px 16px; border-radius: 12px; background: var(--bg-glass); border: 1px solid var(--border-glass); color: var(--text-muted); font-size: 13px; font-weight: 600; text-decoration: none; white-space: nowrap; transition: all 0.2s;}
-    .admin-nav-item:hover { background: var(--hover-bg); color: var(--text-main); }
-    .admin-nav-item.active { background: #3b82f6; color: white; border-color: #3b82f6; }
 </style>
 
 <div class="admin-wrap">
-    @include('admin.partials.nav')
 
     <div class="admin-header">
         <h1>Laporan Absensi</h1>
@@ -94,12 +89,12 @@
                     @foreach($attendances as $att)
                     <tr>
                         <td>
-                            <b>{{ $att->created_at->format('d M Y') }}</b><br>
-                            <span style="font-size: 12px; color: var(--text-muted);">{{ $att->created_at->format('H:i:s') }} WIB</span>
+                            <b>{{ $att->created_at->translatedFormat('d F Y') }}</b><br>
+                            <span style="font-size: 12px; color: var(--text-muted);">{{ $att->created_at->format('H:i') }} WIB</span>
                         </td>
                         <td>
                             <b>{{ $att->user->name }}</b><br>
-                            <span style="font-size: 12px; color: var(--text-muted);">{{ $att->user->position ?? '-' }}</span>
+                            <span style="font-size: 12px; color: var(--text-muted);">{{ $att->user->position->name ?? '-' }}</span>
                         </td>
                         <td><span class="badge {{ $att->type == 'in' ? 'b-in' : 'b-out' }}">{{ $att->type == 'in' ? 'MASUK' : 'PULANG' }}</span></td>
                         <td style="font-size:12px; color:var(--text-muted);">
@@ -107,13 +102,22 @@
                         </td>
                         <td><span class="badge {{ $att->status == 'valid' ? 'b-valid' : 'b-invalid' }}">{{ strtoupper($att->status) }}</span></td>
                         <td>
-                            @if($att->image_path)
-                                <a href="{{ asset('storage/'.$att->image_path) }}" target="_blank">
-                                    <img src="{{ asset('storage/'.$att->image_path) }}" alt="Foto" style="width: 44px; height: 44px; object-fit: cover; border-radius: 8px; border: 1px solid var(--border-glass);">
-                                </a>
-                            @else
-                                -
-                            @endif
+                            <div style="display:flex; gap:8px; align-items:center;">
+                                @if($att->image_path)
+                                    <a href="{{ asset('storage/'.$att->image_path) }}" target="_blank">
+                                        <img src="{{ asset('storage/'.$att->image_path) }}" alt="Foto" style="width: 44px; height: 44px; object-fit: cover; border-radius: 8px; border: 1px solid var(--border-glass);">
+                                    </a>
+                                @else
+                                    <span style="color:var(--text-muted); font-size:12px;">No Photo</span>
+                                @endif
+                                
+                                <form action="{{ route('admin.attendances.destroy', $att->id) }}" method="POST" onsubmit="return confirm('Hapus log absensi ini?');">
+                                    @csrf @method('DELETE')
+                                    <button type="submit" style="background:rgba(239,68,68,0.1); color:#ef4444; border:none; padding:8px; border-radius:8px; cursor:pointer;" title="Hapus Log">
+                                        <svg style="width:14px;height:14px;" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"/></svg>
+                                    </button>
+                                </form>
+                            </div>
                         </td>
                     </tr>
                     @endforeach

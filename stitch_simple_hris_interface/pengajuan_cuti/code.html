@@ -1,0 +1,199 @@
+<!DOCTYPE html>
+
+<html class="light" lang="en"><head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<title>Leave Request - Workplace</title>
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<link href="https://fonts.googleapis.com" rel="preconnect"/>
+<link crossorigin="" href="https://fonts.gstatic.com" rel="preconnect"/>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&amp;family=Manrope:wght@400;500;700;800&amp;family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<script id="tailwind-config">
+        tailwind.config = {
+          darkMode: "class",
+          theme: {
+            extend: {
+              "colors": {
+                      "surface-container-high": "#e7e7f2",
+                      "primary-fixed": "#dae2ff",
+                      "on-secondary-fixed": "#001847",
+                      "on-primary-fixed-variant": "#0040a1",
+                      "tertiary": "#822800",
+                      "outline-variant": "#c3c6d6",
+                      "surface-container": "#ededf8",
+                      "surface-container-highest": "#e1e2ec",
+                      "on-tertiary-fixed-variant": "#812800",
+                      "on-surface": "#191b23",
+                      "tertiary-fixed": "#ffdbcf",
+                      "inverse-on-surface": "#f0f0fb",
+                      "tertiary-fixed-dim": "#ffb59b",
+                      "on-primary-fixed": "#001847",
+                      "on-background": "#191b23",
+                      "on-tertiary-container": "#ffcebd",
+                      "on-surface-variant": "#424654",
+                      "error": "#ba1a1a",
+                      "on-tertiary": "#ffffff",
+                      "inverse-primary": "#b2c5ff",
+                      "on-secondary-fixed-variant": "#324575",
+                      "background": "#faf8ff",
+                      "inverse-surface": "#2e3038",
+                      "surface": "#faf8ff",
+                      "primary": "#0040a1",
+                      "surface-container-lowest": "#ffffff",
+                      "primary-fixed-dim": "#b2c5ff",
+                      "secondary": "#4a5d8e",
+                      "secondary-fixed-dim": "#b3c5fd",
+                      "on-secondary-container": "#3e5181",
+                      "on-error": "#ffffff",
+                      "outline": "#737785",
+                      "secondary-fixed": "#dae2ff",
+                      "primary-container": "#0056d2",
+                      "surface-dim": "#d9d9e4",
+                      "error-container": "#ffdad6",
+                      "secondary-container": "#b3c5fd",
+                      "surface-container-low": "#f2f3fe",
+                      "on-primary-container": "#ccd8ff",
+                      "on-primary": "#ffffff",
+                      "surface-bright": "#faf8ff",
+                      "on-error-container": "#93000a",
+                      "on-tertiary-fixed": "#380d00",
+                      "surface-tint": "#0056d2",
+                      "on-secondary": "#ffffff",
+                      "surface-variant": "#e1e2ec",
+                      "tertiary-container": "#a93802"
+              },
+              "borderRadius": {
+                      "DEFAULT": "0.125rem",
+                      "lg": "0.25rem",
+                      "xl": "0.5rem",
+                      "full": "0.75rem"
+              },
+              "spacing": {},
+              "fontFamily": {
+                      "headline": [
+                              "Manrope"
+                      ],
+                      "body": [
+                              "Inter"
+                      ],
+                      "label": [
+                              "Inter"
+                      ]
+              }
+      },
+          },
+        }
+      </script>
+<style>
+    body {
+      min-height: max(884px, 100dvh);
+    }
+  </style>
+  </head>
+<body class="bg-surface text-on-surface font-body antialiased min-h-screen pb-24 md:pb-0">
+<!-- TopAppBar from JSON -->
+<header class="w-full h-16 flex items-center bg-[#faf8ff] dark:bg-[#191b23] flat no-shadow sticky top-0 z-40">
+<div class="flex justify-between items-center px-6 py-4 w-full">
+<div class="flex items-center gap-3">
+<div class="w-8 h-8 rounded-full bg-surface-variant overflow-hidden shrink-0">
+<img alt="Employee Profile Picture" class="w-full h-full object-cover" data-alt="close-up portrait of a professional woman smiling in a bright modern office setting with natural lighting" src="https://lh3.googleusercontent.com/aida-public/AB6AXuDsL7k2-ffhFxHdGDa5ItboeI3l5UAlaAW7f1cCaze5fcv5AoLOAUVj-d1Gu2ew1FEv3L-R_ftaz8OEbg68AaUZvF0SjFHABaAsKGz1X-bN661W4Gvss9xzXSxHgh1CQ4NPqBIdBd6TVz4-3JwJCCWsgk5vmdiG6l5acOMaohXZvJSvMkANTBSZ06w7IOxHkdVowJ3VtdeAW1hkKC0PD8kvo8RYePBzFftFQ0UqvdDWKqgBqAlCZdmPQTIJIIDorOAQKd6EC84VPVs"/>
+</div>
+<h1 class="text-[#0040a1] font-bold text-xl dark:text-[#0056d2] font-['Manrope'] tracking-tight">Workplace</h1>
+</div>
+<button class="w-10 h-10 rounded-full flex items-center justify-center text-[#0040a1] dark:text-[#0056d2] hover:bg-[#f2f3fe] transition-colors active:scale-95 duration-200">
+<span class="material-symbols-outlined" style="font-variation-settings: 'FILL' 0;">notifications</span>
+</button>
+</div>
+</header>
+<main class="max-w-3xl mx-auto px-6 py-8">
+<!-- Header Section -->
+<div class="mb-10 pl-6 border-l-4 border-primary">
+<h2 class="font-headline font-bold text-3xl tracking-tight text-on-surface mb-2">Request Time Off</h2>
+<p class="font-body text-base text-on-surface-variant">Submit your leave details for manager approval.</p>
+</div>
+<!-- Balance Card -->
+<section class="bg-surface-container-lowest rounded-xl p-6 mb-8 flex items-center justify-between shadow-[0_8px_24px_rgba(25,27,35,0.04)] relative overflow-hidden">
+<div class="absolute right-0 top-0 w-32 h-32 bg-primary-fixed/20 rounded-full -mr-10 -mt-10 blur-2xl pointer-events-none"></div>
+<div>
+<span class="font-label text-sm text-on-surface-variant uppercase tracking-wider block mb-1">Annual Leave Remaining</span>
+<div class="flex items-baseline gap-2">
+<span class="font-headline font-extrabold text-4xl text-primary">14</span>
+<span class="font-body text-sm text-on-surface-variant font-medium">Days</span>
+</div>
+</div>
+<div class="w-12 h-12 rounded-full bg-surface-container-low flex items-center justify-center text-primary">
+<span class="material-symbols-outlined" style="font-variation-settings: 'FILL' 1;">beach_access</span>
+</div>
+</section>
+<!-- Form Area -->
+<form class="space-y-6">
+<!-- Leave Type -->
+<div class="bg-surface-container-low rounded-xl p-4 relative">
+<label class="font-label text-sm text-on-surface-variant font-medium absolute top-4 left-4">Leave Type</label>
+<div class="pt-6">
+<select class="w-full bg-transparent border-none p-0 text-on-surface font-body text-base focus:ring-0 cursor-pointer appearance-none">
+<option>Annual Leave</option>
+<option>Sick Leave</option>
+<option>Unpaid Leave</option>
+<option>Parental Leave</option>
+</select>
+</div>
+<div class="absolute right-4 top-1/2 -translate-y-1/2 pointer-events-none text-on-surface-variant">
+<span class="material-symbols-outlined">expand_more</span>
+</div>
+</div>
+<!-- Date Range (Bento Style) -->
+<div class="grid grid-cols-2 gap-4">
+<div class="bg-surface-container-low rounded-xl p-4 relative group hover:bg-surface-container-high transition-colors cursor-pointer">
+<label class="font-label text-sm text-on-surface-variant font-medium block mb-1">Start Date</label>
+<div class="flex items-center gap-2">
+<span class="material-symbols-outlined text-outline-variant text-sm">calendar_today</span>
+<input class="w-full bg-transparent border-none p-0 text-on-surface font-body text-base focus:ring-0 cursor-pointer text-on-surface" type="date" value="2023-11-20"/>
+</div>
+</div>
+<div class="bg-surface-container-low rounded-xl p-4 relative group hover:bg-surface-container-high transition-colors cursor-pointer">
+<label class="font-label text-sm text-on-surface-variant font-medium block mb-1">End Date</label>
+<div class="flex items-center gap-2">
+<span class="material-symbols-outlined text-outline-variant text-sm">calendar_today</span>
+<input class="w-full bg-transparent border-none p-0 text-on-surface font-body text-base focus:ring-0 cursor-pointer text-on-surface" type="date" value="2023-11-24"/>
+</div>
+</div>
+</div>
+<!-- Reason -->
+<div class="bg-surface-container-low rounded-xl p-4 relative">
+<label class="font-label text-sm text-on-surface-variant font-medium block mb-2">Reason (Optional)</label>
+<textarea class="w-full bg-transparent border-none p-0 text-on-surface font-body text-base focus:ring-0 resize-none min-h-[100px] placeholder-outline-variant" placeholder="Add any necessary details for your manager..."></textarea>
+</div>
+<!-- Submit CTA -->
+<div class="pt-4 flex justify-end gap-4">
+<button class="px-6 py-3 rounded-full font-body font-medium text-primary hover:bg-surface-container-high transition-colors" type="button">
+                    Cancel
+                </button>
+<button class="px-8 py-3 rounded-xl font-body font-medium text-on-primary bg-gradient-to-br from-primary to-primary-container shadow-[0_4px_12px_rgba(0,64,161,0.2)] hover:shadow-[0_6px_16px_rgba(0,64,161,0.3)] transition-all active:scale-95 flex items-center gap-2" type="submit">
+                    Submit Request
+                    <span class="material-symbols-outlined text-sm" style="font-variation-settings: 'FILL' 1;">send</span>
+</button>
+</div>
+</form>
+</main>
+<!-- BottomNavBar from JSON -->
+<nav class="fixed bottom-0 left-0 w-full z-50 flex justify-around items-center px-4 pb-6 pt-3 bg-white/70 dark:bg-[#191b23]/70 backdrop-blur-xl rounded-t-3xl shadow-[0_-8px_24px_rgba(25,27,35,0.06)] md:hidden">
+<a class="flex flex-col items-center justify-center text-slate-400 dark:text-slate-500 px-4 py-1.5 hover:text-[#0040a1] dark:hover:text-[#0056d2] active:scale-90 duration-300 ease-out" href="#">
+<span class="material-symbols-outlined mb-1" style="font-variation-settings: 'FILL' 0;">dashboard</span>
+<span class="font-['Inter'] text-[10px] font-medium uppercase tracking-wider">Home</span>
+</a>
+<a class="flex flex-col items-center justify-center text-slate-400 dark:text-slate-500 px-4 py-1.5 hover:text-[#0040a1] dark:hover:text-[#0056d2] active:scale-90 duration-300 ease-out" href="#">
+<span class="material-symbols-outlined mb-1" style="font-variation-settings: 'FILL' 0;">fingerprint</span>
+<span class="font-['Inter'] text-[10px] font-medium uppercase tracking-wider">Attendance</span>
+</a>
+<a class="flex flex-col items-center justify-center bg-[#f2f3fe] dark:bg-[#0040a1]/20 text-[#0040a1] dark:text-[#0056d2] rounded-xl px-4 py-1.5 transition-all active:scale-90 duration-300 ease-out" href="#">
+<span class="material-symbols-outlined mb-1" style="font-variation-settings: 'FILL' 1;">event_note</span>
+<span class="font-['Inter'] text-[10px] font-medium uppercase tracking-wider">Requests</span>
+</a>
+<a class="flex flex-col items-center justify-center text-slate-400 dark:text-slate-500 px-4 py-1.5 hover:text-[#0040a1] dark:hover:text-[#0056d2] active:scale-90 duration-300 ease-out" href="#">
+<span class="material-symbols-outlined mb-1" style="font-variation-settings: 'FILL' 0;">payments</span>
+<span class="font-['Inter'] text-[10px] font-medium uppercase tracking-wider">Salary</span>
+</a>
+</nav>
+</body></html>

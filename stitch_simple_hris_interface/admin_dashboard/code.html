@@ -1,0 +1,227 @@
+<!DOCTYPE html>
+
+<html class="light" lang="en"><head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<title>HRIS Admin Dashboard - The Sanctuary</title>
+<!-- Material Symbols -->
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<!-- Google Fonts -->
+<link href="https://fonts.googleapis.com" rel="preconnect"/>
+<link crossorigin="" href="https://fonts.gstatic.com" rel="preconnect"/>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&amp;family=Manrope:wght@400;500;600;700;800&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<!-- Tailwind CSS -->
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<!-- Tailwind Configuration -->
+<script id="tailwind-config">
+        tailwind.config = {
+            darkMode: "class",
+            theme: {
+                extend: {
+                    "colors": {
+                        "secondary-container": "#b3c5fd",
+                        "on-primary-fixed": "#001847",
+                        "on-tertiary-fixed": "#380d00",
+                        "surface-tint": "#0056d2",
+                        "secondary-fixed-dim": "#b3c5fd",
+                        "secondary-fixed": "#dae2ff",
+                        "tertiary-fixed": "#ffdbcf",
+                        "surface-container-highest": "#e1e2ec",
+                        "surface-container-lowest": "#ffffff",
+                        "on-primary-fixed-variant": "#0040a1",
+                        "inverse-primary": "#b2c5ff",
+                        "on-error": "#ffffff",
+                        "surface-dim": "#d9d9e4",
+                        "outline": "#737785",
+                        "tertiary": "#822800",
+                        "on-surface-variant": "#424654",
+                        "error-container": "#ffdad6",
+                        "tertiary-container": "#a93802",
+                        "on-secondary": "#ffffff",
+                        "on-background": "#191b23",
+                        "surface-container-low": "#f2f3fe",
+                        "outline-variant": "#c3c6d6",
+                        "on-secondary-container": "#3e5181",
+                        "on-error-container": "#93000a",
+                        "inverse-surface": "#2e3038",
+                        "primary": "#0040a1",
+                        "on-secondary-fixed": "#001847",
+                        "primary-fixed": "#dae2ff",
+                        "on-surface": "#191b23",
+                        "on-secondary-fixed-variant": "#324575",
+                        "surface-container-high": "#e7e7f2",
+                        "background": "#faf8ff",
+                        "tertiary-fixed-dim": "#ffb59b",
+                        "on-tertiary-container": "#ffcebd",
+                        "on-tertiary-fixed-variant": "#812800",
+                        "error": "#ba1a1a",
+                        "on-primary": "#ffffff",
+                        "surface-container": "#ededf8",
+                        "on-primary-container": "#ccd8ff",
+                        "surface-bright": "#faf8ff",
+                        "inverse-on-surface": "#f0f0fb",
+                        "on-tertiary": "#ffffff",
+                        "surface": "#faf8ff",
+                        "primary-fixed-dim": "#b2c5ff",
+                        "secondary": "#4a5d8e",
+                        "primary-container": "#0056d2",
+                        "surface-variant": "#e1e2ec"
+                    },
+                    "borderRadius": {
+                        "DEFAULT": "0.125rem",
+                        "lg": "0.25rem",
+                        "xl": "0.5rem",
+                        "full": "0.75rem"
+                    },
+                    "fontFamily": {
+                        "headline": ["Manrope", "sans-serif"],
+                        "body": ["Inter", "sans-serif"],
+                        "label": ["Inter", "sans-serif"]
+                    }
+                }
+            }
+        }
+    </script>
+<style>
+        /* Custom overrides to match Design System exact specifications */
+        .glass-panel {
+            background-color: rgba(255, 255, 255, 0.7);
+            backdrop-filter: blur(20px);
+            -webkit-backdrop-filter: blur(20px);
+        }
+        
+        .premium-gradient-btn {
+            background: linear-gradient(135deg, #0040a1, #0056d2);
+        }
+        
+        .ambient-shadow {
+            box-shadow: 0 8px 24px rgba(25, 27, 35, 0.06);
+        }
+    </style>
+<style>
+    body {
+      min-height: max(884px, 100dvh);
+    }
+  </style>
+  </head>
+<body class="bg-surface text-on-surface font-body antialiased selection:bg-primary selection:text-on-primary overflow-x-hidden">
+<!-- Desktop Navigation Drawer (Hidden on Mobile) -->
+<aside class="hidden md:flex h-full w-72 flex-col fixed left-0 top-0 z-40 py-8 bg-[#faf8ff] transition-colors duration-300">
+<!-- Brand / Header -->
+<div class="px-8 mb-12">
+<h1 class="text-2xl font-bold tracking-tight text-[#0040a1] font-headline">The Sanctuary</h1>
+</div>
+<!-- Profile Section -->
+<div class="px-8 mb-8 flex items-center gap-4">
+<div class="h-12 w-12 rounded-full overflow-hidden bg-surface-container-high shrink-0">
+<img alt="Marcus Thorne Admin User Profile" class="w-full h-full object-cover" data-alt="Professional headshot of a confident mature man in a tailored navy suit against a soft grey studio background" src="https://lh3.googleusercontent.com/aida-public/AB6AXuAdmfXMh_I2zFlE2IP9c9el8oREN5LNpbw2ziHjpz3H85tQZWUT8DzvSvJEXcxIUDvODnnPCcyH6nxW44AMtPDpntvYkfWxYytZ-BK769BepoL-rKiC4dlz9qpniLi3eMTVSDJPNVV_Kz0S4Xx1iQRzlxmUQVOW6cpeLAR3yofBeitm7XI9iLQnl9jhSE_q12kWG7dtb-vTW_uo-hJc3tnL579ndIw53q37Ek9WVSuSQhUc-6RIEJ3ec5LFkUDbL4608uwpBp33Rk4"/>
+</div>
+<div class="flex flex-col">
+<span class="font-headline font-bold text-on-surface text-sm">Marcus Thorne</span>
+<span class="font-body text-on-surface-variant text-xs">Chief People Officer</span>
+<span class="font-label text-primary font-medium text-[10px] uppercase tracking-wider mt-0.5">Admin Console</span>
+</div>
+</div>
+<!-- Navigation Links -->
+<nav class="flex-1 flex flex-col gap-2 pr-4">
+<!-- Active Tab: Dashboard -->
+<a class="flex items-center gap-4 px-8 py-3 bg-[#0040a1] text-white rounded-r-full font-bold shadow-sm transition-transform scale-98 hover:scale-100" href="#">
+<span class="material-symbols-outlined" style="font-variation-settings: 'FILL' 1;">dashboard</span>
+<span class="font-body text-sm">Dashboard</span>
+</a>
+<a class="flex items-center gap-4 px-8 py-3 text-[#191b23] opacity-70 hover:opacity-100 hover:bg-[#f2f3fe] rounded-r-full transition-colors duration-300" href="#">
+<span class="material-symbols-outlined">group</span>
+<span class="font-body text-sm">Employee Directory</span>
+</a>
+<a class="flex items-center gap-4 px-8 py-3 text-[#191b23] opacity-70 hover:opacity-100 hover:bg-[#f2f3fe] rounded-r-full transition-colors duration-300" href="#">
+<span class="material-symbols-outlined">fact_check</span>
+<span class="font-body text-sm">Approval Requests</span>
+</a>
+<a class="flex items-center gap-4 px-8 py-3 text-[#191b23] opacity-70 hover:opacity-100 hover:bg-[#f2f3fe] rounded-r-full transition-colors duration-300" href="#">
+<span class="material-symbols-outlined">event_busy</span>
+<span class="font-body text-sm">Leave Management</span>
+</a>
+<a class="flex items-center gap-4 px-8 py-3 text-[#191b23] opacity-70 hover:opacity-100 hover:bg-[#f2f3fe] rounded-r-full transition-colors duration-300" href="#">
+<span class="material-symbols-outlined">insights</span>
+<span class="font-body text-sm">Company Insights</span>
+</a>
+</nav>
+</aside>
+<!-- Mobile Top App Bar (Hidden on Desktop) -->
+<header class="md:hidden glass-panel bg-[#ffffff]/70 text-[#0040a1] flex justify-between items-center px-8 py-4 w-full docked full-width top-0 sticky z-50 shadow-[0_8px_24px_rgba(25,27,35,0.06)] transition-all">
+<button class="text-[#0040a1] hover:bg-[#f2f3fe] rounded-lg p-2 transition-colors">
+<span class="material-symbols-outlined">menu</span>
+</button>
+<h1 class="text-xl font-black text-[#0040a1] uppercase tracking-widest font-headline">The Sanctuary</h1>
+<div class="h-8 w-8 rounded-full overflow-hidden bg-surface-container-high shrink-0">
+<img alt="Marcus Thorne" class="w-full h-full object-cover" data-alt="Professional headshot of a confident mature man in a tailored navy suit against a soft grey studio background" src="https://lh3.googleusercontent.com/aida-public/AB6AXuAddQj7OPj9m3QrZUAklByXGSJdiBz4sWV77AMvjxRVLKXbiUNFICwTPjTywZSGe3DMBKAmlzvoJabBWM_6khypSaKnaNVbgVpBDlLRqe9LTF_OvhMHI_KHXpckYzd2OXljBH60U0Ve-k63gLUTq00-x40uvVgtj4g1evSSsvWMhXdk56oBx7K7h9xOfkvIAmWs94H7Am_7FbuZwpf7rrJ9aXESGlkJxcGPW5I9GSdCS4elJVlwjCTFE0KqYOgQ_RC8szO9_pan6dg"/>
+</div>
+</header>
+<!-- Main Content Canvas -->
+<main class="md:ml-72 min-h-screen pb-24 pt-8 md:pt-12 px-6 md:px-12 lg:px-24">
+<!-- Header Section -->
+<div class="mb-12 max-w-5xl">
+<p class="font-label text-sm text-on-surface-variant mb-2">Good morning, Marcus</p>
+<h2 class="font-headline text-4xl md:text-5xl font-bold text-on-surface tracking-tight mb-4">Organizational Pulse</h2>
+<p class="font-body text-on-surface-variant max-w-2xl text-lg">A real-time overview of your workforce. All systems are operational.</p>
+</div>
+<!-- Bento Grid: Key Metrics -->
+<div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 mb-12 max-w-7xl">
+<!-- Card 1: Total Employees -->
+<div class="bg-surface-container-lowest rounded-[24px] p-8 ambient-shadow relative overflow-hidden group">
+<div class="absolute -right-12 -top-12 w-40 h-40 bg-primary-fixed rounded-full opacity-50 mix-blend-multiply filter blur-3xl transition-transform group-hover:scale-110"></div>
+<div class="relative z-10 flex flex-col h-full justify-between">
+<div class="flex justify-between items-start mb-12">
+<div class="w-12 h-12 rounded-xl bg-surface-container-low flex items-center justify-center text-primary">
+<span class="material-symbols-outlined">groups</span>
+</div>
+<span class="font-label text-xs font-semibold px-3 py-1 bg-surface-container-high text-on-surface-variant rounded-full">YTD Growth +4.2%</span>
+</div>
+<div>
+<p class="font-label text-sm text-on-surface-variant mb-1">Total Employees</p>
+<p class="font-headline text-5xl font-bold text-on-surface tracking-tight">1,248</p>
+</div>
+</div>
+</div>
+<!-- Card 2: Attendance Today -->
+<div class="bg-surface-container-lowest rounded-[24px] p-8 ambient-shadow relative overflow-hidden group">
+<div class="absolute -right-12 -top-12 w-40 h-40 bg-secondary-fixed rounded-full opacity-50 mix-blend-multiply filter blur-3xl transition-transform group-hover:scale-110"></div>
+<div class="relative z-10 flex flex-col h-full justify-between">
+<div class="flex justify-between items-start mb-12">
+<div class="w-12 h-12 rounded-xl bg-surface-container-low flex items-center justify-center text-secondary">
+<span class="material-symbols-outlined">how_to_reg</span>
+</div>
+<div class="flex items-center gap-1 text-primary">
+<span class="material-symbols-outlined text-sm">trending_up</span>
+<span class="font-label text-xs font-semibold">96% Present</span>
+</div>
+</div>
+<div>
+<p class="font-label text-sm text-on-surface-variant mb-1">Attendance Today</p>
+<div class="flex items-baseline gap-2">
+<p class="font-headline text-5xl font-bold text-on-surface tracking-tight">1,198</p>
+<p class="font-body text-sm text-on-surface-variant">/ 1,248</p>
+</div>
+</div>
+</div>
+</div>
+<!-- Card 3: Pending Contracts -->
+<div class="bg-surface-container-lowest rounded-[24px] p-8 ambient-shadow relative overflow-hidden group lg:col-span-1 md:col-span-2">
+<div class="absolute -right-12 -top-12 w-40 h-40 bg-tertiary-fixed rounded-full opacity-50 mix-blend-multiply filter blur-3xl transition-transform group-hover:scale-110"></div>
+<div class="relative z-10 flex flex-col h-full justify-between">
+<div class="flex justify-between items-start mb-12">
+<div class="w-12 h-12 rounded-xl bg-surface-container-low flex items-center justify-center text-tertiary">
+<span class="material-symbols-outlined">contract</span>
+</div>
+<span class="font-label text-xs font-semibold px-3 py-1 bg-tertiary-container text-on-tertiary rounded-full">Action Required</span>
+</div>
+<div>
+<p class="font-label text-sm text-on-surface-variant mb-1">Pending Contracts</p>
+<p class="font-headline text-5xl font-bold text-on-surface tracking-tight">24</p>
+</div>
+</div>
+</div>
+</div>
+</main>
+</body></html>

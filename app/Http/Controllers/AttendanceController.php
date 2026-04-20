@@ -66,7 +66,27 @@ class AttendanceController extends Controller
         $path = 'attendances/' . $fileName;
         Storage::disk('public')->put($path, $data);
 
-        // 3. Save Attendance Record
+        // 3. Late & Overtime Logic
+        $user = auth()->user();
+        $shift = $user->workShift;
+        $lateMinutes = 0;
+        $overtimeMinutes = 0;
+        $now = Carbon::now();
+        $today = $now->toDateString();
+
+        if ($request->type == 'in' && $shift) {
+            $shiftStart = Carbon::parse($today . ' ' . $shift->start_time);
+            if ($now->greaterThan($shiftStart)) {
+                $lateMinutes = $now->diffInMinutes($shiftStart);
+            }
+        } elseif ($request->type == 'out' && $shift) {
+            $shiftEnd = Carbon::parse($today . ' ' . $shift->end_time);
+            if ($now->greaterThan($shiftEnd)) {
+                $overtimeMinutes = $now->diffInMinutes($shiftEnd);
+            }
+        }
+
+        // 4. Save Attendance Record
         Attendance::create([
             'user_id' => auth()->id(),
             'type' => $request->type,
@@ -74,6 +94,8 @@ class AttendanceController extends Controller
             'latitude' => $request->latitude,
             'longitude' => $request->longitude,
             'status' => $status,
+            'late_minutes' => $lateMinutes,
+            'overtime_minutes' => $overtimeMinutes,
         ]);
 
         return response()->json([

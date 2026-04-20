@@ -19,17 +19,16 @@
     .btn-delete { background: rgba(239,68,68,0.1); color: #ef4444; }
     .btn-action:hover { opacity: 0.8; }
     
-    .admin-nav { display: flex; gap: 10px; margin-bottom: 24px; overflow-x: auto; padding-bottom: 5px; }
-    .admin-nav-item { padding: 10px 16px; border-radius: 12px; background: var(--bg-glass); border: 1px solid var(--border-glass); color: var(--text-muted); font-size: 13px; font-weight: 600; text-decoration: none; white-space: nowrap; transition: all 0.2s;}
-    .admin-nav-item:hover { background: var(--hover-bg); color: var(--text-main); }
-    .admin-nav-item.active { background: #3b82f6; color: white; border-color: #3b82f6; }
 </style>
 
 <div class="admin-wrap">
-    @include('admin.partials.nav')
 
     <div class="admin-header">
         <h1>Kelola Karyawan</h1>
+        <a href="{{ route('admin.employees.create') }}" class="btn-action" style="background: #3b82f6; color: white; padding: 10px 16px; border-radius: 12px; font-size: 13px;">
+            <svg width="18" height="18" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 6v6m0 0v6m0-6h6m-6 0H6"></path></svg>
+            Tambah Karyawan
+        </a>
     </div>
 
     @if(session('success'))
@@ -58,7 +57,7 @@
                             <b>{{ $emp->name }}</b><br>
                             <span style="font-size: 12px; color: var(--text-muted);">{{ $emp->email }}</span>
                         </td>
-                        <td>{{ $emp->position ?? '-' }}</td>
+                        <td>{{ $emp->position->name ?? '-' }}</td>
                         <td>
                             @if($emp->face_reference_path)
                                 <span style="display:inline-block; padding:4px 8px; border-radius:8px; background:rgba(16,185,129,0.1); color:#10b981; font-weight:600; font-size:11px;">Terdaftar</span>

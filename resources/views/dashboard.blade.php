@@ -81,7 +81,7 @@
             <div>
                 <p>Selamat Datang</p>
                 <h1>{{ Auth::user()->name }}</h1>
-                <p style="margin-top:6px;">{{ now()->locale('id')->isoFormat('dddd, D MMMM YYYY') }} &bull; {{ now()->format('H:i') }} WIB</p>
+                <p style="margin-top:6px;">{{ now()->translatedFormat('dddd, d F Y') }} &bull; {{ now()->format('H:i') }} WIB</p>
             </div>
             <div style="display:flex; gap:12px; flex-wrap:wrap;">
                 <a href="{{ route('employee.leave-requests.index') }}" class="btn-absen" style="background:linear-gradient(135deg,#8b5cf6,#6d28d9); box-shadow:0 4px 18px rgba(139,92,246,0.35);">
@@ -143,45 +143,66 @@
         </div>
     </div>
 
-    {{-- History --}}
-    <div class="db-hist">
-        <div class="db-hist-head">
-            <h2>Riwayat Absensi Terbaru</h2>
-            <a href="{{ route('attendance.index') }}">Absen &rarr;</a>
-        </div>
-        @if($attendances->isEmpty())
-            <div class="empty-box">
-                <div class="empty-icon">
-                    <svg style="width:26px;height:26px;color:var(--text-muted-dark);" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2"/></svg>
-                </div>
-                <p style="color:var(--text-muted-dark);font-size:13.5px;margin:0 0 8px;">Belum ada data absensi.</p>
-                <a href="{{ route('attendance.index') }}" style="color:#3b82f6;font-size:13px;text-decoration:none;">Mulai absensi sekarang &rarr;</a>
+    <div style="display: grid; grid-template-columns: 2fr 1.2fr; gap: 20px;">
+        {{-- Announcements --}}
+        <div class="db-hist">
+            <div class="db-hist-head">
+                <h2>Pusat Informasi</h2>
             </div>
-        @else
-            @foreach($attendances as $att)
-            <div class="hist-row">
-                <div class="hist-left">
-                    @if($att->image_path)
-                    <img src="{{ asset('storage/'.$att->image_path) }}" alt="Foto" class="hist-thumb">
-                    @else
-                    <div class="hist-thumb-ph">
-                        <svg style="width:18px;height:18px;color:var(--text-muted-dark);" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z"/></svg>
-                    </div>
-                    @endif
-                    <div>
-                        <div class="hist-name">{{ $att->type === 'in' ? 'Absen Masuk' : 'Absen Pulang' }}</div>
-                        <div class="hist-date">{{ \Carbon\Carbon::parse($att->created_at)->locale('id')->isoFormat('ddd, D MMM YYYY') }}</div>
-                    </div>
+            @if($activeAnnouncements->isEmpty())
+                <div class="empty-box">
+                    <p style="color:var(--text-muted-dark);font-size:13.5px;">Belum ada pengumuman terbaru.</p>
                 </div>
-                <div class="hist-right">
-                    <div class="hist-time">{{ \Carbon\Carbon::parse($att->created_at)->format('H:i') }}</div>
+            @else
+                @foreach($activeAnnouncements as $ann)
+                <div style="padding: 16px; border-radius: 16px; background: rgba(59,130,246,0.03); border: 1px solid var(--border-glass); margin-bottom: 12px;">
+                    <div style="font-size: 10px; color: #3b82f6; font-weight: 700; text-transform: uppercase; margin-bottom: 4px;">{{ $ann->created_at->translatedFormat('d M Y') }}</div>
+                    <h3 style="margin: 0 0 8px; font-size: 15px;">{{ $ann->title }}</h3>
+                    <p style="margin: 0; font-size: 13px; color: var(--text-muted); line-height: 1.5;">{{ Str::limit($ann->content, 120) }}</p>
+                    <a href="#" style="display: inline-block; margin-top: 10px; font-size: 12px; color: #3b82f6; font-weight: 600; text-decoration: none;">Baca Selengkapnya &rarr;</a>
+                </div>
+                @endforeach
+            @endif
+        </div>
+
+        {{-- History --}}
+        <div class="db-hist">
+            <div class="db-hist-head">
+                <h2>Riwayat Hari Ini</h2>
+                <a href="{{ route('attendance.index') }}">Lihat Semua &rarr;</a>
+            </div>
+            @if($todayAttendance->isEmpty())
+                <div class="empty-box">
+                    <div class="empty-icon">
+                        <svg style="width:26px;height:26px;color:var(--text-muted-dark);" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2"/></svg>
+                    </div>
+                    <p style="color:var(--text-muted-dark);font-size:13.5px;margin:0;">Belum ada absen hari ini.</p>
+                </div>
+            @else
+                @foreach($todayAttendance as $att)
+                <div class="hist-row">
+                    <div class="hist-left">
+                        <div style="width:32px; height:32px; border-radius:8px; background:{{ $att->type == 'in' ? 'rgba(59,130,246,0.1)' : 'rgba(245,158,11,0.1)' }}; display:flex; align-items:center; justify-content:center;">
+                            <svg style="width:16px; height:16px; color:{{ $att->type == 'in' ? '#3b82f6' : '#f59e0b' }};" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                @if($att->type == 'in')
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M11 16l-4-4m0 0l4-4m-4 4h14"/>
+                                @else
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 8l4 4m0 0l-4 4m4-4H3"/>
+                                @endif
+                            </svg>
+                        </div>
+                        <div>
+                            <div class="hist-name">{{ $att->type === 'in' ? 'Masuk' : 'Pulang' }}</div>
+                            <div class="hist-time">{{ $att->created_at->format('H:i') }} WIB</div>
+                        </div>
+                    </div>
                     <span class="badge {{ $att->status === 'valid' ? 'badge-sah' : 'badge-fail' }}">
-                        {{ $att->status === 'valid' ? 'Sah' : 'Tidak Sah' }}
+                        {{ strtoupper($att->status) }}
                     </span>
                 </div>
-            </div>
-            @endforeach
-        @endif
+                @endforeach
+            @endif
+        </div>
     </div>
 </div>
 @endsection

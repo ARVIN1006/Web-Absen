@@ -38,14 +38,9 @@
     [data-theme="light"] .form-control { background: #f9fafb; border: 1px solid #e5e7eb; }
     .form-control:focus { border-color: #3b82f6; }
 
-    .admin-nav { display: flex; gap: 10px; margin-bottom: 24px; overflow-x: auto; padding-bottom: 5px; }
-    .admin-nav-item { padding: 10px 16px; border-radius: 12px; background: var(--bg-glass); border: 1px solid var(--border-glass); color: var(--text-muted); font-size: 13px; font-weight: 600; text-decoration: none; white-space: nowrap; transition: all 0.2s;}
-    .admin-nav-item:hover { background: var(--hover-bg); color: var(--text-main); }
-    .admin-nav-item.active { background: #3b82f6; color: white; border-color: #3b82f6; }
 </style>
 
 <div class="admin-wrap">
-    @include('admin.partials.nav')
 
     <div class="admin-header">
         <h1>Daftar Pengajuan Cuti</h1>
@@ -74,14 +69,14 @@
                 <tbody>
                     @foreach($leaveRequests as $req)
                     <tr>
-                        <td>{{ $req->created_at->format('d M Y') }}</td>
+                        <td>{{ $req->created_at->translatedFormat('d F Y') }}</td>
                         <td>
                             <b>{{ $req->user->name }}</b><br>
                             <span style="font-size: 12px; color: var(--text-muted);">{{ $req->user->position ?: '-' }}</span>
                         </td>
                         <td>{{ $req->leaveType->name }}</td>
                         <td>
-                            {{ $req->start_date->format('d M Y') }} s/d {{ $req->end_date->format('d M Y') }}<br>
+                            {{ $req->start_date->translatedFormat('d F Y') }} s/d {{ $req->end_date->translatedFormat('d F Y') }}<br>
                             <span style="font-size: 12px; color: var(--text-muted);">({{ $req->total_days }} Hari)</span>
                         </td>
                         <td>

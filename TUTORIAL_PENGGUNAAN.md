@@ -1,6 +1,6 @@
-# Panduan Penggunaan Sistem Absensi PT Serunting Sakti Jaya
+# Panduan Penggunaan Sistem Absensi Karyawan
 
-Selamat datang di Sistem Absensi Digital Terpadu PT Serunting Sakti Jaya. Dokumen ini dirancang khusus untuk memandu seluruh karyawan/staf dalam menggunakan fitur presensi berbasis Pengenalan Wajah (Biometric Face-Recognition) dan Lokasi (Geofencing GPS).
+Selamat datang di Sistem Absensi Digital Terpadu. Dokumen ini dirancang khusus untuk memandu seluruh karyawan/staf dalam menggunakan fitur presensi berbasis Pengenalan Wajah (Biometric Face-Recognition) dan Lokasi (Geofencing GPS).
 
 ---
 
@@ -8,7 +8,7 @@ Selamat datang di Sistem Absensi Digital Terpadu PT Serunting Sakti Jaya. Dokume
 Setiap karyawan wajib mendaftarkan data diri, jabatan, serta **merekam wajah** yang digunakan sebagai foto Master (referensi utama).
 
 **Langkah-Langkah Pendaftaran:**
-1. Kunjungi halaman utama website di `https://absensi-pt-serunting-sakti-jaya.online`.
+1. Kunjungi halaman utama website absensi perusahaan Anda.
 2. Klik tombol **Daftar Akun Baru**.
 3. Di sisi kiri layar (atau atas pada HP), isi dengan jujur:
    - **Nama Lengkap**
@@ -44,7 +44,7 @@ Ini adalah rutinitas wajib saat Anda Hadir (*Check-In*) maupun Pulang (*Check-Ou
    - Anda hanya bisa mengklik tombol absen biru **HANYA** jika statusnya berubah Hijau.
 5. **Validasi GPS (Titik Lokasi Kantor):**
    Pastikan Anda memberikan Izinkan (Allow Location) saat browser memintanya. 
-   Lantai kantor dan gedung titik asang tervalidasi di: **Titik Koordinat Pusat PT Serunting Sakti Jaya**. Website akan menolak perekaman absensi jika GPS mendeteksi ponsel Anda berada jauh di radius luar kantor!
+   Lantai kantor dan gedung titik asang tervalidasi di: **Titik Koordinat Pusat Perusahaan**. Website akan menolak perekaman absensi jika GPS mendeteksi ponsel Anda berada jauh di radius luar kantor!
 
 ---
 

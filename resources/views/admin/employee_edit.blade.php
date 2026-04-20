@@ -46,9 +46,20 @@
             </div>
 
             <div class="form-group">
-                <label class="form-label">Jabatan (Position)</label>
-                <input type="text" name="position" class="form-control" value="{{ old('position', $employee->position) }}" required>
-                @error('position') <span class="text-danger">{{ $message }}</span> @enderror
+                <label class="form-label">Ganti Password (Kosongkan jika tidak ingin diubah)</label>
+                <input type="password" name="password" class="form-control" placeholder="Password Baru">
+                @error('password') <span class="text-danger">{{ $message }}</span> @enderror
+            </div>
+
+            <div class="form-group">
+                <label class="form-label">Jabatan</label>
+                <select name="position_id" class="form-control" required>
+                    <option value="">-- Pilih Jabatan --</option>
+                    @foreach($positions as $pos)
+                        <option value="{{ $pos->id }}" {{ old('position_id', $employee->position_id) == $pos->id ? 'selected' : '' }}>{{ $pos->name }}</option>
+                    @endforeach
+                </select>
+                @error('position_id') <span class="text-danger">{{ $message }}</span> @enderror
             </div>
 
             <div class="form-group">

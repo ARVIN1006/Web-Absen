@@ -6,7 +6,7 @@
     <meta name="theme-color" content="#0f1117">
     <meta name="mobile-web-app-capable" content="yes">
     <meta name="apple-mobile-web-app-capable" content="yes">
-    <title>Login – PT Serunting Sakti Jaya</title>
+    <title>Login – {{ config('app.name') }}</title>
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
     @vite(['resources/css/app.css', 'resources/js/app.js'])
@@ -57,6 +57,16 @@
 
         *,*::before,*::after{box-sizing:border-box;-webkit-tap-highlight-color:transparent;}
         body{margin:0;font-family:'Inter',sans-serif;background:var(--bg-body);min-height:100vh;min-height:100dvh;display:flex;align-items:stretch; transition: background 0.3s;}
+        
+        /* Global Select & Option visibility fix */
+        select option {
+            background-color: #1a1d27;
+            color: #ffffff;
+        }
+        [data-theme="light"] select option {
+            background-color: #ffffff;
+            color: #111827;
+        }
 
         /* ── Left panel: branding ── */
         .auth-left{
@@ -186,7 +196,7 @@
                 <img src="{{ asset('assets/images/logo.png') }}" alt="Logo">
             </div>
             <h1>Sistem Absensi</h1>
-            <p>PT SeruntingSakti Jaya</p>
+            <p>{{ config('app.name') }}</p>
         </div>
     </div>
 
@@ -205,7 +215,7 @@
                 <div style="width:60px;margin:0 auto 12px;display:flex;justify-content:center;">
                     <img src="{{ asset('assets/images/logo.png') }}" alt="Logo" style="max-width:100%;height:auto;object-fit:contain;">
                 </div>
-                <div style="font-size:16px;font-weight:700;color:var(--text-main);">PT Serunting Sakti Jaya</div>
+                <div style="font-size:16px;font-weight:700;color:var(--text-main);">{{ config('app.name') }}</div>
                 <div style="font-size:12px;color:var(--text-muted-dark);margin-top:2px;">Sistem Absensi Karyawan</div>
             </div>
 
@@ -228,6 +238,13 @@
                 <div style="margin-top: 8px; border-top: 1px solid rgba(255,255,255,0.05); pt-8; font-size: 11px; color: var(--text-muted);">
                     Password: <span style="font-weight: 600; color: var(--text-main);">password</span>
                 </div>
+            </div>
+
+            <div style="margin-bottom: 24px;">
+                <a href="{{ route('guide') }}" style="display: flex; align-items: center; justify-content: center; gap: 8px; background: rgba(16, 185, 129, 0.15); border: 1px solid rgba(16, 185, 129, 0.3); color: #10b981; padding: 12px; border-radius: 12px; font-size: 13px; font-weight: 600; text-decoration: none; transition: all 0.2s;">
+                    <svg width="18" height="18" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 6.253v13m0-13C10.832 5.477 9.246 5 7.5 5S4.168 5.477 3 6.253v13C4.168 18.477 5.754 18 7.5 18s3.332.477 4.5 1.253m0-13C13.168 5.477 14.754 5 16.5 5c1.747 0 3.332.477 4.5 1.253v13C19.832 18.477 18.247 18 16.5 18c-1.746 0-3.332.477-4.5 1.253"></path></svg>
+                    📖 Baca Panduan Uji Coba (Bagi Klien)
+                </a>
             </div>
 
             {{-- Flash status --}}
@@ -287,7 +304,7 @@
             @endif
 
             <div class="copyright">
-                &copy; {{ date('Y') }} PT Serunting Sakti Jaya. Semua hak dilindungi.
+                &copy; {{ date('Y') }} {{ config('app.name') }}. Semua hak dilindungi.
             </div>
         </div>
     </div>
