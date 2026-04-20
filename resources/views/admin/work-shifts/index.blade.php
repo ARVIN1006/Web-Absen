@@ -44,8 +44,8 @@
     @include('admin.partials.nav')
 
     <div class="admin-header">
-        <h1>Kelola Lokasi Perusahaan</h1>
-        <button onclick="openAddModal()" class="btn-primary">+ Tambah Lokasi</button>
+        <h1>Kelola Shift Kerja</h1>
+        <button onclick="openAddModal()" class="btn-primary">+ Tambah Shift</button>
     </div>
 
     @if(session('success'))
@@ -64,22 +64,32 @@
             <table class="table">
                 <thead>
                     <tr>
-                        <th>Nama Lokasi</th>
-                        <th>Koordinat (Lat, Lng)</th>
-                        <th>Radius</th>
+                        <th>Nama Shift</th>
+                        <th>Jam Masuk</th>
+                        <th>Jam Pulang</th>
+                        <th>Toleransi Telat</th>
+                        <th>Default</th>
                         <th>Aksi</th>
                     </tr>
                 </thead>
                 <tbody>
-                    @foreach($locations as $loc)
+                    @foreach($shifts as $shift)
                     <tr>
-                        <td><b>{{ $loc->name }}</b></td>
-                        <td>{{ $loc->latitude }}, {{ $loc->longitude }}</td>
-                        <td>{{ $loc->radius }} meter</td>
+                        <td><b>{{ $shift->name }}</b></td>
+                        <td>{{ date('H:i', strtotime($shift->clock_in_time)) }}</td>
+                        <td>{{ date('H:i', strtotime($shift->clock_out_time)) }}</td>
+                        <td>{{ $shift->late_tolerance_minutes }} menit</td>
+                        <td>
+                            @if($shift->is_default)
+                                <span style="background: rgba(59,130,246,0.1); color: #3b82f6; padding: 4px 8px; border-radius: 6px; font-size: 12px; font-weight: 600;">Ya</span>
+                            @else
+                                <span style="color: var(--text-muted);">-</span>
+                            @endif
+                        </td>
                         <td>
                             <div style="display:flex; gap:8px;">
-                                <button type="button" class="btn-action btn-edit" onclick="openEditModal({{ $loc }})">Edit</button>
-                                <form action="{{ route('admin.locations.destroy', $loc->id) }}" method="POST" onsubmit="return confirm('Yakin ingin menghapus lokasi ini?');">
+                                <button type="button" class="btn-action btn-edit" onclick="openEditModal({{ $shift }})">Edit</button>
+                                <form action="{{ route('admin.work-shifts.destroy', $shift->id) }}" method="POST" onsubmit="return confirm('Yakin ingin menghapus shift ini?');">
                                     @csrf @method('DELETE')
                                     <button type="submit" class="btn-action btn-delete">Hapus</button>
                                 </form>
@@ -87,9 +97,9 @@
                         </td>
                     </tr>
                     @endforeach
-                    @if(count($locations) == 0)
+                    @if(count($shifts) == 0)
                     <tr>
-                        <td colspan="4" style="text-align: center; color: var(--text-muted); padding: 20px;">Belum ada lokasi perusahaan.</td>
+                        <td colspan="6" style="text-align: center; color: var(--text-muted); padding: 20px;">Belum ada shift kerja.</td>
                     </tr>
                     @endif
                 </tbody>
@@ -102,31 +112,37 @@
 <div id="modalAdd" class="modal-overlay">
     <div class="modal">
         <div class="modal-header">
-            <h3>Tambah Lokasi Baru</h3>
+            <h3>Tambah Shift Baru</h3>
             <button class="btn-close" onclick="closeModal('modalAdd')">&times;</button>
         </div>
         <div class="modal-body">
-            <form action="{{ route('admin.locations.store') }}" method="POST">
+            <form action="{{ route('admin.work-shifts.store') }}" method="POST">
                 @csrf
                 <div class="form-group">
-                    <label class="form-label">Nama / Deskripsi Lokasi</label>
-                    <input type="text" name="name" class="form-control" required placeholder="Mis. Kantor Pusat">
+                    <label class="form-label">Nama Shift</label>
+                    <input type="text" name="name" class="form-control" required placeholder="Mis. Shift Pagi">
                 </div>
                 <div style="display:grid; grid-template-columns: 1fr 1fr; gap:12px;">
                     <div class="form-group">
-                        <label class="form-label">Latitude</label>
-                        <input type="number" step="any" name="latitude" class="form-control" required placeholder="-6.123456">
+                        <label class="form-label">Jam Masuk (HH:MM)</label>
+                        <input type="time" name="clock_in_time" class="form-control" required>
                     </div>
                     <div class="form-group">
-                        <label class="form-label">Longitude</label>
-                        <input type="number" step="any" name="longitude" class="form-control" required placeholder="106.123456">
+                        <label class="form-label">Jam Pulang (HH:MM)</label>
+                        <input type="time" name="clock_out_time" class="form-control" required>
                     </div>
                 </div>
                 <div class="form-group">
-                    <label class="form-label">Batas Radius (meter)</label>
-                    <input type="number" name="radius" class="form-control" required placeholder="100" value="100">
+                    <label class="form-label">Toleransi Keterlambatan (menit)</label>
+                    <input type="number" name="late_tolerance_minutes" class="form-control" required placeholder="15" value="15">
                 </div>
-                <button type="submit" class="btn-primary" style="width:100%; justify-content:center;">Simpan Lokasi</button>
+                <div class="form-group">
+                    <label class="form-label" style="display:flex; align-items:center; gap:8px;">
+                        <input type="checkbox" name="is_default" value="1" style="width:16px; height:16px;">
+                        Jadikan Shift Default (otomatis diterapkan ke karyawan baru)
+                    </label>
+                </div>
+                <button type="submit" class="btn-primary" style="width:100%; justify-content:center;">Simpan Shift</button>
             </form>
         </div>
     </div>
@@ -136,31 +152,37 @@
 <div id="modalEdit" class="modal-overlay">
     <div class="modal">
         <div class="modal-header">
-            <h3>Edit Lokasi</h3>
+            <h3>Edit Shift</h3>
             <button class="btn-close" onclick="closeModal('modalEdit')">&times;</button>
         </div>
         <div class="modal-body">
             <form id="editForm" method="POST">
                 @csrf @method('PUT')
                 <div class="form-group">
-                    <label class="form-label">Nama / Deskripsi Lokasi</label>
+                    <label class="form-label">Nama Shift</label>
                     <input type="text" name="name" id="editName" class="form-control" required>
                 </div>
                 <div style="display:grid; grid-template-columns: 1fr 1fr; gap:12px;">
                     <div class="form-group">
-                        <label class="form-label">Latitude</label>
-                        <input type="number" step="any" name="latitude" id="editLat" class="form-control" required>
+                        <label class="form-label">Jam Masuk (HH:MM)</label>
+                        <input type="time" name="clock_in_time" id="editClockIn" class="form-control" required>
                     </div>
                     <div class="form-group">
-                        <label class="form-label">Longitude</label>
-                        <input type="number" step="any" name="longitude" id="editLng" class="form-control" required>
+                        <label class="form-label">Jam Pulang (HH:MM)</label>
+                        <input type="time" name="clock_out_time" id="editClockOut" class="form-control" required>
                     </div>
                 </div>
                 <div class="form-group">
-                    <label class="form-label">Batas Radius (meter)</label>
-                    <input type="number" name="radius" id="editRadius" class="form-control" required>
+                    <label class="form-label">Toleransi Keterlambatan (menit)</label>
+                    <input type="number" name="late_tolerance_minutes" id="editTolerance" class="form-control" required>
                 </div>
-                <button type="submit" class="btn-primary" style="width:100%; justify-content:center;">Update Lokasi</button>
+                <div class="form-group">
+                    <label class="form-label" style="display:flex; align-items:center; gap:8px;">
+                        <input type="checkbox" name="is_default" id="editIsDefault" value="1" style="width:16px; height:16px;">
+                        Jadikan Shift Default
+                    </label>
+                </div>
+                <button type="submit" class="btn-primary" style="width:100%; justify-content:center;">Update Shift</button>
             </form>
         </div>
     </div>
@@ -173,13 +195,15 @@
     function closeModal(id) {
         document.getElementById(id).style.display = 'none';
     }
-    function openEditModal(loc) {
+    function openEditModal(shift) {
         let form = document.getElementById('editForm');
-        form.action = '/admin/locations/' + loc.id;
-        document.getElementById('editName').value = loc.name;
-        document.getElementById('editLat').value = loc.latitude;
-        document.getElementById('editLng').value = loc.longitude;
-        document.getElementById('editRadius').value = loc.radius;
+        form.action = '/admin/work-shifts/' + shift.id;
+        document.getElementById('editName').value = shift.name;
+        // Format time from H:i:s to H:i
+        document.getElementById('editClockIn').value = shift.clock_in_time.substring(0, 5);
+        document.getElementById('editClockOut').value = shift.clock_out_time.substring(0, 5);
+        document.getElementById('editTolerance').value = shift.late_tolerance_minutes;
+        document.getElementById('editIsDefault').checked = shift.is_default == 1;
         document.getElementById('modalEdit').style.display = 'flex';
     }
 </script>

@@ -42,12 +42,7 @@
 </style>
 
 <div class="admin-wrap">
-    <div class="admin-nav">
-        <a href="{{ route('admin.dashboard') }}" class="admin-nav-item {{ request()->routeIs('admin.dashboard') ? 'active' : '' }}">Dashboard</a>
-        <a href="{{ route('admin.employees.index') }}" class="admin-nav-item {{ request()->routeIs('admin.employees.*') ? 'active' : '' }}">Kelola Karyawan</a>
-        <a href="{{ route('admin.locations.index') }}" class="admin-nav-item {{ request()->routeIs('admin.locations.*') ? 'active' : '' }}">Lokasi Perusahaan</a>
-        <a href="{{ route('admin.attendances.index') }}" class="admin-nav-item {{ request()->routeIs('admin.attendances.*') ? 'active' : '' }}">Laporan Absensi</a>
-    </div>
+    @include('admin.partials.nav')
 
     <div class="admin-header">
         <h1>Laporan Absensi</h1>

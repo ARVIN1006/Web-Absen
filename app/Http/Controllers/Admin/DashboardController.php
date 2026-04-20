@@ -25,6 +25,15 @@ class DashboardController extends Controller
         
         $recentAttendances = Attendance::with('user')->latest()->take(10)->get();
 
-        return view('admin.dashboard', compact('totalEmployees', 'todayAttendancesCount', 'presentToday', 'absentToday', 'recentAttendances'));
+        // Chart Data: last 7 days 'in' count
+        $chartLabels = [];
+        $chartData = [];
+        for ($i = 6; $i >= 0; $i--) {
+            $date = now()->subDays($i);
+            $chartLabels[] = $date->format('D, d M');
+            $chartData[] = Attendance::whereDate('created_at', $date->toDateString())->where('type', 'in')->distinct('user_id')->count();
+        }
+
+        return view('admin.dashboard', compact('totalEmployees', 'todayAttendancesCount', 'presentToday', 'absentToday', 'recentAttendances', 'chartLabels', 'chartData'));
     }
 }

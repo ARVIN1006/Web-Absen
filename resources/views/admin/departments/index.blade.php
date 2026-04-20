@@ -44,8 +44,8 @@
     @include('admin.partials.nav')
 
     <div class="admin-header">
-        <h1>Kelola Lokasi Perusahaan</h1>
-        <button onclick="openAddModal()" class="btn-primary">+ Tambah Lokasi</button>
+        <h1>Kelola Departemen</h1>
+        <button onclick="openAddModal()" class="btn-primary">+ Tambah Departemen</button>
     </div>
 
     @if(session('success'))
@@ -64,22 +64,30 @@
             <table class="table">
                 <thead>
                     <tr>
-                        <th>Nama Lokasi</th>
-                        <th>Koordinat (Lat, Lng)</th>
-                        <th>Radius</th>
+                        <th>Kode</th>
+                        <th>Nama Departemen</th>
+                        <th>Deskripsi</th>
+                        <th>Status</th>
                         <th>Aksi</th>
                     </tr>
                 </thead>
                 <tbody>
-                    @foreach($locations as $loc)
+                    @foreach($departments as $dept)
                     <tr>
-                        <td><b>{{ $loc->name }}</b></td>
-                        <td>{{ $loc->latitude }}, {{ $loc->longitude }}</td>
-                        <td>{{ $loc->radius }} meter</td>
+                        <td><b>{{ $dept->code }}</b></td>
+                        <td>{{ $dept->name }}</td>
+                        <td>{{ $dept->description ?: '-' }}</td>
+                        <td>
+                            @if($dept->is_active)
+                                <span style="background: rgba(16,185,129,0.1); color: #10b981; padding: 4px 8px; border-radius: 6px; font-size: 12px; font-weight: 600;">Aktif</span>
+                            @else
+                                <span style="background: rgba(239,68,68,0.1); color: #ef4444; padding: 4px 8px; border-radius: 6px; font-size: 12px; font-weight: 600;">Nonaktif</span>
+                            @endif
+                        </td>
                         <td>
                             <div style="display:flex; gap:8px;">
-                                <button type="button" class="btn-action btn-edit" onclick="openEditModal({{ $loc }})">Edit</button>
-                                <form action="{{ route('admin.locations.destroy', $loc->id) }}" method="POST" onsubmit="return confirm('Yakin ingin menghapus lokasi ini?');">
+                                <button type="button" class="btn-action btn-edit" onclick="openEditModal({{ $dept }})">Edit</button>
+                                <form action="{{ route('admin.departments.destroy', $dept->id) }}" method="POST" onsubmit="return confirm('Yakin ingin menghapus departemen ini?');">
                                     @csrf @method('DELETE')
                                     <button type="submit" class="btn-action btn-delete">Hapus</button>
                                 </form>
@@ -87,9 +95,9 @@
                         </td>
                     </tr>
                     @endforeach
-                    @if(count($locations) == 0)
+                    @if(count($departments) == 0)
                     <tr>
-                        <td colspan="4" style="text-align: center; color: var(--text-muted); padding: 20px;">Belum ada lokasi perusahaan.</td>
+                        <td colspan="5" style="text-align: center; color: var(--text-muted); padding: 20px;">Belum ada departemen.</td>
                     </tr>
                     @endif
                 </tbody>
@@ -102,31 +110,32 @@
 <div id="modalAdd" class="modal-overlay">
     <div class="modal">
         <div class="modal-header">
-            <h3>Tambah Lokasi Baru</h3>
+            <h3>Tambah Departemen Baru</h3>
             <button class="btn-close" onclick="closeModal('modalAdd')">&times;</button>
         </div>
         <div class="modal-body">
-            <form action="{{ route('admin.locations.store') }}" method="POST">
+            <form action="{{ route('admin.departments.store') }}" method="POST">
                 @csrf
                 <div class="form-group">
-                    <label class="form-label">Nama / Deskripsi Lokasi</label>
-                    <input type="text" name="name" class="form-control" required placeholder="Mis. Kantor Pusat">
-                </div>
-                <div style="display:grid; grid-template-columns: 1fr 1fr; gap:12px;">
-                    <div class="form-group">
-                        <label class="form-label">Latitude</label>
-                        <input type="number" step="any" name="latitude" class="form-control" required placeholder="-6.123456">
-                    </div>
-                    <div class="form-group">
-                        <label class="form-label">Longitude</label>
-                        <input type="number" step="any" name="longitude" class="form-control" required placeholder="106.123456">
-                    </div>
+                    <label class="form-label">Kode Departemen</label>
+                    <input type="text" name="code" class="form-control" required placeholder="Mis. IT">
                 </div>
                 <div class="form-group">
-                    <label class="form-label">Batas Radius (meter)</label>
-                    <input type="number" name="radius" class="form-control" required placeholder="100" value="100">
+                    <label class="form-label">Nama Departemen</label>
+                    <input type="text" name="name" class="form-control" required placeholder="Mis. Information Technology">
                 </div>
-                <button type="submit" class="btn-primary" style="width:100%; justify-content:center;">Simpan Lokasi</button>
+                <div class="form-group">
+                    <label class="form-label">Deskripsi (Opsional)</label>
+                    <textarea name="description" class="form-control" rows="3"></textarea>
+                </div>
+                <div class="form-group">
+                    <label class="form-label">Status Aktif</label>
+                    <select name="is_active" class="form-control">
+                        <option value="1">Aktif</option>
+                        <option value="0">Nonaktif</option>
+                    </select>
+                </div>
+                <button type="submit" class="btn-primary" style="width:100%; justify-content:center;">Simpan Departemen</button>
             </form>
         </div>
     </div>
@@ -136,31 +145,32 @@
 <div id="modalEdit" class="modal-overlay">
     <div class="modal">
         <div class="modal-header">
-            <h3>Edit Lokasi</h3>
+            <h3>Edit Departemen</h3>
             <button class="btn-close" onclick="closeModal('modalEdit')">&times;</button>
         </div>
         <div class="modal-body">
             <form id="editForm" method="POST">
                 @csrf @method('PUT')
                 <div class="form-group">
-                    <label class="form-label">Nama / Deskripsi Lokasi</label>
-                    <input type="text" name="name" id="editName" class="form-control" required>
-                </div>
-                <div style="display:grid; grid-template-columns: 1fr 1fr; gap:12px;">
-                    <div class="form-group">
-                        <label class="form-label">Latitude</label>
-                        <input type="number" step="any" name="latitude" id="editLat" class="form-control" required>
-                    </div>
-                    <div class="form-group">
-                        <label class="form-label">Longitude</label>
-                        <input type="number" step="any" name="longitude" id="editLng" class="form-control" required>
-                    </div>
+                    <label class="form-label">Kode Departemen</label>
+                    <input type="text" name="code" id="editCode" class="form-control" required>
                 </div>
                 <div class="form-group">
-                    <label class="form-label">Batas Radius (meter)</label>
-                    <input type="number" name="radius" id="editRadius" class="form-control" required>
+                    <label class="form-label">Nama Departemen</label>
+                    <input type="text" name="name" id="editName" class="form-control" required>
                 </div>
-                <button type="submit" class="btn-primary" style="width:100%; justify-content:center;">Update Lokasi</button>
+                <div class="form-group">
+                    <label class="form-label">Deskripsi (Opsional)</label>
+                    <textarea name="description" id="editDescription" class="form-control" rows="3"></textarea>
+                </div>
+                <div class="form-group">
+                    <label class="form-label">Status Aktif</label>
+                    <select name="is_active" id="editIsActive" class="form-control">
+                        <option value="1">Aktif</option>
+                        <option value="0">Nonaktif</option>
+                    </select>
+                </div>
+                <button type="submit" class="btn-primary" style="width:100%; justify-content:center;">Update Departemen</button>
             </form>
         </div>
     </div>
@@ -173,13 +183,13 @@
     function closeModal(id) {
         document.getElementById(id).style.display = 'none';
     }
-    function openEditModal(loc) {
+    function openEditModal(dept) {
         let form = document.getElementById('editForm');
-        form.action = '/admin/locations/' + loc.id;
-        document.getElementById('editName').value = loc.name;
-        document.getElementById('editLat').value = loc.latitude;
-        document.getElementById('editLng').value = loc.longitude;
-        document.getElementById('editRadius').value = loc.radius;
+        form.action = '/admin/departments/' + dept.id;
+        document.getElementById('editCode').value = dept.code;
+        document.getElementById('editName').value = dept.name;
+        document.getElementById('editDescription').value = dept.description || '';
+        document.getElementById('editIsActive').value = dept.is_active ? "1" : "0";
         document.getElementById('modalEdit').style.display = 'flex';
     }
 </script>

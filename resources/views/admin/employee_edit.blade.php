@@ -51,6 +51,30 @@
                 @error('position') <span class="text-danger">{{ $message }}</span> @enderror
             </div>
 
+            <div class="form-group">
+                <label class="form-label">Departemen</label>
+                <select name="department_id" class="form-control">
+                    <option value="">-- Pilih Departemen --</option>
+                    @foreach($departments as $dept)
+                        <option value="{{ $dept->id }}" {{ old('department_id', $employee->department_id) == $dept->id ? 'selected' : '' }}>{{ $dept->name }}</option>
+                    @endforeach
+                </select>
+                @error('department_id') <span class="text-danger">{{ $message }}</span> @enderror
+            </div>
+
+            <div class="form-group">
+                <label class="form-label">Shift Kerja</label>
+                <select name="work_shift_id" class="form-control">
+                    <option value="">-- Pilih Shift Kerja --</option>
+                    @foreach($workShifts as $shift)
+                        <option value="{{ $shift->id }}" {{ old('work_shift_id', $employee->work_shift_id) == $shift->id ? 'selected' : '' }}>
+                            {{ $shift->name }} ({{ date('H:i', strtotime($shift->clock_in_time)) }} - {{ date('H:i', strtotime($shift->clock_out_time)) }})
+                        </option>
+                    @endforeach
+                </select>
+                @error('work_shift_id') <span class="text-danger">{{ $message }}</span> @enderror
+            </div>
+
             <button type="submit" class="btn-primary">Simpan Perubahan</button>
         </form>
     </div>

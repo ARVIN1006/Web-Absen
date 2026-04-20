@@ -44,18 +44,13 @@
     @include('admin.partials.nav')
 
     <div class="admin-header">
-        <h1>Kelola Lokasi Perusahaan</h1>
-        <button onclick="openAddModal()" class="btn-primary">+ Tambah Lokasi</button>
+        <h1>Kelola Tipe Cuti</h1>
+        <button onclick="openAddModal()" class="btn-primary">+ Tambah Tipe Cuti</button>
     </div>
 
     @if(session('success'))
         <div style="background: rgba(16,185,129,0.15); border: 1px solid rgba(16,185,129,0.3); color: #10b981; padding: 12px 20px; border-radius: 12px; margin-bottom: 20px; font-weight: 500;">
             {{ session('success') }}
-        </div>
-    @endif
-    @if($errors->any())
-        <div style="background: rgba(239,68,68,0.15); border: 1px solid rgba(239,68,68,0.3); color: #ef4444; padding: 12px 20px; border-radius: 12px; margin-bottom: 20px; font-weight: 500;">
-            Terdapat kesalahan pada isian form.
         </div>
     @endif
 
@@ -64,22 +59,39 @@
             <table class="table">
                 <thead>
                     <tr>
-                        <th>Nama Lokasi</th>
-                        <th>Koordinat (Lat, Lng)</th>
-                        <th>Radius</th>
+                        <th>Tipe Cuti</th>
+                        <th>Kuota / Tahun</th>
+                        <th>Butuh Lampiran</th>
+                        <th>Status</th>
                         <th>Aksi</th>
                     </tr>
                 </thead>
                 <tbody>
-                    @foreach($locations as $loc)
+                    @foreach($leaveTypes as $type)
                     <tr>
-                        <td><b>{{ $loc->name }}</b></td>
-                        <td>{{ $loc->latitude }}, {{ $loc->longitude }}</td>
-                        <td>{{ $loc->radius }} meter</td>
+                        <td>
+                            <b>{{ $type->name }}</b><br>
+                            <span style="font-size: 12px; color: var(--text-muted);">{{ $type->description ?: '-' }}</span>
+                        </td>
+                        <td>{{ $type->max_days_per_year }} Hari</td>
+                        <td>
+                            @if($type->requires_attachment)
+                                <span style="background: rgba(245,158,11,0.1); color: #f59e0b; padding: 4px 8px; border-radius: 6px; font-size: 12px; font-weight: 600;">Ya</span>
+                            @else
+                                <span style="color: var(--text-muted);">-</span>
+                            @endif
+                        </td>
+                        <td>
+                            @if($type->is_active)
+                                <span style="background: rgba(16,185,129,0.1); color: #10b981; padding: 4px 8px; border-radius: 6px; font-size: 12px; font-weight: 600;">Aktif</span>
+                            @else
+                                <span style="background: rgba(239,68,68,0.1); color: #ef4444; padding: 4px 8px; border-radius: 6px; font-size: 12px; font-weight: 600;">Nonaktif</span>
+                            @endif
+                        </td>
                         <td>
                             <div style="display:flex; gap:8px;">
-                                <button type="button" class="btn-action btn-edit" onclick="openEditModal({{ $loc }})">Edit</button>
-                                <form action="{{ route('admin.locations.destroy', $loc->id) }}" method="POST" onsubmit="return confirm('Yakin ingin menghapus lokasi ini?');">
+                                <button type="button" class="btn-action btn-edit" onclick="openEditModal({{ $type }})">Edit</button>
+                                <form action="{{ route('admin.leave-types.destroy', $type->id) }}" method="POST" onsubmit="return confirm('Yakin ingin menghapus tipe cuti ini?');">
                                     @csrf @method('DELETE')
                                     <button type="submit" class="btn-action btn-delete">Hapus</button>
                                 </form>
@@ -87,9 +99,9 @@
                         </td>
                     </tr>
                     @endforeach
-                    @if(count($locations) == 0)
+                    @if(count($leaveTypes) == 0)
                     <tr>
-                        <td colspan="4" style="text-align: center; color: var(--text-muted); padding: 20px;">Belum ada lokasi perusahaan.</td>
+                        <td colspan="5" style="text-align: center; color: var(--text-muted); padding: 20px;">Belum ada tipe cuti.</td>
                     </tr>
                     @endif
                 </tbody>
@@ -102,31 +114,37 @@
 <div id="modalAdd" class="modal-overlay">
     <div class="modal">
         <div class="modal-header">
-            <h3>Tambah Lokasi Baru</h3>
+            <h3>Tambah Tipe Cuti Baru</h3>
             <button class="btn-close" onclick="closeModal('modalAdd')">&times;</button>
         </div>
         <div class="modal-body">
-            <form action="{{ route('admin.locations.store') }}" method="POST">
+            <form action="{{ route('admin.leave-types.store') }}" method="POST">
                 @csrf
                 <div class="form-group">
-                    <label class="form-label">Nama / Deskripsi Lokasi</label>
-                    <input type="text" name="name" class="form-control" required placeholder="Mis. Kantor Pusat">
-                </div>
-                <div style="display:grid; grid-template-columns: 1fr 1fr; gap:12px;">
-                    <div class="form-group">
-                        <label class="form-label">Latitude</label>
-                        <input type="number" step="any" name="latitude" class="form-control" required placeholder="-6.123456">
-                    </div>
-                    <div class="form-group">
-                        <label class="form-label">Longitude</label>
-                        <input type="number" step="any" name="longitude" class="form-control" required placeholder="106.123456">
-                    </div>
+                    <label class="form-label">Nama Cuti</label>
+                    <input type="text" name="name" class="form-control" required placeholder="Mis. Cuti Tahunan">
                 </div>
                 <div class="form-group">
-                    <label class="form-label">Batas Radius (meter)</label>
-                    <input type="number" name="radius" class="form-control" required placeholder="100" value="100">
+                    <label class="form-label">Maksimal Hari per Tahun</label>
+                    <input type="number" name="max_days_per_year" class="form-control" required value="12">
                 </div>
-                <button type="submit" class="btn-primary" style="width:100%; justify-content:center;">Simpan Lokasi</button>
+                <div class="form-group">
+                    <label class="form-label">Deskripsi (Opsional)</label>
+                    <textarea name="description" class="form-control" rows="3"></textarea>
+                </div>
+                <div class="form-group">
+                    <label class="form-label" style="display:flex; align-items:center; gap:8px;">
+                        <input type="checkbox" name="requires_attachment" value="1" style="width:16px; height:16px;">
+                        Wajib upload lampiran (surat dokter, dsb)
+                    </label>
+                </div>
+                <div class="form-group">
+                    <label class="form-label" style="display:flex; align-items:center; gap:8px;">
+                        <input type="checkbox" name="is_active" value="1" checked style="width:16px; height:16px;">
+                        Aktif
+                    </label>
+                </div>
+                <button type="submit" class="btn-primary" style="width:100%; justify-content:center;">Simpan</button>
             </form>
         </div>
     </div>
@@ -136,31 +154,39 @@
 <div id="modalEdit" class="modal-overlay">
     <div class="modal">
         <div class="modal-header">
-            <h3>Edit Lokasi</h3>
+            <h3>Edit Tipe Cuti</h3>
             <button class="btn-close" onclick="closeModal('modalEdit')">&times;</button>
         </div>
         <div class="modal-body">
             <form id="editForm" method="POST">
                 @csrf @method('PUT')
                 <div class="form-group">
-                    <label class="form-label">Nama / Deskripsi Lokasi</label>
+                    <label class="form-label">Nama Cuti</label>
                     <input type="text" name="name" id="editName" class="form-control" required>
                 </div>
-                <div style="display:grid; grid-template-columns: 1fr 1fr; gap:12px;">
-                    <div class="form-group">
-                        <label class="form-label">Latitude</label>
-                        <input type="number" step="any" name="latitude" id="editLat" class="form-control" required>
-                    </div>
-                    <div class="form-group">
-                        <label class="form-label">Longitude</label>
-                        <input type="number" step="any" name="longitude" id="editLng" class="form-control" required>
-                    </div>
+                <div class="form-group">
+                    <label class="form-label">Maksimal Hari per Tahun</label>
+                    <input type="number" name="max_days_per_year" id="editMaxDays" class="form-control" required>
                 </div>
                 <div class="form-group">
-                    <label class="form-label">Batas Radius (meter)</label>
-                    <input type="number" name="radius" id="editRadius" class="form-control" required>
+                    <label class="form-label">Deskripsi (Opsional)</label>
+                    <textarea name="description" id="editDesc" class="form-control" rows="3"></textarea>
                 </div>
-                <button type="submit" class="btn-primary" style="width:100%; justify-content:center;">Update Lokasi</button>
+                <div class="form-group">
+                    <label class="form-label" style="display:flex; align-items:center; gap:8px;">
+                        <input type="hidden" name="requires_attachment" value="0">
+                        <input type="checkbox" name="requires_attachment" id="editReqAttach" value="1" style="width:16px; height:16px;">
+                        Wajib upload lampiran
+                    </label>
+                </div>
+                <div class="form-group">
+                    <label class="form-label" style="display:flex; align-items:center; gap:8px;">
+                        <input type="hidden" name="is_active" value="0">
+                        <input type="checkbox" name="is_active" id="editIsActive" value="1" style="width:16px; height:16px;">
+                        Aktif
+                    </label>
+                </div>
+                <button type="submit" class="btn-primary" style="width:100%; justify-content:center;">Update</button>
             </form>
         </div>
     </div>
@@ -173,13 +199,14 @@
     function closeModal(id) {
         document.getElementById(id).style.display = 'none';
     }
-    function openEditModal(loc) {
+    function openEditModal(type) {
         let form = document.getElementById('editForm');
-        form.action = '/admin/locations/' + loc.id;
-        document.getElementById('editName').value = loc.name;
-        document.getElementById('editLat').value = loc.latitude;
-        document.getElementById('editLng').value = loc.longitude;
-        document.getElementById('editRadius').value = loc.radius;
+        form.action = '/admin/leave-types/' + type.id;
+        document.getElementById('editName').value = type.name;
+        document.getElementById('editMaxDays').value = type.max_days_per_year;
+        document.getElementById('editDesc').value = type.description || '';
+        document.getElementById('editReqAttach').checked = type.requires_attachment == 1;
+        document.getElementById('editIsActive').checked = type.is_active == 1;
         document.getElementById('modalEdit').style.display = 'flex';
     }
 </script>

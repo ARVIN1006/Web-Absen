@@ -16,6 +16,8 @@ class Attendance extends Model
         'latitude',
         'longitude',
         'status',
+        'late_status',
+        'late_minutes',
     ];
 
     public function user()

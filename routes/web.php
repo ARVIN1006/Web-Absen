@@ -6,8 +6,8 @@ use App\Models\Attendance;
 use Illuminate\Support\Facades\Route;
 
 Route::get('/', function () {
-    return redirect()->route('dashboard');
-});
+    return view('welcome');
+})->name('home');
 
 Route::get('/dashboard', function () {
     $attendances = Attendance::where('user_id', auth()->id())->latest()->take(10)->get();
@@ -23,6 +23,11 @@ Route::middleware(['auth'])->group(function () {
     Route::get('/profile',    [ProfileController::class, 'edit'])->name('profile.edit');
     Route::patch('/profile',  [ProfileController::class, 'update'])->name('profile.update');
     Route::delete('/profile', [ProfileController::class, 'destroy'])->name('profile.destroy');
+
+    // Employee Leave Requests
+    Route::prefix('employee')->name('employee.')->group(function () {
+        Route::resource('leave-requests', \App\Http\Controllers\Employee\LeaveController::class)->only(['index', 'create', 'store']);
+    });
 });
 
 // Admin Routes
@@ -34,6 +39,20 @@ Route::prefix('admin')->name('admin.')->middleware(['auth', 'admin'])->group(fun
     Route::get('/employees/{employee}/edit', [\App\Http\Controllers\Admin\EmployeeController::class, 'edit'])->name('employees.edit');
     Route::put('/employees/{employee}', [\App\Http\Controllers\Admin\EmployeeController::class, 'update'])->name('employees.update');
     Route::delete('/employees/{employee}', [\App\Http\Controllers\Admin\EmployeeController::class, 'destroy'])->name('employees.destroy');
+
+    // Departments
+    Route::resource('departments', \App\Http\Controllers\Admin\DepartmentController::class)->except(['show']);
+
+    // Work Shifts
+    Route::resource('work-shifts', \App\Http\Controllers\Admin\WorkShiftController::class)->except(['show']);
+
+    // Leave Types
+    Route::resource('leave-types', \App\Http\Controllers\Admin\LeaveTypeController::class)->except(['show', 'create', 'edit']);
+
+    // Leave Requests
+    Route::get('leave-requests', [\App\Http\Controllers\Admin\LeaveRequestController::class, 'index'])->name('leave-requests.index');
+    Route::post('leave-requests/{leaveRequest}/approve', [\App\Http\Controllers\Admin\LeaveRequestController::class, 'approve'])->name('leave-requests.approve');
+    Route::post('leave-requests/{leaveRequest}/reject', [\App\Http\Controllers\Admin\LeaveRequestController::class, 'reject'])->name('leave-requests.reject');
 
     // Locations
     Route::get('/locations', [\App\Http\Controllers\Admin\LocationController::class, 'index'])->name('locations.index');

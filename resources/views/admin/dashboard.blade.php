@@ -33,12 +33,7 @@
 </style>
 
 <div class="admin-wrap">
-    <div class="admin-nav">
-        <a href="{{ route('admin.dashboard') }}" class="admin-nav-item {{ request()->routeIs('admin.dashboard') ? 'active' : '' }}">Dashboard</a>
-        <a href="{{ route('admin.employees.index') }}" class="admin-nav-item {{ request()->routeIs('admin.employees.*') ? 'active' : '' }}">Kelola Karyawan</a>
-        <a href="{{ route('admin.locations.index') }}" class="admin-nav-item {{ request()->routeIs('admin.locations.*') ? 'active' : '' }}">Lokasi Perusahaan</a>
-        <a href="{{ route('admin.attendances.index') }}" class="admin-nav-item {{ request()->routeIs('admin.attendances.*') ? 'active' : '' }}">Laporan Absensi</a>
-    </div>
+    @include('admin.partials.nav')
 
     <div class="admin-header">
         <h1>Dashboard Admin</h1>
@@ -61,6 +56,11 @@
             <div class="stat-name">Karyawan Belum Hadir</div>
             <div class="stat-val" style="color: #ef4444;">{{ $absentToday }}</div>
         </div>
+    </div>
+
+    <div class="admin-card" style="margin-bottom: 24px; padding: 20px;">
+        <div style="font-weight: 600; font-size: 16px; margin-bottom: 16px; color: var(--text-main);">Statistik Kehadiran (7 Hari Terakhir)</div>
+        <canvas id="attendanceChart" height="80"></canvas>
     </div>
 
     <div class="admin-card">
@@ -108,4 +108,46 @@
         </div>
     </div>
 </div>
+
+<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+<script>
+    const ctx = document.getElementById('attendanceChart').getContext('2d');
+    
+    // Gradient fill
+    let gradient = ctx.createLinearGradient(0, 0, 0, 400);
+    gradient.addColorStop(0, 'rgba(59, 130, 246, 0.5)');   
+    gradient.addColorStop(1, 'rgba(59, 130, 246, 0.0)');
+
+    new Chart(ctx, {
+        type: 'line',
+        data: {
+            labels: {!! json_encode($chartLabels) !!},
+            datasets: [{
+                label: 'Karyawan Hadir',
+                data: {!! json_encode($chartData) !!},
+                borderColor: '#3b82f6',
+                backgroundColor: gradient,
+                borderWidth: 3,
+                pointBackgroundColor: '#ffffff',
+                pointBorderColor: '#3b82f6',
+                pointBorderWidth: 2,
+                pointRadius: 4,
+                fill: true,
+                tension: 0.4
+            }]
+        },
+        options: {
+            responsive: true,
+            plugins: {
+                legend: { display: false }
+            },
+            scales: {
+                y: {
+                    beginAtZero: true,
+                    ticks: { stepSize: 1 }
+                }
+            }
+        }
+    });
+</script>
 @endsection
