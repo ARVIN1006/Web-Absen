@@ -6,13 +6,17 @@ use Illuminate\Http\Request;
 use App\Models\Attendance;
 use App\Models\CompanySetting;
 use Illuminate\Support\Facades\Storage;
+use Illuminate\Support\Facades\Cache;
 use Carbon\Carbon;
+use Intervention\Image\Laravel\Facades\Image;
 
 class AttendanceController extends Controller
 {
     public function index()
     {
-        $locations = CompanySetting::all();
+        $locations = Cache::remember('company_locations', 3600, function () {
+            return CompanySetting::all();
+        });
         return view('attendance.index', compact('locations'));
     }
 
@@ -25,7 +29,10 @@ class AttendanceController extends Controller
             'type' => 'required|in:in,out',
         ]);
 
-        $locations = CompanySetting::all();
+        $locations = Cache::remember('company_locations', 3600, function () {
+            return CompanySetting::all();
+        });
+
         if ($locations->isEmpty()) {
             return response()->json(['success' => false, 'message' => 'Company settings not found.'], 404);
         }
@@ -57,14 +64,21 @@ class AttendanceController extends Controller
             ], 403);
         }
 
-        // 2. Face Image Storage
+        // 2. Face Image Storage & Optimization
         $img = $request->image;
         $img = str_replace('data:image/jpeg;base64,', '', $img);
         $img = str_replace(' ', '+', $img);
         $data = base64_decode($img);
+        
         $fileName = 'attendance_' . auth()->id() . '_' . time() . '.jpg';
         $path = 'attendances/' . $fileName;
-        Storage::disk('public')->put($path, $data);
+
+        // Use Intervention Image to resize and compress
+        $optimizedImage = Image::read($data)
+            ->scale(width: 640) // Resize to max 640px width
+            ->toJpeg(quality: 75); // Compress to 75% quality
+
+        Storage::disk('public')->put($path, (string) $optimizedImage);
 
         // 3. Late & Overtime Logic
         $user = auth()->user();

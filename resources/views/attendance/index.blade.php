@@ -175,7 +175,7 @@ const locations = @json($locations);
 
 /* Load models and reference face */
 async function loadModels() {
-    const BASE = 'https://raw.githubusercontent.com/justadudewhohacks/face-api.js/master/weights';
+    const BASE = '/models';
     try {
         await faceapi.nets.tinyFaceDetector.loadFromUri(BASE);
         await faceapi.nets.faceLandmark68Net.loadFromUri(BASE);
