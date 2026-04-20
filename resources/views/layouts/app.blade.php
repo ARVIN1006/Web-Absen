@@ -133,6 +133,10 @@
 </head>
 <body>
 <div class="page-wrap">
+    {{-- DEMO MODE BANNER --}}
+    <div style="background: linear-gradient(to right, #3b82f6, #8b5cf6); color: white; text-align: center; padding: 6px; font-size: 11px; font-weight: 700; letter-spacing: 0.05em; text-transform: uppercase; z-index: 9999; position: relative;">
+        Demo Mode: Sistem Absensi & HRD Management
+    </div>
 
     {{-- DESKTOP NAV --}}
     <nav class="nav-desktop">

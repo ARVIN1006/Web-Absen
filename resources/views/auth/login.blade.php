@@ -172,6 +172,10 @@
     </style>
 </head>
 <body>
+    {{-- DEMO MODE BANNER --}}
+    <div style="background: linear-gradient(to right, #3b82f6, #8b5cf6); color: white; text-align: center; padding: 6px; font-size: 11px; font-weight: 700; letter-spacing: 0.05em; text-transform: uppercase; z-index: 9999; position: absolute; top: 0; left: 0; right: 0;">
+        Demo Mode: Sistem Absensi & HRD Management
+    </div>
 
     {{-- Left branding panel --}}
     <div class="auth-left">
@@ -207,6 +211,24 @@
 
             <h2>Selamat Datang</h2>
             <p class="subtitle">Masuk ke akun karyawan Anda</p>
+
+            {{-- Demo Credentials Box --}}
+            <div style="background: rgba(59,130,246,0.1); border: 1px solid rgba(59,130,246,0.2); border-radius: 14px; padding: 16px; margin-bottom: 24px;">
+                <div style="font-size: 11px; font-weight: 700; color: #3b82f6; text-transform: uppercase; margin-bottom: 8px; letter-spacing: 0.05em;">Demo Access</div>
+                <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 12px;">
+                    <div>
+                        <div style="font-size: 10px; color: var(--text-muted-dark);">Admin Role</div>
+                        <div style="font-size: 12px; color: var(--text-main); font-weight: 600;">admin@admin.com</div>
+                    </div>
+                    <div>
+                        <div style="font-size: 10px; color: var(--text-muted-dark);">Employee Role</div>
+                        <div style="font-size: 12px; color: var(--text-main); font-weight: 600;">test@example.com</div>
+                    </div>
+                </div>
+                <div style="margin-top: 8px; border-top: 1px solid rgba(255,255,255,0.05); pt-8; font-size: 11px; color: var(--text-muted);">
+                    Password: <span style="font-weight: 600; color: var(--text-main);">password</span>
+                </div>
+            </div>
 
             {{-- Flash status --}}
             @if(session('status'))
