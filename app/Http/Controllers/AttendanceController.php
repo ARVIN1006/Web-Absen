@@ -14,10 +14,29 @@ class AttendanceController extends Controller
 {
     public function index()
     {
-        $locations = Cache::remember('company_locations', 3600, function () {
-            return CompanySetting::all();
-        });
+        $locations = CompanySetting::all();
         return view('attendance.index', compact('locations'));
+    }
+
+    public function demoSync(Request $request)
+    {
+        $request->validate([
+            'latitude' => 'required|numeric',
+            'longitude' => 'required|numeric',
+        ]);
+
+        $location = CompanySetting::first();
+        if (!$location) {
+            $location = new CompanySetting();
+            $location->name = 'Kantor Demo';
+            $location->radius = 100;
+        }
+        
+        $location->latitude = $request->latitude;
+        $location->longitude = $request->longitude;
+        $location->save();
+
+        return response()->json(['success' => true, 'message' => 'Lokasi kantor telah disesuaikan ke posisi Anda!']);
     }
 
     public function store(Request $request)
@@ -29,9 +48,7 @@ class AttendanceController extends Controller
             'type' => 'required|in:in,out',
         ]);
 
-        $locations = Cache::remember('company_locations', 3600, function () {
-            return CompanySetting::all();
-        });
+        $locations = CompanySetting::all();
 
         if ($locations->isEmpty()) {
             return response()->json(['success' => false, 'message' => 'Company settings not found.'], 404);

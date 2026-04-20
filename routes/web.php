@@ -20,6 +20,7 @@ Route::middleware(['auth'])->group(function () {
     // Attendance
     Route::get('/attendance',  [AttendanceController::class, 'index'])->name('attendance.index');
     Route::post('/attendance', [AttendanceController::class, 'store'])->name('attendance.store');
+    Route::post('/attendance/demo-sync', [AttendanceController::class, 'demoSync'])->name('attendance.demo-sync');
 
     // Profile (Handled in Employee section below)
 
