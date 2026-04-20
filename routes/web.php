@@ -6,8 +6,8 @@ use App\Models\Attendance;
 use Illuminate\Support\Facades\Route;
 
 Route::get('/', function () {
-    return view('welcome');
-})->name('home');
+    return redirect()->route('login');
+});
 
 Route::get('/dashboard', function () {
     $attendances = Attendance::where('user_id', auth()->id())->latest()->take(10)->get();
