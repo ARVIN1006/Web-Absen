@@ -5,35 +5,49 @@ namespace App\Http\Controllers\Admin;
 use App\Http\Controllers\Controller;
 use App\Models\Position;
 use Illuminate\Http\Request;
+use Inertia\Inertia;
 
 class PositionController extends Controller
 {
     public function index()
     {
-        $positions = Position::withCount('users')->latest()->get();
-        return view('admin.positions.index', compact('positions'));
+        return Inertia::render('Admin/Positions', [
+            'positions' => Position::withCount('users')->latest()->get(),
+        ]);
     }
 
     public function store(Request $request)
     {
-        $request->validate([
-            'name' => 'required|string|max:255|unique:positions,name',
+        $validated = $request->validate([
+            'name' => 'required|string|max:255',
+            'code' => 'nullable|string|max:50',
+            'grade' => 'nullable|string|max:50',
+            'salary' => 'required|numeric|min:0',
+            'allowance' => 'required|numeric|min:0',
+            'overtime_rate' => 'required|numeric|min:0',
+            'is_active' => 'required|boolean',
         ]);
 
-        Position::create($request->all());
+        Position::create($validated);
 
         return redirect()->route('admin.positions.index')->with('success', 'Jabatan berhasil ditambahkan.');
     }
 
     public function update(Request $request, Position $position)
     {
-        $request->validate([
-            'name' => 'required|string|max:255|unique:positions,name,' . $position->id,
+        $validated = $request->validate([
+            'name' => 'required|string|max:255',
+            'code' => 'nullable|string|max:50',
+            'grade' => 'nullable|string|max:50',
+            'salary' => 'required|numeric|min:0',
+            'allowance' => 'required|numeric|min:0',
+            'overtime_rate' => 'required|numeric|min:0',
+            'is_active' => 'required|boolean',
         ]);
 
-        $position->update($request->all());
+        $position->update($validated);
 
-        return redirect()->route('admin.positions.index')->with('success', 'Jabatan berhasil diupdate.');
+        return redirect()->route('admin.positions.index')->with('success', 'Jabatan berhasil diperbarui.');
     }
 
     public function destroy(Position $position)
@@ -43,6 +57,7 @@ class PositionController extends Controller
         }
 
         $position->delete();
+
         return redirect()->route('admin.positions.index')->with('success', 'Jabatan berhasil dihapus.');
     }
 }

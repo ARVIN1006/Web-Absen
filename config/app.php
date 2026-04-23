@@ -54,6 +54,10 @@ return [
 
     'url' => env('APP_URL', 'http://localhost'),
 
+    'demo_mode' => (bool) env('DEMO_MODE', false),
+    'demo_bypass_face_verification' => (bool) env('DEMO_BYPASS_FACE_VERIFICATION', false),
+    'demo_bypass_geofence' => (bool) env('DEMO_BYPASS_GEOFENCE', false),
+
     /*
     |--------------------------------------------------------------------------
     | Application Timezone

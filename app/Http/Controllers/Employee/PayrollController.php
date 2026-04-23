@@ -12,7 +12,9 @@ class PayrollController extends Controller
     public function index()
     {
         $payrolls = Auth::user()->payrolls()->latest()->get();
-        return view('employee.payrolls.index', compact('payrolls'));
+        return \Inertia\Inertia::render('Employee/Payrolls', [
+            'payrolls' => $payrolls
+        ]);
     }
 
     public function show(Payroll $payroll)
@@ -22,6 +24,8 @@ class PayrollController extends Controller
             abort(403);
         }
 
-        return view('employee.payrolls.show', compact('payroll'));
+        return \Inertia\Inertia::render('Employee/PayrollShow', [
+            'payroll' => $payroll->load(['user.position', 'componentItems.payrollComponent'])
+        ]);
     }
 }

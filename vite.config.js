@@ -4,17 +4,23 @@ import { VitePWA } from "vite-plugin-pwa";
 
 import { ViteImageOptimizer } from 'vite-plugin-image-optimizer';
 
+import react from "@vitejs/plugin-react";
+
 export default defineConfig({
-    // Hapus atau ubah bagian server ini
     server: {
-        host: "localhost",
+        host: "0.0.0.0",
+        port: 5173,
         cors: true,
+        hmr: {
+            host: "localhost",
+        },
     },
     plugins: [
         laravel({
-            input: ["resources/css/app.css", "resources/js/app.js"],
+            input: ["resources/css/app.css", "resources/js/app.jsx"],
             refresh: true,
         }),
+        react(),
         ViteImageOptimizer({
             /* pass your config */
         }),

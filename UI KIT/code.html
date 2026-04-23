@@ -1,0 +1,439 @@
+<!DOCTYPE html>
+
+<html class="light" lang="en"><head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<title>Executive Precision UI Kit - HRIS Enterprise</title>
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<link href="https://fonts.googleapis.com/css2?family=Manrope:wght@400;500;600;700;800&amp;family=Inter:wght@400;500;600&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<script id="tailwind-config">
+        tailwind.config = {
+            darkMode: "class",
+            theme: {
+                extend: {
+                    "colors": {
+                        "inverse-on-surface": "#e9f1ff",
+                        "tertiary-container": "#0d1c2f",
+                        "primary-container": "#131b2e",
+                        "on-tertiary": "#ffffff",
+                        "primary-fixed": "#dae2fd",
+                        "surface-tint": "#565e74",
+                        "surface": "#f8f9ff",
+                        "on-secondary-fixed-variant": "#2f2ebe",
+                        "outline-variant": "#c6c6cd",
+                        "surface-dim": "#ccdbf2",
+                        "tertiary-fixed": "#d5e3fd",
+                        "primary": "#000000",
+                        "on-primary": "#ffffff",
+                        "on-secondary-fixed": "#07006c",
+                        "surface-bright": "#f8f9ff",
+                        "on-primary-fixed-variant": "#3f465c",
+                        "primary-fixed-dim": "#bec6e0",
+                        "on-secondary-container": "#fffbff",
+                        "on-surface-variant": "#45464d",
+                        "on-background": "#0d1c2d",
+                        "inverse-primary": "#bec6e0",
+                        "on-error": "#ffffff",
+                        "inverse-surface": "#233143",
+                        "tertiary": "#000000",
+                        "surface-container-lowest": "#ffffff",
+                        "surface-container": "#e5efff",
+                        "error-container": "#ffdad6",
+                        "on-primary-container": "#7c839b",
+                        "error": "#ba1a1a",
+                        "secondary-fixed-dim": "#c0c1ff",
+                        "on-secondary": "#ffffff",
+                        "background": "#f8f9ff",
+                        "on-surface": "#0d1c2d",
+                        "on-tertiary-fixed-variant": "#3a485c",
+                        "tertiary-fixed-dim": "#b9c7e0",
+                        "surface-container-low": "#eef4ff",
+                        "secondary-container": "#6063ee",
+                        "surface-container-highest": "#d4e4fa",
+                        "on-tertiary-fixed": "#0d1c2f",
+                        "on-primary-fixed": "#131b2e",
+                        "outline": "#76777d",
+                        "surface-container-high": "#dbe9ff",
+                        "secondary": "#4648d4",
+                        "secondary-fixed": "#e1e0ff",
+                        "on-tertiary-container": "#76859b",
+                        "surface-variant": "#d4e4fa",
+                        "on-error-container": "#93000a"
+                    },
+                    "borderRadius": {
+                        "DEFAULT": "0.125rem",
+                        "lg": "0.25rem",
+                        "xl": "0.5rem",
+                        "full": "0.75rem"
+                    },
+                    "spacing": {
+                        "xs": "8px",
+                        "md": "16px",
+                        "lg": "24px",
+                        "container-margin": "24px",
+                        "gutter": "20px",
+                        "xl": "32px",
+                        "sm": "12px",
+                        "base": "4px",
+                        "2xl": "48px"
+                    },
+                    "fontFamily": {
+                        "h3": ["Manrope"],
+                        "data-mono": ["Inter"],
+                        "body-sm": ["Inter"],
+                        "body-md": ["Inter"],
+                        "h2": ["Manrope"],
+                        "label-md": ["Inter"],
+                        "h1": ["Manrope"],
+                        "body-lg": ["Inter"]
+                    },
+                    "fontSize": {
+                        "h3": ["20px", {"lineHeight": "28px", "fontWeight": "600"}],
+                        "data-mono": ["13px", {"lineHeight": "18px", "fontWeight": "500"}],
+                        "body-sm": ["12px", {"lineHeight": "16px", "fontWeight": "400"}],
+                        "body-md": ["14px", {"lineHeight": "20px", "fontWeight": "400"}],
+                        "h2": ["24px", {"lineHeight": "32px", "letterSpacing": "-0.01em", "fontWeight": "600"}],
+                        "label-md": ["12px", {"lineHeight": "16px", "letterSpacing": "0.05em", "fontWeight": "600"}],
+                        "h1": ["30px", {"lineHeight": "38px", "letterSpacing": "-0.02em", "fontWeight": "700"}],
+                        "body-lg": ["16px", {"lineHeight": "24px", "fontWeight": "400"}]
+                    }
+                },
+            },
+        }
+    </script>
+<style>
+        .material-symbols-outlined {
+            font-variation-settings: 'FILL' 0, 'wght' 400, 'GRAD' 0, 'opsz' 24;
+        }
+        .sidebar-active { border-left-width: 4px; border-color: #6366f1; background-color: #0f172a; color: white; }
+        .grid-indicator { background-image: linear-gradient(to right, rgba(99, 102, 241, 0.05) 1px, transparent 1px); background-size: calc(100% / 12) 100%; }
+    </style>
+</head>
+<body class="bg-background font-body-md text-on-background antialiased flex">
+<!-- SideNavBar Anchor -->
+<aside class="fixed left-0 top-0 h-screen w-[260px] z-50 bg-slate-950 flex flex-col border-r border-slate-800">
+<div class="p-6">
+<h1 class="text-white font-black tracking-tight text-xl">CoreHR</h1>
+<p class="text-slate-400 text-xs mt-1">Enterprise Portal</p>
+</div>
+<nav class="flex-1 overflow-y-auto mt-4">
+<a class="group flex items-center gap-3 bg-slate-900 text-white border-l-4 border-indigo-500 py-3 px-6 cursor-pointer" href="#">
+<span class="material-symbols-outlined" data-icon="dashboard">dashboard</span>
+<span class="font-manrope text-sm font-medium">Dashboard</span>
+</a>
+<a class="group flex items-center gap-3 text-slate-400 hover:text-slate-100 py-3 px-6 cursor-pointer hover:bg-slate-900/50 transition-all" href="#">
+<span class="material-symbols-outlined" data-icon="group">group</span>
+<span class="font-manrope text-sm font-medium">Employees</span>
+</a>
+<a class="group flex items-center gap-3 text-slate-400 hover:text-slate-100 py-3 px-6 cursor-pointer hover:bg-slate-900/50 transition-all" href="#">
+<span class="material-symbols-outlined" data-icon="payments">payments</span>
+<span class="font-manrope text-sm font-medium">Payroll</span>
+</a>
+<a class="group flex items-center gap-3 text-slate-400 hover:text-slate-100 py-3 px-6 cursor-pointer hover:bg-slate-900/50 transition-all" href="#">
+<span class="material-symbols-outlined" data-icon="event_available">event_available</span>
+<span class="font-manrope text-sm font-medium">Attendance</span>
+</a>
+<a class="group flex items-center gap-3 text-slate-400 hover:text-slate-100 py-3 px-6 cursor-pointer hover:bg-slate-900/50 transition-all" href="#">
+<span class="material-symbols-outlined" data-icon="trending_up">trending_up</span>
+<span class="font-manrope text-sm font-medium">Performance</span>
+</a>
+<a class="group flex items-center gap-3 text-slate-400 hover:text-slate-100 py-3 px-6 cursor-pointer hover:bg-slate-900/50 transition-all" href="#">
+<span class="material-symbols-outlined" data-icon="medical_services">medical_services</span>
+<span class="font-manrope text-sm font-medium">Benefits</span>
+</a>
+</nav>
+<div class="p-4 border-t border-slate-800">
+<a class="group flex items-center gap-3 text-slate-400 hover:text-slate-100 py-2 px-2" href="#">
+<span class="material-symbols-outlined" data-icon="settings">settings</span>
+<span class="text-sm">Settings</span>
+</a>
+<a class="group flex items-center gap-3 text-slate-400 hover:text-slate-100 py-2 px-2" href="#">
+<span class="material-symbols-outlined" data-icon="contact_support">contact_support</span>
+<span class="text-sm">Support</span>
+</a>
+</div>
+</aside>
+<main class="ml-[260px] flex-1 min-h-screen">
+<!-- TopAppBar Anchor -->
+<header class="sticky top-0 z-40 bg-white border-b border-slate-200 shadow-sm flex items-center justify-between px-6 h-16 w-full">
+<div class="flex items-center gap-4">
+<div class="relative">
+<span class="material-symbols-outlined absolute left-3 top-1/2 -translate-y-1/2 text-slate-400" data-icon="search">search</span>
+<input class="pl-10 pr-4 py-2 border border-slate-200 bg-slate-50 text-sm focus:ring-2 focus:ring-secondary outline-none rounded-lg w-64" placeholder="Search resources..." type="text"/>
+</div>
+</div>
+<div class="flex items-center gap-4">
+<span class="material-symbols-outlined text-slate-600 cursor-pointer p-2 hover:bg-slate-50 rounded-full" data-icon="notifications">notifications</span>
+<span class="material-symbols-outlined text-slate-600 cursor-pointer p-2 hover:bg-slate-50 rounded-full" data-icon="settings">settings</span>
+<span class="material-symbols-outlined text-slate-600 cursor-pointer p-2 hover:bg-slate-50 rounded-full" data-icon="help">help</span>
+<div class="w-8 h-8 rounded-full bg-slate-200 overflow-hidden">
+<img alt="User profile photo" data-alt="professional portrait of a corporate executive in a light blue shirt with a friendly expression and neutral background" src="https://lh3.googleusercontent.com/aida-public/AB6AXuBGQY8W3xJ7daCrdA0JuaTno3QJ6OIRhNl9GEBHsnCsvHZPk6hYBQOph3cjRV2Z_X_TYnIcil7sbAenJNwdNmMQ3llTYTOeuRyXfwNBO9VAmIx_8SDmpoAiG9MEW18vTkiqjPeusbltjTjS-V7rrOI_NY1RJqviQmDXkHVDEuf262v9EacLgka5P-d9nUjtD44bHxPQ_B4LggHC5hKdCDUW4lju6bLUr-WDIBJWWRAgPMPC-BALjwDlQQgN6cGpCukLdzIoVBj97B4"/>
+</div>
+</div>
+</header>
+<div class="p-lg max-w-7xl mx-auto space-y-xl">
+<!-- Header Section -->
+<section>
+<h1 class="font-h1 text-h1 text-primary">Style Guide &amp; UI Kit</h1>
+<p class="font-body-lg text-body-lg text-on-surface-variant mt-base">Executive Precision Design System for HRIS Enterprise</p>
+</section>
+<!-- Typography Section -->
+<section class="bg-surface-container-lowest p-xl border border-outline-variant rounded-xl">
+<h2 class="font-h2 text-h2 mb-lg border-b border-outline-variant pb-base">1. Typography</h2>
+<div class="space-y-lg">
+<div class="flex items-baseline gap-lg border-b border-surface-variant pb-md">
+<span class="w-32 font-label-md text-label-md text-outline">H1 / 30px</span>
+<h1 class="font-h1 text-h1">The quick brown fox jumps over the lazy dog</h1>
+</div>
+<div class="flex items-baseline gap-lg border-b border-surface-variant pb-md">
+<span class="w-32 font-label-md text-label-md text-outline">H2 / 24px</span>
+<h2 class="font-h2 text-h2">The quick brown fox jumps over the lazy dog</h2>
+</div>
+<div class="flex items-baseline gap-lg border-b border-surface-variant pb-md">
+<span class="w-32 font-label-md text-label-md text-outline">H3 / 20px</span>
+<h3 class="font-h3 text-h3">The quick brown fox jumps over the lazy dog</h3>
+</div>
+<div class="flex items-baseline gap-lg border-b border-surface-variant pb-md">
+<span class="w-32 font-label-md text-label-md text-outline">Body LG / 16px</span>
+<p class="font-body-lg text-body-lg">The quick brown fox jumps over the lazy dog. Heavy, premium anchor font-bold with tight tracking.</p>
+</div>
+<div class="flex items-baseline gap-lg border-b border-surface-variant pb-md">
+<span class="w-32 font-label-md text-label-md text-outline">Body MD / 14px</span>
+<p class="font-body-md text-body-md">The quick brown fox jumps over the lazy dog. Standard interface text for reading comfort.</p>
+</div>
+<div class="flex items-baseline gap-lg border-b border-surface-variant pb-md">
+<span class="w-32 font-label-md text-label-md text-outline">Label MD / 12px</span>
+<p class="font-label-md text-label-md uppercase">The quick brown fox jumps over the lazy dog</p>
+</div>
+<div class="flex items-baseline gap-lg">
+<span class="w-32 font-label-md text-label-md text-outline">Data Mono</span>
+<p class="font-data-mono text-data-mono">1,234.56 USD — $9,000,000,000.00</p>
+</div>
+</div>
+</section>
+<!-- Color Palette -->
+<section class="bg-surface-container-lowest p-xl border border-outline-variant rounded-xl">
+<h2 class="font-h2 text-h2 mb-lg border-b border-outline-variant pb-base">2. Color Palette</h2>
+<div class="grid grid-cols-2 md:grid-cols-4 gap-lg">
+<div class="space-y-xs">
+<div class="h-20 w-full bg-secondary rounded-lg border border-outline-variant"></div>
+<p class="font-label-md text-label-md">Primary Indigo</p>
+<p class="font-data-mono text-body-sm text-outline">#4648D4</p>
+</div>
+<div class="space-y-xs">
+<div class="h-20 w-full bg-primary-container rounded-lg border border-outline-variant"></div>
+<p class="font-label-md text-label-md">Dark Slate</p>
+<p class="font-data-mono text-body-sm text-outline">#131B2E</p>
+</div>
+<div class="space-y-xs">
+<div class="h-20 w-full bg-error rounded-lg border border-outline-variant"></div>
+<p class="font-label-md text-label-md">Semantic Error</p>
+<p class="font-data-mono text-body-sm text-outline">#BA1A1A</p>
+</div>
+<div class="space-y-xs">
+<div class="h-20 w-full bg-[#10b981] rounded-lg border border-outline-variant"></div>
+<p class="font-label-md text-label-md">Semantic Success</p>
+<p class="font-data-mono text-body-sm text-outline">#10B981</p>
+</div>
+</div>
+</section>
+<!-- Buttons & Inputs -->
+<section class="grid grid-cols-1 lg:grid-cols-2 gap-lg">
+<div class="bg-surface-container-lowest p-xl border border-outline-variant rounded-xl">
+<h2 class="font-h2 text-h2 mb-lg border-b border-outline-variant pb-base">3. Buttons</h2>
+<div class="space-y-lg">
+<div class="flex flex-wrap items-center gap-md">
+<button class="bg-secondary text-on-secondary px-lg py-xs font-label-md rounded shadow-sm hover:opacity-90 active:scale-95 transition-all">PRIMARY</button>
+<button class="bg-surface-container-high text-secondary px-lg py-xs font-label-md rounded hover:bg-surface-container-highest transition-colors">SECONDARY</button>
+<button class="border border-outline text-on-surface px-lg py-xs font-label-md rounded hover:bg-surface-container-low transition-colors">OUTLINE</button>
+<button class="text-secondary px-lg py-xs font-label-md rounded hover:bg-secondary-container/10 transition-colors">GHOST</button>
+</div>
+<div class="flex flex-wrap items-center gap-md">
+<button class="bg-secondary/50 text-on-secondary cursor-not-allowed px-lg py-xs font-label-md rounded">DISABLED</button>
+<button class="bg-secondary text-on-secondary px-xs py-xs rounded-full flex items-center justify-center">
+<span class="material-symbols-outlined" data-icon="add">add</span>
+</button>
+</div>
+</div>
+</div>
+<div class="bg-surface-container-lowest p-xl border border-outline-variant rounded-xl">
+<h2 class="font-h2 text-h2 mb-lg border-b border-outline-variant pb-base">4. Form Fields</h2>
+<div class="space-y-md">
+<div>
+<label class="font-label-md text-label-md text-outline block mb-base">Full Name</label>
+<input class="w-full border-slate-200 focus:border-secondary focus:ring-1 focus:ring-secondary rounded p-xs text-sm" placeholder="John Doe" type="text"/>
+</div>
+<div class="grid grid-cols-2 gap-md">
+<div>
+<label class="font-label-md text-label-md text-outline block mb-base">Select Role</label>
+<select class="w-full border-slate-200 focus:border-secondary rounded p-xs text-sm">
+<option>Administrator</option>
+<option>Manager</option>
+</select>
+</div>
+<div class="flex items-end gap-md pb-xs">
+<label class="flex items-center gap-xs cursor-pointer">
+<input class="rounded border-slate-300 text-secondary focus:ring-secondary" type="checkbox"/>
+<span class="text-sm">Active</span>
+</label>
+<label class="relative inline-flex items-center cursor-pointer">
+<input checked="" class="sr-only peer" type="checkbox"/>
+<div class="w-9 h-5 bg-slate-200 peer-focus:outline-none rounded-full peer peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-4 after:w-4 after:transition-all peer-checked:bg-secondary"></div>
+<span class="ml-xs text-sm">Toggle</span>
+</label>
+</div>
+</div>
+</div>
+</div>
+</section>
+<!-- Visual Components & Navigation -->
+<section class="grid grid-cols-1 lg:grid-cols-3 gap-lg">
+<!-- Navigation -->
+<div class="bg-surface-container-lowest p-xl border border-outline-variant rounded-xl col-span-1 lg:col-span-2">
+<h2 class="font-h2 text-h2 mb-lg border-b border-outline-variant pb-base">5. Navigation &amp; Progress</h2>
+<div class="space-y-xl">
+<nav class="flex text-sm text-outline gap-base items-center">
+<span class="hover:text-secondary cursor-pointer">Home</span>
+<span class="material-symbols-outlined text-[16px]" data-icon="chevron_right">chevron_right</span>
+<span class="hover:text-secondary cursor-pointer">Management</span>
+<span class="material-symbols-outlined text-[16px]" data-icon="chevron_right">chevron_right</span>
+<span class="text-on-surface font-semibold">Employees</span>
+</nav>
+<div class="space-y-md">
+<div class="flex justify-between text-xs font-label-md">
+<span>Deployment Progress</span>
+<span>75%</span>
+</div>
+<div class="w-full bg-surface-container-highest h-2 rounded-full overflow-hidden">
+<div class="bg-secondary h-full w-3/4 rounded-full"></div>
+</div>
+<div class="w-full bg-surface-container-highest h-2 rounded-full overflow-hidden">
+<div class="bg-[#10b981] h-full w-1/2 rounded-full"></div>
+</div>
+</div>
+<div class="flex items-center gap-xs">
+<button class="p-xs border rounded hover:bg-slate-50"><span class="material-symbols-outlined" data-icon="first_page">first_page</span></button>
+<button class="px-md py-xs border rounded bg-secondary text-on-secondary">1</button>
+<button class="px-md py-xs border rounded hover:bg-slate-50">2</button>
+<button class="px-md py-xs border rounded hover:bg-slate-50">3</button>
+<button class="p-xs border rounded hover:bg-slate-50"><span class="material-symbols-outlined" data-icon="last_page">last_page</span></button>
+</div>
+</div>
+</div>
+<!-- Avatars & Icons -->
+<div class="bg-surface-container-lowest p-xl border border-outline-variant rounded-xl">
+<h2 class="font-h2 text-h2 mb-lg border-b border-outline-variant pb-base">Visual Assets</h2>
+<div class="space-y-lg">
+<div class="flex items-center gap-md">
+<div class="w-16 h-16 rounded-full ring-2 ring-secondary ring-offset-2 overflow-hidden bg-slate-200">
+<img alt="Large avatar" data-alt="close-up portrait of a smiling woman with glasses in a professional office environment, soft natural lighting" src="https://lh3.googleusercontent.com/aida-public/AB6AXuDrrkLRL3sZ9Op7Zppb-fjtIKMG2D4ZhcREOxmYhYkP0nb196aD4djBIbbf4HIzthZbfot_fm_E4Opejfpmup4rHbNg2xYEadfdnQFwLOamJPHixBrvtclS16tbN1hf8T-9bjpSb0-jRmyxwuZKyU0aBJxv4NOp4Tfp4RI807C85W26aXOQ74PlZy_1OMVsTtx0ty7JiUt-3S6SHQWOEUcQQMIWzjRZf0mLIwe9HBk6v4uFfgbrfdsvFTNeK6WIqTfLnJulWrpxoA4"/>
+</div>
+<div class="w-10 h-10 rounded-full overflow-hidden bg-slate-200">
+<img alt="Medium avatar" data-alt="professional headshot of a middle-aged man in a dark suit against a grey studio background" src="https://lh3.googleusercontent.com/aida-public/AB6AXuBMG5h0D24cqN_7bYrkAq21D6Mw12kjm_8Uqv1kpelhuPCRi48msk8CX8EbGTRZ_HibC31qSPPJ7hED_Ua1k07LaWd9iu4W_TEkZAeLLWPRcR6KzG6hS0wqrtP1FDn_GenAnfPdUZy8xnUkVs-cqO_tbYNnhI6vAk7t7aCcXK7rLdHsV_0hq9BmQEabrBVPSgG-a3_6avo8rDJ9lcgcH_-G14DuW3M-5oIVjXRX6swUOugUfW66RhMGMRnTHHtttsWdyQNHXzIqW54"/>
+</div>
+<div class="w-8 h-8 rounded-full overflow-hidden bg-slate-200">
+<img alt="Small avatar" data-alt="blurred minimalist profile silhouette against a warm amber gradient background" src="https://lh3.googleusercontent.com/aida-public/AB6AXuCndnrRfACxXc2iXZ3uvMAsUY-QipQjPm2sZpH8B9Zxsjosy5exeF5MzA4_AsxVIbvTLt09XYZ4gN1N3x_NYIVSbpyVp_SVBvcLK6viWkP2ZjxKfXCwsvJQCmOBvp9OF_92F8ZX30q6-_vEgZN-3h0Rwv7NvgS9kEP2kEhKFRmkQaJEEqtyWJnHHB7C10vn0udg_Q0UdN_LOq0u2lL0nXbIIBW6ln9qLd8JGNkKAH4jRZYl7-WRV-fxXjC4NUvF2KxbSfm6DUBQgwE"/>
+</div>
+</div>
+<div class="grid grid-cols-4 gap-md text-outline">
+<span class="material-symbols-outlined hover:text-secondary cursor-pointer" data-icon="settings">settings</span>
+<span class="material-symbols-outlined hover:text-secondary cursor-pointer" data-icon="person">person</span>
+<span class="material-symbols-outlined hover:text-secondary cursor-pointer" data-icon="mail">mail</span>
+<span class="material-symbols-outlined hover:text-secondary cursor-pointer" data-icon="calendar_month">calendar_month</span>
+<span class="material-symbols-outlined hover:text-secondary cursor-pointer" data-icon="analytics">analytics</span>
+<span class="material-symbols-outlined hover:text-secondary cursor-pointer" data-icon="logout">logout</span>
+<span class="material-symbols-outlined hover:text-secondary cursor-pointer" data-icon="cloud_upload">cloud_upload</span>
+<span class="material-symbols-outlined hover:text-secondary cursor-pointer" data-icon="verified">verified</span>
+</div>
+</div>
+</div>
+</section>
+<!-- Cards & Modals -->
+<section class="grid grid-cols-1 lg:grid-cols-2 gap-lg">
+<div class="bg-surface-container-lowest p-xl border border-outline-variant rounded-xl">
+<h2 class="font-h2 text-h2 mb-lg border-b border-outline-variant pb-base">6. Sample Card</h2>
+<div class="max-w-sm rounded-lg overflow-hidden bg-white border border-slate-200 shadow-sm">
+<img class="w-full h-48 object-cover" data-alt="ultra-modern glass-walled office boardroom overlooking a sunset cityscape with clean lines and premium furniture" src="https://lh3.googleusercontent.com/aida-public/AB6AXuBTxQ29MUw5fts9CCTjyl18UAOeHgJVf1bPsD2eZmi3L9hcH_JodGOIZ-n60x1s_REtB7FW7C09qkCMpfGo2toN552zbDlIpNQMsDqeoOXy64xyVwYyO_CiKQ3flflt1eCIbgd1epr4_6dp2gP2hFGJAOkXJCIUZLgsUxAU_mfJOBFyBWIViS9V4eFKZadnEKafD2pDeRSOZkqNIIBqoawiVNu488NYnP9cDKdBC4rFyyChKP9hS_tFFs7BqS27NCcyliIH4rb1Z-M"/>
+<div class="p-md space-y-xs">
+<h3 class="font-h3 text-h3 text-primary">Strategic Growth Plan</h3>
+<p class="text-sm text-on-surface-variant">Annual roadmap for scaling enterprise human resources across global departments.</p>
+<button class="mt-md text-secondary font-semibold text-sm flex items-center gap-xs">
+                                View Details <span class="material-symbols-outlined text-[16px]" data-icon="arrow_forward">arrow_forward</span>
+</button>
+</div>
+</div>
+</div>
+<div class="bg-surface-container-lowest p-xl border border-outline-variant rounded-xl relative overflow-hidden">
+<h2 class="font-h2 text-h2 mb-lg border-b border-outline-variant pb-base">7. Modal Preview</h2>
+<div class="bg-slate-900/10 absolute inset-0 flex items-center justify-center p-md">
+<div class="bg-white rounded-xl shadow-xl w-full max-w-sm p-lg border border-slate-200">
+<div class="flex items-center gap-md mb-md">
+<div class="bg-error-container p-xs rounded-full">
+<span class="material-symbols-outlined text-error" data-icon="warning">warning</span>
+</div>
+<h3 class="font-h3 text-h3">Confirm Deletion</h3>
+</div>
+<p class="text-sm text-on-surface-variant mb-xl">Are you sure you want to remove this employee record? This action cannot be undone.</p>
+<div class="flex justify-end gap-md">
+<button class="px-md py-xs text-sm font-semibold hover:bg-slate-50 rounded">Cancel</button>
+<button class="px-md py-xs bg-error text-white text-sm font-semibold rounded">Delete Record</button>
+</div>
+</div>
+</div>
+</div>
+</section>
+<!-- Grid & Spacing -->
+<section class="bg-surface-container-lowest p-xl border border-outline-variant rounded-xl">
+<h2 class="font-h2 text-h2 mb-lg border-b border-outline-variant pb-base">8. Grid &amp; Spacing</h2>
+<div class="space-y-xl">
+<div class="grid-indicator h-12 rounded border border-secondary/20 flex gap-0 px-base">
+<div class="flex-1 bg-secondary/5 border-x border-secondary/10"></div>
+<div class="flex-1 bg-secondary/5 border-x border-secondary/10"></div>
+<div class="flex-1 bg-secondary/5 border-x border-secondary/10"></div>
+<div class="flex-1 bg-secondary/5 border-x border-secondary/10"></div>
+<div class="flex-1 bg-secondary/5 border-x border-secondary/10"></div>
+<div class="flex-1 bg-secondary/5 border-x border-secondary/10"></div>
+<div class="flex-1 bg-secondary/5 border-x border-secondary/10"></div>
+<div class="flex-1 bg-secondary/5 border-x border-secondary/10"></div>
+<div class="flex-1 bg-secondary/5 border-x border-secondary/10"></div>
+<div class="flex-1 bg-secondary/5 border-x border-secondary/10"></div>
+<div class="flex-1 bg-secondary/5 border-x border-secondary/10"></div>
+<div class="flex-1 bg-secondary/5 border-x border-secondary/10"></div>
+</div>
+<p class="text-xs font-label-md text-outline">12-COLUMN FLUID GRID SYSTEM</p>
+<div class="flex flex-wrap items-end gap-xl">
+<div class="text-center">
+<div class="w-1 h-4 bg-secondary mx-auto mb-xs"></div>
+<p class="font-data-mono text-[10px]">4px (base)</p>
+</div>
+<div class="text-center">
+<div class="w-2 h-8 bg-secondary mx-auto mb-xs"></div>
+<p class="font-data-mono text-[10px]">8px (xs)</p>
+</div>
+<div class="text-center">
+<div class="w-3 h-12 bg-secondary mx-auto mb-xs"></div>
+<p class="font-data-mono text-[10px]">12px (sm)</p>
+</div>
+<div class="text-center">
+<div class="w-4 h-16 bg-secondary mx-auto mb-xs"></div>
+<p class="font-data-mono text-[10px]">16px (md)</p>
+</div>
+<div class="text-center">
+<div class="w-6 h-20 bg-secondary mx-auto mb-xs"></div>
+<p class="font-data-mono text-[10px]">24px (lg)</p>
+</div>
+<div class="text-center">
+<div class="w-8 h-24 bg-secondary mx-auto mb-xs"></div>
+<p class="font-data-mono text-[10px]">32px (xl)</p>
+</div>
+</div>
+</div>
+</section>
+</div>
+<footer class="mt-2xl p-lg border-t border-outline-variant text-center bg-white">
+<p class="text-sm text-outline">© 2024 CoreHR Enterprise Design System. All rights reserved.</p>
+</footer>
+</main>
+</body></html>

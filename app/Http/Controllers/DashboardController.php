@@ -21,6 +21,10 @@ class DashboardController extends Controller
 
         $todayAttendance = $attendances; // Send both names for compatibility
 
-        return view('dashboard', compact('activeAnnouncements', 'attendances', 'todayAttendance'));
+        return \Inertia\Inertia::render('Dashboard', [
+            'activeAnnouncements' => $activeAnnouncements,
+            'attendances' => $attendances,
+            'todayAttendance' => $todayAttendance
+        ]);
     }
 }

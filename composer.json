@@ -11,6 +11,7 @@
     "require": {
         "php": "^8.3",
         "barryvdh/laravel-dompdf": "^3.1",
+        "inertiajs/inertia-laravel": "^3.0",
         "intervention/image": "^3.6",
         "laravel/framework": "^13.0",
         "laravel/octane": "^2.17",
@@ -19,7 +20,8 @@
         "predis/predis": "^2.2",
         "spatie/laravel-image-optimizer": "^1.8",
         "spiral/roadrunner-cli": "^2.7",
-        "spiral/roadrunner-http": "^4.1"
+        "spiral/roadrunner-http": "^4.1",
+        "tightenco/ziggy": "^2.6"
     },
     "require-dev": {
         "fakerphp/faker": "^1.23",
@@ -49,6 +51,14 @@
             "@php artisan key:generate",
             "@php artisan migrate --force",
             "npm install --ignore-scripts",
+            "npm run build"
+        ],
+        "demo:prepare": [
+            "@php -r \"file_exists('database/database.sqlite') || touch('database/database.sqlite');\"",
+            "@php -r \"file_exists('.env') || copy('.env.example', '.env');\"",
+            "@php artisan key:generate --ansi",
+            "@php artisan migrate:fresh --seed --force",
+            "@php artisan storage:link",
             "npm run build"
         ],
         "dev": [

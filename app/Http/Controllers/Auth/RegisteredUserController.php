@@ -5,6 +5,7 @@ namespace App\Http\Controllers\Auth;
 use App\Http\Controllers\Controller;
 use App\Models\User;
 use App\Models\Department;
+use App\Models\Position;
 use App\Models\WorkShift;
 use Illuminate\Auth\Events\Registered;
 use Illuminate\Http\RedirectResponse;
@@ -20,22 +21,17 @@ class RegisteredUserController extends Controller
     /**
      * Display the registration view.
      */
-    public function create(): View
+    public function create()
     {
         $departments = Department::orderBy('name')->get();
-        $positions = [
-            'Manager',
-            'Supervisor',
-            'Staff IT',
-            'Staff HRD',
-            'Staff Finance',
-            'Staff Marketing',
-            'Admin',
-            'Security',
-            'Driver',
-            'Office Boy'
-        ];
-        return view('auth.register', compact('departments', 'positions'));
+        $positions = Position::query()
+            ->where('is_active', true)
+            ->orderBy('name')
+            ->get(['id', 'name']);
+        return \Inertia\Inertia::render('Auth/Register', [
+            'departments' => $departments,
+            'positions' => $positions
+        ]);
     }
 
     /**
@@ -48,10 +44,12 @@ class RegisteredUserController extends Controller
         $request->validate([
             'name' => ['required', 'string', 'max:255'],
             'email' => ['required', 'string', 'lowercase', 'email', 'max:255', 'unique:'.User::class],
-            'position' => ['required', 'string', 'max:100'],
+            'position_id' => ['required', 'exists:positions,id'],
             'department_id' => ['required', 'exists:departments,id'],
             'password' => ['required', 'confirmed', Rules\Password::defaults()],
             'face_data' => ['required', 'string'], // base64 string
+            'face_descriptor' => ['required', 'array', 'size:128'],
+            'face_descriptor.*' => ['numeric'],
         ]);
 
         $imagePath = null;
@@ -68,11 +66,12 @@ class RegisteredUserController extends Controller
         $user = User::create([
             'name' => $request->name,
             'email' => $request->email,
-            'position' => $request->position,
+            'position_id' => $request->position_id,
             'department_id' => $request->department_id,
             'work_shift_id' => WorkShift::where('is_default', true)->first()?->id,
             'password' => Hash::make($request->password),
             'face_reference_path' => $imagePath,
+            'face_descriptor' => $request->face_descriptor,
         ]);
 
         event(new Registered($user));

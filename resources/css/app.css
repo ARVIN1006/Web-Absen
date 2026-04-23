@@ -1,3 +1,146 @@
+@import url("https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Manrope:wght@600;700;800&display=swap");
+
 @tailwind base;
 @tailwind components;
 @tailwind utilities;
+
+:root {
+    --font-heading: "Manrope", sans-serif;
+    --font-body: "Inter", sans-serif;
+    --font-mono: "Inter", monospace;
+    --bg-body: #f8f9ff;
+    --bg-subtle: #eef4ff;
+    --card-bg: #ffffff;
+    --card-muted: #eef4ff;
+    --sidebar-bg: #020817;
+    --sidebar-surface: #0f172a;
+    --primary-color: #4648d4;
+    --primary-strong: #6063ee;
+    --text-main: #0d1c2d;
+    --text-muted: #5f6b7a;
+    --text-soft: #76859b;
+    --text-on-dark: #f8fafc;
+    --text-dark-muted: #94a3b8;
+    --border-line: #dbe4f0;
+    --border-strong: #c6d3e6;
+    --success-color: #0f9f6e;
+    --warning-color: #d97706;
+    --danger-color: #ba1a1a;
+    --shadow-card: 0 4px 6px -1px rgba(15, 23, 42, 0.05);
+    --shadow-pop: 0 10px 15px -3px rgba(15, 23, 42, 0.1);
+    --hover-bg: rgba(70, 72, 212, 0.08);
+}
+
+html {
+    font-family: var(--font-body);
+    background: var(--bg-body);
+}
+
+body {
+    color: var(--text-main);
+    background:
+        radial-gradient(circle at top right, rgba(96, 99, 238, 0.08), transparent 24%),
+        linear-gradient(180deg, #f8f9ff 0%, #eef4ff 100%);
+    min-height: 100vh;
+}
+
+.font-heading {
+    font-family: var(--font-heading);
+}
+
+.font-data {
+    font-family: var(--font-mono);
+    font-variant-numeric: tabular-nums;
+}
+
+@layer components {
+    .ui-card {
+        @apply rounded-xl border bg-white;
+        border-color: var(--border-line);
+        box-shadow: var(--shadow-card);
+    }
+
+    .ui-card-muted {
+        @apply rounded-xl border;
+        background: var(--card-muted);
+        border-color: var(--border-line);
+    }
+
+    .ui-section-title {
+        @apply text-xs font-semibold uppercase tracking-[0.18em];
+        color: var(--text-soft);
+    }
+
+    .ui-button-primary {
+        @apply inline-flex items-center justify-center rounded-md px-4 py-2.5 text-sm font-semibold text-white transition;
+        background: var(--primary-color);
+    }
+
+    .ui-button-primary:hover {
+        background: var(--primary-strong);
+    }
+
+    .ui-button-secondary {
+        @apply inline-flex items-center justify-center rounded-md border px-4 py-2.5 text-sm font-semibold transition;
+        border-color: var(--border-strong);
+        color: var(--text-main);
+        background: #ffffff;
+    }
+
+    .ui-input {
+        @apply w-full rounded-md border bg-white px-3 py-2.5 text-sm outline-none transition;
+        border-color: var(--border-strong);
+        color: var(--text-main);
+    }
+
+    .ui-input:focus {
+        border-color: var(--primary-color);
+        box-shadow: 0 0 0 3px rgba(70, 72, 212, 0.12);
+    }
+
+    .ui-badge {
+        @apply inline-flex items-center rounded-full px-2.5 py-1 text-[11px] font-semibold uppercase tracking-[0.08em];
+    }
+}
+
+@layer utilities {
+    .glass {
+        @apply ui-card;
+    }
+
+    .mobile-page {
+        @apply mx-auto w-full max-w-7xl px-4 py-4 sm:px-6 sm:py-6;
+    }
+
+    .mobile-stack {
+        @apply flex flex-col gap-3;
+    }
+
+    .mobile-card-list {
+        @apply grid grid-cols-1 gap-4;
+    }
+}
+
+/* Sidebar scrollbar polish (scoped, avoids affecting main content). */
+.sidebar-scroll {
+    scrollbar-width: thin; /* Firefox */
+    scrollbar-color: rgba(148, 163, 184, 0.38) rgba(2, 8, 23, 0.35); /* thumb track */
+}
+
+.sidebar-scroll::-webkit-scrollbar {
+    width: 10px;
+}
+
+.sidebar-scroll::-webkit-scrollbar-track {
+    background: rgba(2, 8, 23, 0.35);
+}
+
+.sidebar-scroll::-webkit-scrollbar-thumb {
+    background: rgba(148, 163, 184, 0.32);
+    border-radius: 999px;
+    border: 2px solid rgba(2, 8, 23, 0.35);
+}
+
+.sidebar-scroll::-webkit-scrollbar-thumb:hover {
+    background: rgba(148, 163, 184, 0.48);
+}

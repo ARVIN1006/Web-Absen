@@ -1,103 +1,49 @@
-# Sistem Absensi Wajah 
+# HRIS Face Attendance Demo
 
-Aplikasi presensi (absensi) modern berbasis **Pengenalan Wajah Berbasis AI (Face Recognition)** dan **Geo-Location**. aplikasi ini menjamin keaslian data absensi karyawan dan mencegah kecurangan.
+Aplikasi HRIS berbasis Laravel + Inertia React dengan fokus pada presensi wajah, geofence kantor, employee self service, approval, payroll, audit trail, dan notifikasi. Paket ini juga sudah disiapkan untuk kebutuhan demo client agar bisa dibawa presentasi di mana saja.
 
-## 🌟 Fitur Utama
+## Fitur Utama
 
-- **Pendaftaran Biometrik Wajah**: Semua karyawan diwajibkan mendaftar dengan memindai foto wajah secara _real-time_ via web-camera untuk disimpan sebagai _Master Data_.
-- **Validasi Absensi Berbasis AI**: Karyawan hanya bisa *Check-In* jika wajahnya cocok dengan foto rujukan di sistem (Didukung oleh library `face-api.js` komputasi AI dilakukan secara mandiri di sisi-klien (*browser* HP/Laptop pengguna) agar server bebas dari antrean pemrosesan berat).
-- **Desain UI/UX Ppremium**: Antarmuka korporat profesional yang dilengkapi dukungan *Light Mode* dan *Dark Mode*, responsif pada seluruh ukuran layar.
-- **Lapisan Keamanan Hosting**: Modifikasi sistematis `.htaccess` yang menghalangi pencuri untuk mengakses konfigurasi `.env` dan direktori vital Laravel pada lingkungan asrama / *Shared Hosting*.
+- Presensi berbasis wajah dan lokasi kantor
+- Master data HRIS: cabang, departemen, posisi, tipe karyawan, shift, hari libur
+- Employee self service: cuti, reimbursement, slip gaji, profil, direktori
+- Approval center untuk cuti, reimbursement, dan koreksi absensi
+- Payroll dan komponen payroll
+- Audit trail dan notification center
+- UI mobile-first untuk kebutuhan supervisor dan employee
 
-## 🛠 Tech Stack (Teknologi)
+## Tech Stack
 
-- **Backend**: Laravel 11 (PHP 8.2+) / MySQL 8+
-- **Frontend**: Blade Templating, Vanilla CSS
-- **Kecerdasan Buatan**: Face-api.js Framework (via CDN)
+- Backend: Laravel 13, PHP 8.3
+- Frontend: Inertia React, Vite, Tailwind CSS
+- Database default demo: SQLite
 
----
+## Quick Start
 
-## 🚀 Panduan Instalasi Lokal (Laragon / XAMPP)
+```bash
+composer install
+npm install
+composer demo:prepare
+php artisan serve
+```
 
-1. **Jalankan Instalasi Ekstensi / Dependensi:**
-   ```bash
-   composer install
-   npm install
-   ```
+Login demo:
 
-2. **Pengaturan `.env`:**
-   Gandakan file `.env.example` ubah namanya menjadi `.env`, lalu buat *App Key* baru Anda melalui terminal:
-   ```bash
-   php artisan key:generate
-   ```
-   **Catatan:** Sesuaikan `DB_DATABASE`, `DB_USERNAME`, dan `DB_PASSWORD` dengan pengaturan MySQL lokal Anda.
+- Admin: `admin@gmail.com` / `password`
+- Employee: `test@gmail.com` / `password`
 
-3. **Migrasi Struktur Database (Penting!):**
-   Eksekusi perintah di bawah ini agar struktur tabel tercetak ke database MySQL Anda:
-   ```bash
-   php artisan migrate
-   ```
+## Demo Mode
 
-4. **Sistem Penautan Foto (Storage Link):**
-   Aplikasi menaruh foto biometrik ke wilayah rahasia (`storage/app/public/...`), maka Anda harus membuat lorong akses rahasia tersebut agar bisa diakses oleh Face API dengan mengetik:
-   ```bash
-   php artisan storage:link
-   ```
+File `.env.example` sudah berisi mode presentasi:
 
-5. **Kompilasi Aset Antarmuka:**
-   Tarik file-file desain UI Anda dan manpatkan (*compile*) menjadi bentuk jadi siap-pakai minimalis untuk mesin produksi (hosting):
-   ```bash
-   npm run build
-   ```
+- `DEMO_MODE=true`
+- `DEMO_BYPASS_FACE_VERIFICATION=true`
+- `DEMO_BYPASS_GEOFENCE=true`
 
-## ☁️ Panduan Publikasi ke Shared Hosting (Hostinger)
+Dengan konfigurasi ini, demo presensi tetap bisa dilakukan dari lokasi mana saja tanpa tergantung GPS kantor asli atau data wajah final. Untuk simulasi operasional normal, ubah flag tersebut ke `false`.
 
-Bagi pengguna Hostinger / Shared Hosting lain tanpa kebebasan mengganti *Document Root*. Apabila semua jeroan folder `public/` dilepaskan bebas di `public_html/`:
+## Dokumen Pendukung
 
-1. **Memberi Arah Baru Pada Laravel (`index.php`)**
-   Carilah tempat tertulisnya:
-   ```php
-   $app = require_once __DIR__.'/bootstrap/app.php';
-   ```
-   Tepat di bawahnya sisipkan komando per-rute-an spesifik berikut:
-   ```php
-   $app->usePublicPath(__DIR__);
-   ```
-
-2. **Kompilasi Folder `build`:**
-   Jangan lupa Anda harus menyeret / meng-upload _folder_ hasil `build` (**Point Panduan Lokal ke-5**) ke `public_html/` sebagai penopang *stylesheet*.
-
-3. **Proteksi File Rahasia (`.htaccess` WAJIB):**
-   Timpa file `.htaccess` terdalam di root (tempat `.env` bernaung bersama *public_html*) dengan:
-
-   ```apache
-   <IfModule mod_rewrite.c>
-       Options -Indexes
-       RewriteEngine On
-
-       # Proteksi file krusial dari maling
-       <FilesMatch "^\.env|composer\.json|package\.json|\.gitignore">
-           Order allow,deny
-           Deny from all
-       </FilesMatch>
-
-       # Kunci laci arsip utama Laravel agar tidak bocor
-       RedirectMatch 404 ^/(app|bootstrap|config|database|resources|routes|storage|tests|vendor)/
-
-       # Pengalir arus HTTP biasa menuju file pintu gerbang index.php
-       RewriteCond %{HTTP:Authorization} .
-       RewriteRule .* - [E=HTTP_AUTHORIZATION:%{HTTP:Authorization}]
-       RewriteCond %{REQUEST_FILENAME} !-d
-       RewriteCond %{REQUEST_FILENAME} !-f
-       RewriteRule ^ index.php [L]
-   </IfModule>
-   ```
-
-4. **Penyegaran Sistem Internal via SSH:**
-   Masuklah ke SSH/Terminal Hosting Anda:
-   ```bash
-   php artisan config:clear
-   php artisan cache:clear
-   php artisan storage:link
-   ```
-
+- Demo runbook: [DEMO_PRESENTATION.md](DEMO_PRESENTATION.md)
+- Panduan pengguna: [TUTORIAL_PENGGUNAAN.md](TUTORIAL_PENGGUNAAN.md)
+- Catatan workflow database: [database_schema_workflow.md](database_schema_workflow.md)

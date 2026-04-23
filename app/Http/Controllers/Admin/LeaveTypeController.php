@@ -11,35 +11,55 @@ class LeaveTypeController extends Controller
     public function index()
     {
         $leaveTypes = LeaveType::latest()->get();
-        return view('admin.leave-types.index', compact('leaveTypes'));
+        return \Inertia\Inertia::render('Admin/LeaveTypes', [
+            'leaveTypes' => $leaveTypes
+        ]);
     }
 
     public function store(Request $request)
     {
-        $request->validate([
+        $validated = $request->validate([
             'name' => 'required|string|max:255',
+            'code' => 'required|string|max:50|unique:leave_types,code',
             'max_days_per_year' => 'required|integer|min:0',
+            'is_paid' => 'boolean',
             'requires_attachment' => 'boolean',
+            'requires_balance' => 'boolean',
             'description' => 'nullable|string',
             'is_active' => 'boolean',
         ]);
 
-        LeaveType::create($request->all());
+        LeaveType::create([
+            ...$validated,
+            'is_paid' => $request->boolean('is_paid'),
+            'requires_attachment' => $request->boolean('requires_attachment'),
+            'requires_balance' => $request->boolean('requires_balance'),
+            'is_active' => $request->boolean('is_active', true),
+        ]);
 
         return redirect()->route('admin.leave-types.index')->with('success', 'Tipe cuti berhasil ditambahkan.');
     }
 
     public function update(Request $request, LeaveType $leaveType)
     {
-        $request->validate([
+        $validated = $request->validate([
             'name' => 'required|string|max:255',
+            'code' => 'required|string|max:50|unique:leave_types,code,' . $leaveType->id,
             'max_days_per_year' => 'required|integer|min:0',
+            'is_paid' => 'boolean',
             'requires_attachment' => 'boolean',
+            'requires_balance' => 'boolean',
             'description' => 'nullable|string',
             'is_active' => 'boolean',
         ]);
 
-        $leaveType->update($request->all());
+        $leaveType->update([
+            ...$validated,
+            'is_paid' => $request->boolean('is_paid'),
+            'requires_attachment' => $request->boolean('requires_attachment'),
+            'requires_balance' => $request->boolean('requires_balance'),
+            'is_active' => $request->boolean('is_active', true),
+        ]);
 
         return redirect()->route('admin.leave-types.index')->with('success', 'Tipe cuti berhasil diupdate.');
     }

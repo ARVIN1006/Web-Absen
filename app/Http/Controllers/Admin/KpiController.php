@@ -13,7 +13,10 @@ class KpiController extends Controller
     {
         $kpis = KpiScore::with('user')->latest()->get();
         $employees = User::where('role', 'employee')->get();
-        return view('admin.kpi.index', compact('kpis', 'employees'));
+        return \Inertia\Inertia::render('Admin/Kpi', [
+            'kpis' => $kpis,
+            'employees' => $employees
+        ]);
     }
 
     public function store(Request $request)

@@ -11,7 +11,7 @@ class ReportController extends Controller
 {
     public function laborCost(Request $request)
     {
-        $year = $request->get('year', now()->year);
+        $year = $request->input('year', now()->year);
 
         $monthlyCosts = Payroll::select(
                 'month',
@@ -25,7 +25,10 @@ class ReportController extends Controller
             ->orderBy('month')
             ->get();
 
-        return view('admin.reports.labor-cost', compact('monthlyCosts', 'year'));
+        return \Inertia\Inertia::render('Admin/Reports/LaborCost', [
+            'monthlyCosts' => $monthlyCosts,
+            'year' => $year
+        ]);
     }
 
     public function performanceHeatmap()
@@ -55,6 +58,8 @@ class ReportController extends Controller
             ];
         }
 
-        return view('admin.reports.performance-heatmap', compact('heatData'));
+        return \Inertia\Inertia::render('Admin/Reports/PerformanceHeatmap', [
+            'heatData' => $heatData
+        ]);
     }
 }

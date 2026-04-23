@@ -3,14 +3,52 @@
 namespace Database\Seeders;
 
 use Illuminate\Database\Seeder;
+use App\Models\Branch;
 use App\Models\Department;
+use App\Models\EmploymentType;
 use App\Models\WorkShift;
 use App\Models\Position;
+use App\Models\LeaveType;
 
 class EmployeeMasterDataSeeder extends Seeder
 {
     public function run(): void
     {
+        $headOffice = Branch::updateOrCreate(
+            ['code' => 'JKT-HO'],
+            [
+                'name' => 'Jakarta Head Office',
+                'phone_number' => '021500100',
+                'email' => 'ho@demo-hris.local',
+                'address' => 'Jl. Jenderal Sudirman Kav. 88',
+                'city' => 'Jakarta Selatan',
+                'province' => 'DKI Jakarta',
+                'postal_code' => '12190',
+                'is_head_office' => true,
+                'is_active' => true,
+            ]
+        );
+
+        EmploymentType::updateOrCreate(
+            ['code' => 'PERM'],
+            [
+                'name' => 'Karyawan Tetap',
+                'category' => 'permanent',
+                'description' => 'Karyawan tetap penuh waktu',
+                'is_active' => true,
+            ]
+        );
+
+        EmploymentType::updateOrCreate(
+            ['code' => 'CONT'],
+            [
+                'name' => 'Karyawan Kontrak',
+                'category' => 'contract',
+                'description' => 'Karyawan kontrak dengan masa kerja tertentu',
+                'is_active' => true,
+            ]
+        );
+
         // 1. Seed Positions
         $positions = [
             ['name' => 'Manager', 'salary' => 15000000, 'overtime_rate' => 50000],
@@ -25,7 +63,16 @@ class EmployeeMasterDataSeeder extends Seeder
             ['name' => 'Cleaning Service', 'salary' => 4800000, 'overtime_rate' => 10000],
         ];
         foreach ($positions as $pos) {
-            \App\Models\Position::updateOrCreate(['name' => $pos['name']], $pos);
+            \App\Models\Position::updateOrCreate(
+                ['name' => $pos['name']],
+                [
+                    ...$pos,
+                    'code' => str($pos['name'])->upper()->replace(' ', '_')->toString(),
+                    'grade' => str_contains($pos['name'], 'Manager') ? 'M1' : 'S1',
+                    'allowance' => $pos['salary'] * 0.15,
+                    'is_active' => true,
+                ]
+            );
         }
 
         // 2. Seed Departments
@@ -37,7 +84,14 @@ class EmployeeMasterDataSeeder extends Seeder
             ['code' => 'MKT', 'name' => 'Marketing', 'description' => 'Department for marketing and sales'],
         ];
         foreach ($departments as $dept) {
-            Department::firstOrCreate(['code' => $dept['code']], $dept);
+            Department::updateOrCreate(
+                ['code' => $dept['code']],
+                [
+                    ...$dept,
+                    'branch_id' => $headOffice->id,
+                    'is_active' => true,
+                ]
+            );
         }
 
         // 3. Seed Work Shifts
@@ -47,7 +101,37 @@ class EmployeeMasterDataSeeder extends Seeder
             ['name' => 'Shift Malam', 'clock_in_time' => '22:00', 'clock_out_time' => '06:00', 'late_tolerance_minutes' => 15, 'is_default' => false],
         ];
         foreach ($shifts as $shift) {
-            WorkShift::firstOrCreate(['name' => $shift['name']], $shift);
+            WorkShift::updateOrCreate(
+                ['name' => $shift['name']],
+                [
+                    ...$shift,
+                    'branch_id' => $headOffice->id,
+                    'work_days' => ['monday', 'tuesday', 'wednesday', 'thursday', 'friday'],
+                    'break_start_time' => '12:00',
+                    'break_end_time' => '13:00',
+                ]
+            );
+        }
+
+        // 4. Seed Leave Types
+        $leaveTypes = [
+            ['name' => 'Cuti Tahunan', 'max_days_per_year' => 12, 'requires_attachment' => false, 'description' => 'Cuti tahunan untuk karyawan tetap'],
+            ['name' => 'Cuti Sakit', 'max_days_per_year' => 14, 'requires_attachment' => true, 'description' => 'Cuti sakit dengan surat keterangan dokter'],
+            ['name' => 'Cuti Melahirkan', 'max_days_per_year' => 90, 'requires_attachment' => true, 'description' => 'Cuti melahirkan untuk karyawan wanita'],
+            ['name' => 'Cuti Menikah', 'max_days_per_year' => 3, 'requires_attachment' => true, 'description' => 'Cuti untuk pernikahan karyawan'],
+            ['name' => 'Cuti Duka', 'max_days_per_year' => 3, 'requires_attachment' => false, 'description' => 'Cuti karena keluarga meninggal dunia'],
+        ];
+        foreach ($leaveTypes as $lt) {
+            LeaveType::updateOrCreate(
+                ['name' => $lt['name']],
+                [
+                    ...$lt,
+                    'code' => str($lt['name'])->upper()->replace(' ', '_')->toString(),
+                    'is_paid' => !str_contains($lt['name'], 'Duka'),
+                    'requires_balance' => !str_contains($lt['name'], 'Sakit'),
+                    'is_active' => true,
+                ]
+            );
         }
     }
 }

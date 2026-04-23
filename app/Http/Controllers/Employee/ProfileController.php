@@ -3,36 +3,98 @@
 namespace App\Http\Controllers\Employee;
 
 use App\Http\Controllers\Controller;
+use App\Models\AttendanceCorrection;
+use App\Models\LeaveBalance;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\Hash;
+use Inertia\Inertia;
 
 class ProfileController extends Controller
 {
     public function index()
     {
-        $user = Auth::user();
-        return view('employee.profile', compact('user'));
+        $user = Auth::user()->load([
+            'profile',
+            'position',
+            'department',
+            'branch',
+            'workShift',
+            'employmentType',
+            'leaveBalances.leaveType',
+            'attendanceCorrections' => fn ($query) => $query->latest()->limit(5),
+            'leaveRequests.leaveType' => fn ($query) => $query->latest()->limit(5),
+            'payrolls' => fn ($query) => $query->latest()->limit(3),
+        ]);
+
+        $todayAttendance = $user->attendances()->whereDate('created_at', today())->latest()->first();
+
+        return Inertia::render('Employee/Profile', [
+            'employee' => $user,
+            'workShift' => $user->workShift,
+            'todayAttendance' => $todayAttendance,
+            'leaveBalances' => $user->leaveBalances,
+            'attendanceCorrections' => $user->attendanceCorrections,
+            'recentLeaveRequests' => $user->leaveRequests,
+            'recentPayrolls' => $user->payrolls,
+        ]);
     }
 
     public function update(Request $request)
     {
         $user = Auth::user();
         
-        $request->validate([
-            'phone_number' => 'nullable|string|max:20',
-            'address' => 'nullable|string',
-            'gender' => 'nullable|in:male,female',
-            'birth_date' => 'nullable|date',
-            'password' => 'nullable|min:6|confirmed'
+        $validated = $request->validate([
+            'name' => ['required', 'string', 'max:255'],
+            'phone_number' => ['nullable', 'string', 'max:30'],
+            'address' => ['nullable', 'string', 'max:1000'],
+            'gender' => ['nullable', 'in:male,female'],
+            'birth_date' => ['nullable', 'date'],
+            'place_of_birth' => ['nullable', 'string', 'max:100'],
+            'personal_email' => ['nullable', 'email', 'max:255'],
+            'alternate_phone_number' => ['nullable', 'string', 'max:30'],
+            'current_address' => ['nullable', 'string', 'max:1000'],
+            'domicile_address' => ['nullable', 'string', 'max:1000'],
+            'marital_status' => ['nullable', 'string', 'max:50'],
+            'religion' => ['nullable', 'string', 'max:50'],
+            'nationality' => ['nullable', 'string', 'max:80'],
+            'bank_name' => ['nullable', 'string', 'max:100'],
+            'bank_account_number' => ['nullable', 'string', 'max:50'],
+            'bank_account_name' => ['nullable', 'string', 'max:100'],
+            'password' => ['nullable', 'min:6', 'confirmed'],
         ]);
 
-        $data = $request->only('phone_number', 'address', 'gender', 'birth_date');
-        
-        if ($request->filled('password')) {
-            $data['password'] = bcrypt($request->password);
+        $userData = [
+            'name' => $validated['name'],
+            'phone_number' => $validated['phone_number'] ?? null,
+            'address' => $validated['address'] ?? null,
+            'gender' => $validated['gender'] ?? null,
+            'birth_date' => $validated['birth_date'] ?? null,
+        ];
+
+        if (!empty($validated['password'])) {
+            $userData['password'] = Hash::make($validated['password']);
         }
 
-        $user->update($data);
+        $profileData = [
+            'phone_number' => $validated['phone_number'] ?? null,
+            'current_address' => $validated['current_address'] ?? ($validated['address'] ?? null),
+            'gender' => $validated['gender'] ?? null,
+            'birth_date' => $validated['birth_date'] ?? null,
+            'place_of_birth' => $validated['place_of_birth'] ?? null,
+            'personal_email' => $validated['personal_email'] ?? null,
+            'alternate_phone_number' => $validated['alternate_phone_number'] ?? null,
+            'domicile_address' => $validated['domicile_address'] ?? null,
+            'marital_status' => $validated['marital_status'] ?? null,
+            'religion' => $validated['religion'] ?? null,
+            'nationality' => $validated['nationality'] ?? null,
+            'bank_name' => $validated['bank_name'] ?? null,
+            'bank_account_number' => $validated['bank_account_number'] ?? null,
+            'bank_account_name' => $validated['bank_account_name'] ?? null,
+        ];
+
+        $user->update($userData);
+        $user->profile()->updateOrCreate(['user_id' => $user->id], $profileData);
 
         return redirect()->back()->with('success', 'Profil berhasil diperbarui.');
     }
