@@ -1,5 +1,5 @@
 import AuthenticatedLayout from "@/Layouts/AuthenticatedLayout";
-import { Head, Link, useForm } from "@inertiajs/react";
+import { Head, Link, router, useForm } from "@inertiajs/react";
 
 function StatCard({ label, value }) {
     return (
@@ -10,8 +10,58 @@ function StatCard({ label, value }) {
     );
 }
 
-export default function Attendances({ attendances, todayStats, flash, pendingCorrections }) {
+function Pagination({ links }) {
+    if (!links || links.length <= 3) return null;
+
+    return (
+        <nav className="flex flex-wrap items-center justify-end gap-2 border-t border-[var(--border-line)] px-6 py-4">
+            {links.map((link, index) => (
+                <Link
+                    key={`${link.label}-${index}`}
+                    href={link.url || "#"}
+                    preserveScroll
+                    className={`rounded-md border px-3 py-2 text-sm font-semibold ${
+                        link.active
+                            ? "border-[var(--primary-color)] bg-[var(--primary-color)] text-white"
+                            : "border-[var(--border-line)] bg-white text-[var(--text-main)] hover:bg-[var(--bg-subtle)]"
+                    } ${!link.url ? "pointer-events-none opacity-40" : ""}`}
+                    dangerouslySetInnerHTML={{ __html: link.label }}
+                />
+            ))}
+        </nav>
+    );
+}
+
+export default function Attendances({ attendances, todayStats, flash, pendingCorrections, filters = {} }) {
     const { delete: destroy } = useForm();
+    const filterForm = useForm({
+        start_date: filters.start_date || "",
+        end_date: filters.end_date || "",
+        search: filters.search || "",
+    });
+
+    const submitFilters = (event) => {
+        event.preventDefault();
+        router.get(route("admin.attendances.index"), filterForm.data, {
+            preserveState: true,
+            preserveScroll: true,
+        });
+    };
+
+    const resetFilters = () => {
+        filterForm.setData({ start_date: "", end_date: "", search: "" });
+        router.get(route("admin.attendances.index"), {}, { preserveScroll: true });
+    };
+
+    const exportUrl = (type) => {
+        const params = new URLSearchParams();
+        Object.entries(filterForm.data).forEach(([key, value]) => {
+            if (value) params.append(key, value);
+        });
+        const base = route(type === "pdf" ? "admin.export.pdf" : "admin.export.csv");
+        const query = params.toString();
+        return query ? `${base}?${query}` : base;
+    };
 
     return (
         <AuthenticatedLayout>
@@ -23,9 +73,17 @@ export default function Attendances({ attendances, todayStats, flash, pendingCor
                         <div className="ui-section-title">Attendance Monitor</div>
                         <h1 className="font-heading mt-3 text-3xl font-bold text-black">Rekap kehadiran dan validasi presensi</h1>
                     </div>
-                    <Link href={route("admin.attendance-corrections.index")} className="ui-button-secondary">
-                        Lihat Koreksi Absensi
-                    </Link>
+                    <div className="flex flex-wrap gap-3">
+                        <Link href={exportUrl("csv")} className="ui-button-secondary">
+                            Export CSV
+                        </Link>
+                        <Link href={exportUrl("pdf")} className="ui-button-secondary">
+                            Export PDF
+                        </Link>
+                        <Link href={route("admin.attendance-corrections.index")} className="ui-button-primary">
+                            Koreksi Absensi
+                        </Link>
+                    </div>
                 </div>
             </section>
 
@@ -38,6 +96,25 @@ export default function Attendances({ attendances, todayStats, flash, pendingCor
             </section>
 
             {flash?.success && <div className="mt-6 rounded-xl border border-emerald-200 bg-emerald-50 px-4 py-3 text-sm font-medium text-emerald-700">{flash.success}</div>}
+
+            <section className="ui-card mt-6 p-6">
+                <form onSubmit={submitFilters} className="grid gap-4 lg:grid-cols-[1fr_1fr_1.5fr_auto_auto] lg:items-end">
+                    <label className="block">
+                        <span className="mb-2 block text-sm font-semibold text-[var(--text-main)]">Mulai</span>
+                        <input type="date" value={filterForm.data.start_date} onChange={(event) => filterForm.setData("start_date", event.target.value)} className="ui-input" />
+                    </label>
+                    <label className="block">
+                        <span className="mb-2 block text-sm font-semibold text-[var(--text-main)]">Sampai</span>
+                        <input type="date" value={filterForm.data.end_date} onChange={(event) => filterForm.setData("end_date", event.target.value)} className="ui-input" />
+                    </label>
+                    <label className="block">
+                        <span className="mb-2 block text-sm font-semibold text-[var(--text-main)]">Nama karyawan</span>
+                        <input value={filterForm.data.search} onChange={(event) => filterForm.setData("search", event.target.value)} className="ui-input" placeholder="Cari nama karyawan" />
+                    </label>
+                    <button type="submit" className="ui-button-primary">Filter</button>
+                    <button type="button" onClick={resetFilters} className="ui-button-secondary">Reset</button>
+                </form>
+            </section>
 
             <section className="ui-card mt-6 overflow-hidden">
                 <div className="overflow-x-auto">
@@ -53,7 +130,13 @@ export default function Attendances({ attendances, todayStats, flash, pendingCor
                             </tr>
                         </thead>
                         <tbody className="divide-y divide-[var(--border-line)]">
-                            {attendances.data.map((attendance) => (
+                            {attendances.data.length === 0 ? (
+                                <tr>
+                                    <td colSpan="6" className="px-6 py-12 text-center text-sm text-[var(--text-muted)]">
+                                        Tidak ada data absensi untuk filter ini.
+                                    </td>
+                                </tr>
+                            ) : attendances.data.map((attendance) => (
                                 <tr key={attendance.id}>
                                     <td className="px-6 py-4">
                                         <div className="font-semibold text-[var(--text-main)]">{attendance.user?.name}</div>
@@ -80,7 +163,7 @@ export default function Attendances({ attendances, todayStats, flash, pendingCor
                                     </td>
                                     <td className="px-6 py-4 text-[var(--text-muted)]">
                                         <div>{attendance.location?.name || "-"}</div>
-                                        <div className="mt-1">{attendance.latitude}, {attendance.longitude}</div>
+                                        <div className="mt-1">{attendance.latitude || "-"}, {attendance.longitude || "-"}</div>
                                     </td>
                                     <td className="px-6 py-4">
                                         <div className="flex justify-end gap-2">
@@ -94,6 +177,7 @@ export default function Attendances({ attendances, todayStats, flash, pendingCor
                         </tbody>
                     </table>
                 </div>
+                <Pagination links={attendances.links} />
             </section>
         </AuthenticatedLayout>
     );

@@ -18,7 +18,7 @@ return new class extends Migration
             $table->decimal('bonus', 15, 2)->default(0);
             $table->decimal('deductions', 15, 2)->default(0);
             $table->decimal('net_salary', 15, 2);
-            $table->enum('status', ['draft', 'paid'])->default('draft');
+            $table->string('status', 30)->default('draft');
             $table->date('paid_at')->nullable();
             $table->timestamps();
         });

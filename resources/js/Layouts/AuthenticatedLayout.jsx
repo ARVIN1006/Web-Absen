@@ -376,8 +376,16 @@ export default function AuthenticatedLayout({ children }) {
                   {
                       label: "Approval Center",
                       href: route("admin.approvals"),
-                      active: route().current("admin.approvals"),
+                      active:
+                          route().current("admin.approvals") ||
+                          route().current("admin.reimbursements.*"),
                       icon: "M9 12l2 2 4-4m6 2A9 9 0 113 12a9 9 0 0118 0z",
+                  },
+                  {
+                      label: "KPI Karyawan",
+                      href: route("admin.kpi.index"),
+                      active: route().current("admin.kpi.*"),
+                      icon: "M11 3h2v18h-2V3zm-6 8h2v10H5V11zm12-5h2v15h-2V6z",
                   },
                   {
                       label: "Manajemen Payroll",
@@ -394,6 +402,12 @@ export default function AuthenticatedLayout({ children }) {
                           route().current("admin.reports.*") ||
                           route().current("admin.activity-logs.*"),
                       icon: "M7 12h3v7H7v-7zm7-8h3v15h-3V4zM14 10h3v9h-3v-9zM4 16h3v3H4v-3z",
+                  },
+                  {
+                      label: "Pengumuman",
+                      href: route("admin.announcements.index"),
+                      active: route().current("admin.announcements.*"),
+                      icon: "M15 17h5l-1.405-1.405A2.032 2.032 0 0118 14.158V11a6 6 0 10-12 0v3.159c0 .538-.214 1.055-.595 1.436L4 17h5m6 0v1a3 3 0 11-6 0v-1m6 0H9",
                   },
               ]
             : [];
@@ -412,6 +426,12 @@ export default function AuthenticatedLayout({ children }) {
                       href: route("admin.positions.index"),
                       active: route().current("admin.positions.*"),
                       icon: "M12 6v12m6-6H6",
+                  },
+                  {
+                      label: "Org Chart",
+                      href: route("admin.org-chart"),
+                      active: route().current("admin.org-chart"),
+                      icon: "M6 5h12v4H6V5zm-3 10h7v4H3v-4zm11 0h7v4h-7v-4zM12 9v3m-5 0h10",
                   },
                   {
                       label: "Cabang",
@@ -462,6 +482,12 @@ export default function AuthenticatedLayout({ children }) {
                       icon: "M9 12l2 2 4-4M12 22C6.477 22 2 17.523 2 12S6.477 2 12 2s10 4.477 10 10-4.477 10-10 10z",
                   },
                   {
+                      label: "Reimbursement",
+                      href: route("admin.reimbursements.index"),
+                      active: route().current("admin.reimbursements.*"),
+                      icon: "M9 14l2 2 4-4M7 4h10a2 2 0 012 2v12a2 2 0 01-2 2H7a2 2 0 01-2-2V6a2 2 0 012-2z",
+                  },
+                  {
                       label: "Komponen Payroll",
                       href: route("admin.payroll-components.index"),
                       active: route().current("admin.payroll-components.*"),
@@ -472,6 +498,18 @@ export default function AuthenticatedLayout({ children }) {
                       href: route("admin.activity-logs.index"),
                       active: route().current("admin.activity-logs.*"),
                       icon: "M9 17v-6h6v6m-8 4h10a2 2 0 002-2V7l-5-4-5 4v12a2 2 0 002 2zm3-10h4",
+                  },
+                  {
+                      label: "Labor Cost",
+                      href: route("admin.reports.labor-cost"),
+                      active: route().current("admin.reports.labor-cost"),
+                      icon: "M4 19h16M7 16V8m5 8V5m5 11v-6",
+                  },
+                  {
+                      label: "Pengumuman",
+                      href: route("admin.announcements.index"),
+                      active: route().current("admin.announcements.*"),
+                      icon: "M7 8h10M7 12h8m-8 4h6M5 4h14v16H5V4z",
                   },
               ]
             : [];

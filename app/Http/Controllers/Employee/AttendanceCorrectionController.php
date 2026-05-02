@@ -19,13 +19,19 @@ class AttendanceCorrectionController extends Controller
             'requested_check_in_at' => ['nullable', 'date'],
             'requested_check_out_at' => ['nullable', 'date'],
             'reason' => ['required', 'string'],
-            'attachment_path' => ['nullable', 'string', 'max:255'],
+            'attachment' => ['nullable', 'file', 'mimes:jpg,jpeg,png,pdf', 'max:4096'],
         ]);
 
         if (!empty($validated['attendance_id'])) {
             $attendance = Attendance::findOrFail($validated['attendance_id']);
             abort_unless($attendance->user_id === auth()->id(), 403);
         }
+
+        if ($request->hasFile('attachment')) {
+            $validated['attachment_path'] = $request->file('attachment')->store('attendance-corrections', 'public');
+        }
+
+        unset($validated['attachment']);
 
         $attendanceCorrection = AttendanceCorrection::create([
             ...$validated,

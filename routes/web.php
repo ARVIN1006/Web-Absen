@@ -123,6 +123,7 @@ Route::prefix('admin')->name('admin.')->middleware(['auth', 'admin'])->group(fun
     // Payrolls
     Route::get('payrolls', [\App\Http\Controllers\Admin\PayrollController::class, 'index'])->name('payrolls.index');
     Route::post('payrolls/generate', [\App\Http\Controllers\Admin\PayrollController::class, 'generate'])->name('payrolls.generate');
+    Route::patch('payrolls/{payroll}', [\App\Http\Controllers\Admin\PayrollController::class, 'update'])->name('payrolls.update');
     Route::patch('payrolls/{payroll}/status', [\App\Http\Controllers\Admin\PayrollController::class, 'updateStatus'])->name('payrolls.updateStatus');
     Route::resource('payroll-components', \App\Http\Controllers\Admin\PayrollComponentController::class)->except(['show', 'create', 'edit']);
 
@@ -134,6 +135,8 @@ Route::prefix('admin')->name('admin.')->middleware(['auth', 'admin'])->group(fun
     // Performance (KPI)
     Route::get('kpi', [\App\Http\Controllers\Admin\KpiController::class, 'index'])->name('kpi.index');
     Route::post('kpi', [\App\Http\Controllers\Admin\KpiController::class, 'store'])->name('kpi.store');
+    Route::put('kpi/{kpiScore}', [\App\Http\Controllers\Admin\KpiController::class, 'update'])->name('kpi.update');
+    Route::delete('kpi/{kpiScore}', [\App\Http\Controllers\Admin\KpiController::class, 'destroy'])->name('kpi.destroy');
 
     // Announcements
     Route::patch('announcements/{announcement}/toggle', [\App\Http\Controllers\Admin\AnnouncementController::class, 'toggle'])->name('announcements.toggle');

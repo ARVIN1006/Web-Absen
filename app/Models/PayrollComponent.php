@@ -11,6 +11,7 @@ class PayrollComponent extends Model
         'code',
         'type',
         'calculation_method',
+        'default_amount',
         'is_taxable',
         'is_active',
     ];
@@ -20,6 +21,7 @@ class PayrollComponent extends Model
         return [
             'is_taxable' => 'boolean',
             'is_active' => 'boolean',
+            'default_amount' => 'decimal:2',
         ];
     }
 

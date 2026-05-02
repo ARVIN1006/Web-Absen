@@ -199,6 +199,7 @@ return new class extends Migration
                 $table->string('code')->unique();
                 $table->string('type', 30);
                 $table->string('calculation_method', 30)->default('manual');
+                $table->decimal('default_amount', 15, 2)->default(0);
                 $table->boolean('is_taxable')->default(true);
                 $table->boolean('is_active')->default(true);
                 $table->timestamps();

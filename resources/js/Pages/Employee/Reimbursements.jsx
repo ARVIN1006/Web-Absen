@@ -20,12 +20,14 @@ export default function Reimbursements({ reimbursements, flash }) {
         const variants = {
             pending: "bg-yellow-500/10 text-yellow-500",
             approved: "bg-green-500/10 text-green-500",
+            paid: "bg-blue-500/10 text-blue-500",
             rejected: "bg-red-500/10 text-red-500",
         };
         const variant = variants[status] || variants.pending;
         const text = {
             pending: "MENUNGGU",
             approved: "DISETUJUI",
+            paid: "DIBAYAR",
             rejected: "DITOLAK",
         };
 
@@ -74,7 +76,7 @@ export default function Reimbursements({ reimbursements, flash }) {
 
                 {/* Tabs */}
                 <div className="flex gap-2 mb-6 overflow-x-auto pb-2">
-                    {["all", "pending", "approved", "rejected"].map((tab) => (
+                    {["all", "pending", "approved", "paid", "rejected"].map((tab) => (
                         <button
                             key={tab}
                             onClick={() => setActiveTab(tab)}

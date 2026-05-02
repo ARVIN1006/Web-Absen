@@ -1,5 +1,5 @@
 import AuthenticatedLayout from "@/Layouts/AuthenticatedLayout";
-import { Head } from "@inertiajs/react";
+import { Head, Link } from "@inertiajs/react";
 import { useState } from "react";
 
 export default function LaborCost({ monthlyCosts, year }) {
@@ -31,6 +31,7 @@ export default function LaborCost({ monthlyCosts, year }) {
                     </div>
                     <form className="flex gap-3">
                         <input
+                            name="year"
                             type="number"
                             value={filterYear}
                             onChange={(e) => setFilterYear(e.target.value)}
@@ -43,6 +44,9 @@ export default function LaborCost({ monthlyCosts, year }) {
                         >
                             Filter
                         </button>
+                        <Link href={route("admin.reports.performance-heatmap")} className="ui-button-secondary">
+                            Heatmap
+                        </Link>
                     </form>
                 </div>
 

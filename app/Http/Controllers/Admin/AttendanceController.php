@@ -11,7 +11,7 @@ class AttendanceController extends Controller
 {
     public function index(Request $request)
     {
-        $query = Attendance::with(['user.position', 'user.department'])->latest();
+        $query = Attendance::with(['user.position', 'user.department', 'location'])->latest();
 
         // Filtering
         if ($request->filled('start_date')) {
@@ -26,7 +26,7 @@ class AttendanceController extends Controller
             });
         }
 
-        $attendances = $query->paginate(20);
+        $attendances = $query->paginate(20)->withQueryString();
 
         // Stats for Today
         $todayStats = [
@@ -40,6 +40,7 @@ class AttendanceController extends Controller
             'attendances' => $attendances,
             'todayStats' => $todayStats,
             'pendingCorrections' => AttendanceCorrection::where('status', 'pending')->count(),
+            'filters' => $request->only(['start_date', 'end_date', 'search']),
         ]);
     }
 

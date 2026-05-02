@@ -10,6 +10,7 @@ export default function PayrollComponents({ components, flash }) {
         code: "",
         type: "earning",
         calculation_method: "manual",
+        default_amount: 0,
         is_taxable: true,
         is_active: true,
     });
@@ -19,6 +20,7 @@ export default function PayrollComponents({ components, flash }) {
         reset();
         setData("type", "earning");
         setData("calculation_method", "manual");
+        setData("default_amount", 0);
         setData("is_taxable", true);
         setData("is_active", true);
         setShowModal(true);
@@ -31,6 +33,7 @@ export default function PayrollComponents({ components, flash }) {
             code: component.code || "",
             type: component.type || "earning",
             calculation_method: component.calculation_method || "manual",
+            default_amount: component.default_amount || 0,
             is_taxable: component.is_taxable,
             is_active: component.is_active,
         });
@@ -90,6 +93,7 @@ export default function PayrollComponents({ components, flash }) {
                                     <td className="px-6 py-4 text-[var(--text-muted)]">
                                         <div>Type: {component.type}</div>
                                         <div className="mt-1">Method: {component.calculation_method}</div>
+                                        <div className="mt-1">Default: Rp {Number(component.default_amount || 0).toLocaleString("id-ID")}</div>
                                         <div className="mt-1">Taxable: {component.is_taxable ? "Yes" : "No"}</div>
                                     </td>
                                     <td className="px-6 py-4">
@@ -126,6 +130,7 @@ export default function PayrollComponents({ components, flash }) {
                                 <option value="manual">Manual</option>
                                 <option value="auto">Auto</option>
                             </select>
+                            <input type="number" min="0" value={data.default_amount} onChange={(e) => setData("default_amount", e.target.value)} className="ui-input" placeholder="Nominal default" />
                             <label className="flex items-center gap-2 rounded-lg border border-[var(--border-line)] px-4 py-3"><input type="checkbox" checked={data.is_taxable} onChange={(e) => setData("is_taxable", e.target.checked)} /> Taxable</label>
                             <label className="flex items-center gap-2 rounded-lg border border-[var(--border-line)] px-4 py-3"><input type="checkbox" checked={data.is_active} onChange={(e) => setData("is_active", e.target.checked)} /> Aktif</label>
                             <div className="md:col-span-2 flex gap-3">

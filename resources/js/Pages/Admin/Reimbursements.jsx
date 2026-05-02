@@ -1,8 +1,8 @@
 import AuthenticatedLayout from "@/Layouts/AuthenticatedLayout";
-import { Head, useForm } from "@inertiajs/react";
+import { Head, router, useForm } from "@inertiajs/react";
 import { useState } from "react";
 
-export default function Reimbursements({ reimbursements, flash }) {
+export default function Reimbursements({ reimbursements, flash, filters = {} }) {
     const [showProcessModal, setShowProcessModal] = useState(false);
     const [processingReimbursement, setProcessingReimbursement] = useState(null);
     const [actionType, setActionType] = useState("approved");
@@ -10,6 +10,9 @@ export default function Reimbursements({ reimbursements, flash }) {
     const { data, setData, patch, processing, reset } = useForm({
         status: "approved",
         admin_note: "",
+    });
+    const filterForm = useForm({
+        status: filters.status || "",
     });
 
     const openProcessModal = (reimbursement, action) => {
@@ -39,10 +42,19 @@ export default function Reimbursements({ reimbursements, flash }) {
         const styles = {
             pending: "bg-amber-50 text-[var(--warning-color)]",
             approved: "bg-emerald-50 text-[var(--success-color)]",
+            paid: "bg-blue-50 text-blue-600",
             rejected: "bg-red-50 text-red-600",
         };
 
         return <span className={`ui-badge ${styles[status] || "bg-slate-100 text-slate-500"}`}>{status}</span>;
+    };
+
+    const submitFilters = (event) => {
+        event.preventDefault();
+        router.get(route("admin.reimbursements.index"), filterForm.data, {
+            preserveState: true,
+            preserveScroll: true,
+        });
     };
 
     return (
@@ -65,6 +77,26 @@ export default function Reimbursements({ reimbursements, flash }) {
                         {flash.success}
                     </div>
                 )}
+                {flash?.error && (
+                    <div className="mt-4 rounded-2xl border border-red-200 bg-red-50 px-5 py-4 text-sm font-medium text-red-700">
+                        {flash.error}
+                    </div>
+                )}
+
+                <form onSubmit={submitFilters} className="mt-6 grid gap-3 rounded-[20px] border border-slate-200 bg-white p-4 sm:grid-cols-[1fr_auto_auto] sm:items-end">
+                    <label className="block">
+                        <span className="mb-2 block text-sm font-semibold text-[var(--text-main)]">Status</span>
+                        <select value={filterForm.data.status} onChange={(event) => filterForm.setData("status", event.target.value)} className="ui-input">
+                            <option value="">Semua status</option>
+                            <option value="pending">Pending</option>
+                            <option value="approved">Approved</option>
+                            <option value="paid">Paid</option>
+                            <option value="rejected">Rejected</option>
+                        </select>
+                    </label>
+                    <button type="submit" className="ui-button-primary">Filter</button>
+                    <button type="button" onClick={() => { filterForm.setData("status", ""); router.get(route("admin.reimbursements.index"), {}, { preserveScroll: true }); }} className="ui-button-secondary">Reset</button>
+                </form>
 
                 <div className="mt-6 hidden overflow-hidden rounded-[28px] border border-slate-200 bg-white shadow-sm lg:block">
                     <div className="overflow-x-auto">
@@ -119,8 +151,16 @@ export default function Reimbursements({ reimbursements, flash }) {
                                                         </button>
                                                     </div>
                                                 ) : (
-                                                    <div className="text-xs text-[var(--text-muted)]">
-                                                        Oleh: {reim.approver?.name || "-"}
+                                                    <div className="flex justify-end gap-2">
+                                                        {reim.status === "approved" && (
+                                                            <button onClick={() => openProcessModal(reim, "paid")} className="ui-button-primary">
+                                                                Tandai Dibayar
+                                                            </button>
+                                                        )}
+                                                        <div className="text-xs text-[var(--text-muted)]">
+                                                            Oleh: {reim.approver?.name || "-"}
+                                                            {reim.reimbursed_at && <div>Dibayar: {new Date(reim.reimbursed_at).toLocaleDateString("id-ID")}</div>}
+                                                        </div>
                                                     </div>
                                                 )}
                                             </td>
@@ -181,8 +221,14 @@ export default function Reimbursements({ reimbursements, flash }) {
                                     ) : (
                                         <div className="rounded-2xl border border-[var(--border-line)] px-4 py-3 text-sm text-[var(--text-muted)]">
                                             Oleh: {reim.approver?.name || "-"}
+                                            {reim.reimbursed_at && <div className="mt-1">Dibayar: {new Date(reim.reimbursed_at).toLocaleDateString("id-ID")}</div>}
                                             {reim.admin_note && (
                                                 <div className="mt-1 italic text-[var(--text-main)]">&quot;{reim.admin_note}&quot;</div>
+                                            )}
+                                            {reim.status === "approved" && (
+                                                <button onClick={() => openProcessModal(reim, "paid")} className="ui-button-primary mt-3 w-full">
+                                                    Tandai Dibayar
+                                                </button>
                                             )}
                                         </div>
                                     )}
@@ -198,7 +244,7 @@ export default function Reimbursements({ reimbursements, flash }) {
                     <div className="w-full max-w-md overflow-hidden rounded-3xl border border-[var(--border-line)] bg-[var(--bg-body)] shadow-2xl">
                         <div className="flex items-center justify-between border-b border-[var(--border-line)] bg-black/5 px-6 py-4">
                             <h3 className="font-extrabold text-lg">
-                                {actionType === "approved" ? "Setujui Reimbursement" : "Tolak Reimbursement"}
+                                {actionType === "approved" ? "Setujui Reimbursement" : actionType === "paid" ? "Tandai Reimbursement Dibayar" : "Tolak Reimbursement"}
                             </h3>
                             <button onClick={closeModal} className="text-2xl text-[var(--text-muted)] hover:text-[var(--text-main)]">
                                 &times;
@@ -226,12 +272,12 @@ export default function Reimbursements({ reimbursements, flash }) {
                                         onChange={(event) => setData("admin_note", event.target.value)}
                                         rows="3"
                                         className="ui-input"
-                                        placeholder={actionType === "approved" ? "Berikan catatan jika diperlukan..." : "Wajib diisi agar karyawan tahu alasannya..."}
+                                        placeholder={actionType === "rejected" ? "Wajib diisi agar karyawan tahu alasannya..." : "Berikan catatan jika diperlukan..."}
                                         required={actionType === "rejected"}
                                     />
                                 </div>
-                                <button type="submit" disabled={processing} className={`w-full rounded-xl py-4 font-bold text-white ${actionType === "approved" ? "bg-green-500" : "bg-red-500"}`}>
-                                    {processing ? "Memproses..." : actionType === "approved" ? "Konfirmasi Persetujuan" : "Konfirmasi Penolakan"}
+                                <button type="submit" disabled={processing} className={`w-full rounded-xl py-4 font-bold text-white ${actionType === "rejected" ? "bg-red-500" : actionType === "paid" ? "bg-blue-500" : "bg-green-500"}`}>
+                                    {processing ? "Memproses..." : actionType === "approved" ? "Konfirmasi Persetujuan" : actionType === "paid" ? "Konfirmasi Pembayaran" : "Konfirmasi Penolakan"}
                                 </button>
                             </form>
                         </div>

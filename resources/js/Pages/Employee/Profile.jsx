@@ -33,6 +33,13 @@ function Field({ label, error, children }) {
 }
 
 const dateValue = (value) => (value ? String(value).slice(0, 10) : "");
+const dateTimeLocalValue = (value) => {
+    if (!value) return "";
+    const date = new Date(value);
+    if (Number.isNaN(date.getTime())) return "";
+    const offset = date.getTimezoneOffset() * 60000;
+    return new Date(date.getTime() - offset).toISOString().slice(0, 16);
+};
 
 export default function Profile({ employee, workShift, todayAttendance, leaveBalances, attendanceCorrections, recentLeaveRequests, recentPayrolls }) {
     const [tab, setTab] = useState("profile");
@@ -58,11 +65,11 @@ export default function Profile({ employee, workShift, todayAttendance, leaveBal
     });
     const correctionForm = useForm({
         attendance_id: todayAttendance?.id || "",
-        attendance_date: todayAttendance?.attendance_date || "",
-        requested_check_in_at: todayAttendance?.check_in_at || "",
-        requested_check_out_at: todayAttendance?.check_out_at || "",
+        attendance_date: dateValue(todayAttendance?.attendance_date || new Date().toISOString()),
+        requested_check_in_at: dateTimeLocalValue(todayAttendance?.check_in_at),
+        requested_check_out_at: dateTimeLocalValue(todayAttendance?.check_out_at),
         reason: "",
-        attachment_path: "",
+        attachment: null,
     });
 
     return (
@@ -252,12 +259,39 @@ export default function Profile({ employee, workShift, todayAttendance, leaveBal
             {tab === "attendance" && (
                 <div className="mt-6 grid gap-6 lg:grid-cols-2">
                     <Section title="Koreksi Absensi">
-                        <form onSubmit={(e) => { e.preventDefault(); correctionForm.post(route("attendance-corrections.store")); }} className="space-y-4">
-                            <input type="date" value={correctionForm.data.attendance_date} onChange={(e) => correctionForm.setData("attendance_date", e.target.value)} className="ui-input" />
-                            <input type="text" value={correctionForm.data.requested_check_in_at} onChange={(e) => correctionForm.setData("requested_check_in_at", e.target.value)} className="ui-input" placeholder="Check-in yang diajukan" />
-                            <input type="text" value={correctionForm.data.requested_check_out_at} onChange={(e) => correctionForm.setData("requested_check_out_at", e.target.value)} className="ui-input" placeholder="Check-out yang diajukan" />
-                            <textarea value={correctionForm.data.reason} onChange={(e) => correctionForm.setData("reason", e.target.value)} className="ui-input" rows="3" placeholder="Alasan koreksi" />
-                            <button type="submit" className="ui-button-primary">Ajukan Koreksi</button>
+                        <form
+                            onSubmit={(e) => {
+                                e.preventDefault();
+                                correctionForm.post(route("attendance-corrections.store"), {
+                                    forceFormData: true,
+                                    preserveScroll: true,
+                                    onSuccess: () => correctionForm.setData({
+                                        ...correctionForm.data,
+                                        reason: "",
+                                        attachment: null,
+                                    }),
+                                });
+                            }}
+                            className="space-y-4"
+                        >
+                            <Field label="Tanggal absensi" error={correctionForm.errors.attendance_date}>
+                                <input type="date" value={correctionForm.data.attendance_date} onChange={(e) => correctionForm.setData("attendance_date", e.target.value)} className="ui-input" />
+                            </Field>
+                            <Field label="Check-in yang diajukan" error={correctionForm.errors.requested_check_in_at}>
+                                <input type="datetime-local" value={correctionForm.data.requested_check_in_at} onChange={(e) => correctionForm.setData("requested_check_in_at", e.target.value)} className="ui-input" />
+                            </Field>
+                            <Field label="Check-out yang diajukan" error={correctionForm.errors.requested_check_out_at}>
+                                <input type="datetime-local" value={correctionForm.data.requested_check_out_at} onChange={(e) => correctionForm.setData("requested_check_out_at", e.target.value)} className="ui-input" />
+                            </Field>
+                            <Field label="Lampiran" error={correctionForm.errors.attachment}>
+                                <input type="file" accept="image/*,.pdf" onChange={(e) => correctionForm.setData("attachment", e.target.files?.[0] || null)} className="ui-input" />
+                            </Field>
+                            <Field label="Alasan koreksi" error={correctionForm.errors.reason}>
+                                <textarea value={correctionForm.data.reason} onChange={(e) => correctionForm.setData("reason", e.target.value)} className="ui-input" rows="3" />
+                            </Field>
+                            <button type="submit" disabled={correctionForm.processing} className="ui-button-primary">
+                                {correctionForm.processing ? "Mengirim..." : "Ajukan Koreksi"}
+                            </button>
                         </form>
                     </Section>
 

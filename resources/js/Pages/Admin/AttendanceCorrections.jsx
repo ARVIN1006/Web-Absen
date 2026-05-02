@@ -103,6 +103,11 @@ export default function AttendanceCorrections({ corrections = [], flash }) {
                                         </td>
                                         <td className="max-w-xs px-6 py-4 text-[var(--text-muted)]">
                                             <div className="line-clamp-2">{correction.reason}</div>
+                                            {correction.attachment_path && (
+                                                <a href={`/storage/${correction.attachment_path}`} target="_blank" rel="noopener noreferrer" className="mt-2 inline-flex text-xs font-semibold text-[var(--primary-color)] hover:underline">
+                                                    Lihat lampiran
+                                                </a>
+                                            )}
                                             {correction.admin_note && <div className="mt-2 text-xs text-[var(--text-main)]">Catatan admin: {correction.admin_note}</div>}
                                         </td>
                                         <td className="px-6 py-4">{statusBadge(correction.status)}</td>

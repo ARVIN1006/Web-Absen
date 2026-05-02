@@ -1,278 +1,202 @@
 import AuthenticatedLayout from "@/Layouts/AuthenticatedLayout";
-import { Head, useForm } from "@inertiajs/react";
+import { Head, router, useForm } from "@inertiajs/react";
 import { useState } from "react";
 
-export default function Kpi({ kpis, employees, flash }) {
-    const [showModal, setShowModal] = useState(false);
-    const { data, setData, post, processing, errors, reset } = useForm({
-        user_id: "",
-        period: "",
-        attendance_score: "",
-        performance_score: "",
-        attitude_score: "",
-    });
+const emptyForm = {
+    user_id: "",
+    period: "",
+    attendance_score: "",
+    performance_score: "",
+    attitude_score: "",
+    feedback: "",
+};
 
-    const openModal = () => {
-        reset();
+function scoreColor(score) {
+    if (score >= 80) return "bg-emerald-50 text-emerald-600";
+    if (score >= 60) return "bg-amber-50 text-amber-600";
+    return "bg-red-50 text-red-600";
+}
+
+export default function Kpi({ kpis, employees, filters = {}, flash }) {
+    const [showModal, setShowModal] = useState(false);
+    const [editingKpi, setEditingKpi] = useState(null);
+    const filterForm = useForm({
+        period: filters.period || "",
+        user_id: filters.user_id || "",
+    });
+    const form = useForm(emptyForm);
+
+    const average = (kpi) =>
+        Math.round((Number(kpi.attendance_score) + Number(kpi.performance_score) + Number(kpi.attitude_score)) / 3);
+
+    const openCreate = () => {
+        setEditingKpi(null);
+        form.setData(emptyForm);
+        form.clearErrors();
+        setShowModal(true);
+    };
+
+    const openEdit = (kpi) => {
+        setEditingKpi(kpi);
+        form.setData({
+            user_id: kpi.user_id || "",
+            period: kpi.period || "",
+            attendance_score: kpi.attendance_score || "",
+            performance_score: kpi.performance_score || "",
+            attitude_score: kpi.attitude_score || "",
+            feedback: kpi.feedback || "",
+        });
+        form.clearErrors();
         setShowModal(true);
     };
 
     const closeModal = () => {
         setShowModal(false);
-        reset();
+        setEditingKpi(null);
+        form.reset();
     };
 
-    const handleSubmit = (e) => {
-        e.preventDefault();
-        post(route("admin.kpi.store"), {
-            onSuccess: closeModal,
+    const submit = (event) => {
+        event.preventDefault();
+        if (editingKpi) {
+            form.put(route("admin.kpi.update", editingKpi.id), { onSuccess: closeModal, preserveScroll: true });
+            return;
+        }
+        form.post(route("admin.kpi.store"), { onSuccess: closeModal, preserveScroll: true });
+    };
+
+    const submitFilters = (event) => {
+        event.preventDefault();
+        router.get(route("admin.kpi.index"), filterForm.data, {
+            preserveState: true,
+            preserveScroll: true,
         });
     };
 
-    const calculateAverage = (kpi) => {
-        return Math.round((kpi.attendance_score + kpi.performance_score + kpi.attitude_score) / 3);
+    const resetFilters = () => {
+        filterForm.setData({ period: "", user_id: "" });
+        router.get(route("admin.kpi.index"), {}, { preserveScroll: true });
     };
 
-    const getScoreColor = (score) => {
-        if (score >= 80) return "#10b981";
-        if (score >= 60) return "#f59e0b";
-        return "#ef4444";
+    const destroy = (kpi) => {
+        if (confirm(`Hapus KPI ${kpi.user?.name || "karyawan"} periode ${kpi.period}?`)) {
+            router.delete(route("admin.kpi.destroy", kpi.id), { preserveScroll: true });
+        }
     };
 
     return (
         <AuthenticatedLayout>
             <Head title="KPI Karyawan" />
 
-            <div className="max-w-[1200px] mx-auto p-6">
-                {/* Header */}
-                <div className="glass rounded-3xl p-6 mb-6 flex justify-between items-center border border-[var(--border-glass)] backdrop-blur-xl">
-                    <h1 className="text-2xl font-bold text-[var(--text-main)]">KPI Karyawan</h1>
-                    <button
-                        onClick={openModal}
-                        className="bg-blue-500 text-white px-5 py-2.5 rounded-xl font-semibold flex items-center gap-2 hover:opacity-80 transition-all"
-                    >
-                        + Tambah Penilaian
-                    </button>
-                </div>
-
-                {/* Flash Messages */}
-                {flash?.success && (
-                    <div className="bg-green-500/15 border border-green-500/30 text-green-500 px-5 py-3 rounded-xl mb-5 font-medium">
-                        {flash.success}
+            <section className="ui-card overflow-hidden">
+                <div className="flex flex-col gap-5 p-6 lg:flex-row lg:items-end lg:justify-between lg:p-8">
+                    <div>
+                        <div className="ui-section-title">Performance Review</div>
+                        <h1 className="font-heading mt-3 text-3xl font-bold text-black">KPI karyawan</h1>
                     </div>
-                )}
+                    <button type="button" onClick={openCreate} className="ui-button-primary">Tambah Penilaian</button>
+                </div>
+            </section>
 
-                {/* Table */}
-                <div className="glass rounded-2xl overflow-hidden">
-                    <div className="overflow-x-auto">
-                        <table className="w-full">
-                            <thead>
-                                <tr className="bg-black/5 border-b border-[var(--border-glass)]">
-                                    <th className="px-6 py-4 text-left text-xs font-bold text-[var(--text-muted-dark)] uppercase">
-                                        Karyawan
-                                    </th>
-                                    <th className="px-6 py-4 text-left text-xs font-bold text-[var(--text-muted-dark)] uppercase">
-                                        Periode
-                                    </th>
-                                    <th className="px-6 py-4 text-center text-xs font-bold text-[var(--text-muted-dark)] uppercase">
-                                        Kehadiran
-                                    </th>
-                                    <th className="px-6 py-4 text-center text-xs font-bold text-[var(--text-muted-dark)] uppercase">
-                                        Performa
-                                    </th>
-                                    <th className="px-6 py-4 text-center text-xs font-bold text-[var(--text-muted-dark)] uppercase">
-                                        Sikap
-                                    </th>
-                                    <th className="px-6 py-4 text-center text-xs font-bold text-[var(--text-muted-dark)] uppercase">
-                                        Rata-rata
-                                    </th>
+            {flash?.success && <div className="mt-6 rounded-xl border border-emerald-200 bg-emerald-50 px-4 py-3 text-sm font-medium text-emerald-700">{flash.success}</div>}
+
+            <section className="ui-card mt-6 p-6">
+                <form onSubmit={submitFilters} className="grid gap-4 md:grid-cols-[1fr_1fr_auto_auto] md:items-end">
+                    <label className="block">
+                        <span className="mb-2 block text-sm font-semibold text-[var(--text-main)]">Periode</span>
+                        <input value={filterForm.data.period} onChange={(event) => filterForm.setData("period", event.target.value)} className="ui-input" placeholder="2026-Q1 / Mei 2026" />
+                    </label>
+                    <label className="block">
+                        <span className="mb-2 block text-sm font-semibold text-[var(--text-main)]">Karyawan</span>
+                        <select value={filterForm.data.user_id} onChange={(event) => filterForm.setData("user_id", event.target.value)} className="ui-input">
+                            <option value="">Semua karyawan</option>
+                            {employees.map((employee) => (
+                                <option key={employee.id} value={employee.id}>{employee.name}</option>
+                            ))}
+                        </select>
+                    </label>
+                    <button type="submit" className="ui-button-primary">Filter</button>
+                    <button type="button" onClick={resetFilters} className="ui-button-secondary">Reset</button>
+                </form>
+            </section>
+
+            <section className="ui-card mt-6 overflow-hidden">
+                <div className="overflow-x-auto">
+                    <table className="min-w-full divide-y divide-[var(--border-line)] text-sm">
+                        <thead className="bg-[var(--bg-subtle)] text-left text-[11px] font-semibold uppercase tracking-[0.14em] text-[var(--text-soft)]">
+                            <tr>
+                                <th className="px-6 py-4">Karyawan</th>
+                                <th className="px-6 py-4">Periode</th>
+                                <th className="px-6 py-4 text-center">Kehadiran</th>
+                                <th className="px-6 py-4 text-center">Performa</th>
+                                <th className="px-6 py-4 text-center">Sikap</th>
+                                <th className="px-6 py-4 text-center">Rata-rata</th>
+                                <th className="px-6 py-4 text-right">Aksi</th>
+                            </tr>
+                        </thead>
+                        <tbody className="divide-y divide-[var(--border-line)]">
+                            {kpis.length === 0 ? (
+                                <tr>
+                                    <td colSpan="7" className="px-6 py-12 text-center text-sm text-[var(--text-muted)]">Belum ada data KPI.</td>
                                 </tr>
-                            </thead>
-                            <tbody>
-                                {kpis.length === 0 ? (
-                                    <tr>
-                                        <td colSpan="6" className="text-center py-12 text-[var(--text-muted)]">
-                                            Belum ada data KPI.
+                            ) : kpis.map((kpi) => {
+                                const avg = average(kpi);
+                                return (
+                                    <tr key={kpi.id}>
+                                        <td className="px-6 py-4">
+                                            <div className="font-semibold text-[var(--text-main)]">{kpi.user?.name}</div>
+                                            <div className="mt-1 text-xs text-[var(--text-muted)]">{kpi.user?.position?.name || "-"}</div>
+                                        </td>
+                                        <td className="px-6 py-4 text-[var(--text-muted)]">{kpi.period}</td>
+                                        <td className="px-6 py-4 text-center"><span className={`ui-badge ${scoreColor(kpi.attendance_score)}`}>{kpi.attendance_score}</span></td>
+                                        <td className="px-6 py-4 text-center"><span className={`ui-badge ${scoreColor(kpi.performance_score)}`}>{kpi.performance_score}</span></td>
+                                        <td className="px-6 py-4 text-center"><span className={`ui-badge ${scoreColor(kpi.attitude_score)}`}>{kpi.attitude_score}</span></td>
+                                        <td className="px-6 py-4 text-center"><span className={`ui-badge ${scoreColor(avg)}`}>{avg}</span></td>
+                                        <td className="px-6 py-4">
+                                            <div className="flex justify-end gap-2">
+                                                <button type="button" onClick={() => openEdit(kpi)} className="ui-button-secondary px-3 py-2">Edit</button>
+                                                <button type="button" onClick={() => destroy(kpi)} className="rounded-md border border-red-200 px-3 py-2 text-sm font-semibold text-red-600 transition hover:bg-red-50">Hapus</button>
+                                            </div>
                                         </td>
                                     </tr>
-                                ) : (
-                                    kpis.map((kpi) => {
-                                        const avg = calculateAverage(kpi);
-                                        return (
-                                            <tr
-                                                key={kpi.id}
-                                                className="border-b border-[var(--border-glass)] hover:bg-[var(--hover-bg)] transition-colors"
-                                            >
-                                                <td className="px-6 py-4">
-                                                    <div className="flex items-center gap-3">
-                                                        <div className="w-10 h-10 rounded-xl bg-gradient-to-br from-blue-500 to-green-500 text-white flex items-center justify-center font-bold">
-                                                            {kpi.user?.name?.charAt(0).toUpperCase()}
-                                                        </div>
-                                                        <div>
-                                                            <div className="font-semibold text-[var(--text-main)]">
-                                                                {kpi.user?.name}
-                                                            </div>
-                                                            <div className="text-xs text-[var(--text-muted)]">
-                                                                {kpi.user?.position?.name}
-                                                            </div>
-                                                        </div>
-                                                    </div>
-                                                </td>
-                                                <td className="px-6 py-4 text-sm text-[var(--text-muted)]">
-                                                    {kpi.period}
-                                                </td>
-                                                <td className="px-6 py-4 text-center">
-                                                    <span
-                                                        className="px-3 py-1 rounded-lg text-sm font-bold"
-                                                        style={{
-                                                            backgroundColor: `${getScoreColor(kpi.attendance_score)}20`,
-                                                            color: getScoreColor(kpi.attendance_score),
-                                                        }}
-                                                    >
-                                                        {kpi.attendance_score}
-                                                    </span>
-                                                </td>
-                                                <td className="px-6 py-4 text-center">
-                                                    <span
-                                                        className="px-3 py-1 rounded-lg text-sm font-bold"
-                                                        style={{
-                                                            backgroundColor: `${getScoreColor(kpi.performance_score)}20`,
-                                                            color: getScoreColor(kpi.performance_score),
-                                                        }}
-                                                    >
-                                                        {kpi.performance_score}
-                                                    </span>
-                                                </td>
-                                                <td className="px-6 py-4 text-center">
-                                                    <span
-                                                        className="px-3 py-1 rounded-lg text-sm font-bold"
-                                                        style={{
-                                                            backgroundColor: `${getScoreColor(kpi.attitude_score)}20`,
-                                                            color: getScoreColor(kpi.attitude_score),
-                                                        }}
-                                                    >
-                                                        {kpi.attitude_score}
-                                                    </span>
-                                                </td>
-                                                <td className="px-6 py-4 text-center">
-                                                    <span
-                                                        className="px-4 py-2 rounded-xl text-lg font-extrabold"
-                                                        style={{
-                                                            backgroundColor: `${getScoreColor(avg)}20`,
-                                                            color: getScoreColor(avg),
-                                                        }}
-                                                    >
-                                                        {avg}
-                                                    </span>
-                                                </td>
-                                            </tr>
-                                        );
-                                    })
-                                )}
-                            </tbody>
-                        </table>
-                    </div>
+                                );
+                            })}
+                        </tbody>
+                    </table>
                 </div>
-            </div>
+            </section>
 
-            {/* Modal */}
             {showModal && (
-                <div className="fixed inset-0 bg-black/50 backdrop-blur-sm z-50 flex items-center justify-center p-4">
-                    <div className="bg-[var(--bg-body)] border border-[var(--border-glass)] rounded-2xl w-full max-w-md overflow-hidden">
-                        <div className="px-6 py-4 border-b border-[var(--border-glass)] flex justify-between items-center">
-                            <h3 className="text-lg font-bold text-[var(--text-main)]">Tambah Penilaian KPI</h3>
-                            <button
-                                onClick={closeModal}
-                                className="text-[var(--text-muted)] hover:text-[var(--text-main)] text-2xl"
-                            >
-                                &times;
-                            </button>
+                <div className="fixed inset-0 z-[70] flex items-center justify-center bg-slate-950/50 p-4 backdrop-blur-sm">
+                    <div className="w-full max-w-2xl rounded-xl bg-white shadow-[var(--shadow-pop)]">
+                        <div className="flex items-center justify-between border-b border-[var(--border-line)] px-6 py-4">
+                            <h2 className="font-heading text-xl font-semibold">{editingKpi ? "Edit KPI" : "Tambah KPI"}</h2>
+                            <button type="button" onClick={closeModal} className="text-sm text-[var(--text-muted)]">Tutup</button>
                         </div>
-                        <form onSubmit={handleSubmit} className="p-6 space-y-4">
-                            <div>
-                                <label className="block text-sm font-semibold text-[var(--text-muted)] mb-2">
-                                    Karyawan <span className="text-red-500">*</span>
-                                </label>
-                                <select
-                                    value={data.user_id}
-                                    onChange={(e) => setData("user_id", e.target.value)}
-                                    className="w-full px-4 py-3 rounded-xl bg-black/5 border border-[var(--border-glass)] focus:border-blue-500 outline-none transition-all"
-                                    required
-                                >
-                                    <option value="">Pilih Karyawan</option>
-                                    {employees.map((emp) => (
-                                        <option key={emp.id} value={emp.id}>
-                                            {emp.name}
-                                        </option>
+                        <form onSubmit={submit} className="grid gap-5 p-6 md:grid-cols-2">
+                            <label className="block md:col-span-2">
+                                <span className="mb-2 block text-sm font-semibold text-[var(--text-main)]">Karyawan</span>
+                                <select value={form.data.user_id} onChange={(event) => form.setData("user_id", event.target.value)} className="ui-input">
+                                    <option value="">Pilih karyawan</option>
+                                    {employees.map((employee) => (
+                                        <option key={employee.id} value={employee.id}>{employee.name}</option>
                                     ))}
                                 </select>
-                                {errors.user_id && <p className="text-red-500 text-sm mt-1">{errors.user_id}</p>}
+                                {form.errors.user_id && <span className="mt-1 block text-sm text-red-500">{form.errors.user_id}</span>}
+                            </label>
+                            <label className="block md:col-span-2">
+                                <span className="mb-2 block text-sm font-semibold text-[var(--text-main)]">Periode</span>
+                                <input value={form.data.period} onChange={(event) => form.setData("period", event.target.value)} className="ui-input" placeholder="2026-Q1 / Mei 2026" />
+                                {form.errors.period && <span className="mt-1 block text-sm text-red-500">{form.errors.period}</span>}
+                            </label>
+                            <input type="number" min="0" max="100" value={form.data.attendance_score} onChange={(event) => form.setData("attendance_score", event.target.value)} className="ui-input" placeholder="Skor kehadiran" />
+                            <input type="number" min="0" max="100" value={form.data.performance_score} onChange={(event) => form.setData("performance_score", event.target.value)} className="ui-input" placeholder="Skor performa" />
+                            <input type="number" min="0" max="100" value={form.data.attitude_score} onChange={(event) => form.setData("attitude_score", event.target.value)} className="ui-input" placeholder="Skor sikap" />
+                            <textarea value={form.data.feedback} onChange={(event) => form.setData("feedback", event.target.value)} className="ui-input md:col-span-2" rows="3" placeholder="Feedback" />
+                            <div className="flex gap-3 md:col-span-2">
+                                <button type="submit" disabled={form.processing} className="ui-button-primary">{form.processing ? "Menyimpan..." : "Simpan"}</button>
+                                <button type="button" onClick={closeModal} className="ui-button-secondary">Batal</button>
                             </div>
-                            <div>
-                                <label className="block text-sm font-semibold text-[var(--text-muted)] mb-2">
-                                    Periode <span className="text-red-500">*</span>
-                                </label>
-                                <input
-                                    type="text"
-                                    value={data.period}
-                                    onChange={(e) => setData("period", e.target.value)}
-                                    className="w-full px-4 py-3 rounded-xl bg-black/5 border border-[var(--border-glass)] focus:border-blue-500 outline-none transition-all"
-                                    placeholder="e.g., 2026-Q1, Januari 2026"
-                                    required
-                                />
-                                {errors.period && <p className="text-red-500 text-sm mt-1">{errors.period}</p>}
-                            </div>
-                            <div className="grid grid-cols-3 gap-3">
-                                <div>
-                                    <label className="block text-sm font-semibold text-[var(--text-muted)] mb-2">
-                                        Kehadiran <span className="text-red-500">*</span>
-                                    </label>
-                                    <input
-                                        type="number"
-                                        min="0"
-                                        max="100"
-                                        value={data.attendance_score}
-                                        onChange={(e) => setData("attendance_score", e.target.value)}
-                                        className="w-full px-4 py-3 rounded-xl bg-black/5 border border-[var(--border-glass)] focus:border-blue-500 outline-none transition-all"
-                                        required
-                                    />
-                                </div>
-                                <div>
-                                    <label className="block text-sm font-semibold text-[var(--text-muted)] mb-2">
-                                        Performa <span className="text-red-500">*</span>
-                                    </label>
-                                    <input
-                                        type="number"
-                                        min="0"
-                                        max="100"
-                                        value={data.performance_score}
-                                        onChange={(e) => setData("performance_score", e.target.value)}
-                                        className="w-full px-4 py-3 rounded-xl bg-black/5 border border-[var(--border-glass)] focus:border-blue-500 outline-none transition-all"
-                                        required
-                                    />
-                                </div>
-                                <div>
-                                    <label className="block text-sm font-semibold text-[var(--text-muted)] mb-2">
-                                        Sikap <span className="text-red-500">*</span>
-                                    </label>
-                                    <input
-                                        type="number"
-                                        min="0"
-                                        max="100"
-                                        value={data.attitude_score}
-                                        onChange={(e) => setData("attitude_score", e.target.value)}
-                                        className="w-full px-4 py-3 rounded-xl bg-black/5 border border-[var(--border-glass)] focus:border-blue-500 outline-none transition-all"
-                                        required
-                                    />
-                                </div>
-                            </div>
-                            <button
-                                type="submit"
-                                disabled={processing}
-                                className="w-full bg-blue-500 text-white py-3 rounded-xl font-bold hover:opacity-90 transition-all disabled:opacity-50"
-                            >
-                                {processing ? "Menyimpan..." : "Simpan Penilaian"}
-                            </button>
                         </form>
                     </div>
                 </div>

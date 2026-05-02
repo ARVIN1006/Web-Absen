@@ -41,11 +41,25 @@ class ReimbursementNotification extends Notification
                 'action' => 'approved',
                 'reimbursement_id' => $this->reimbursement->id,
             ],
+            'paid' => [
+                'title' => 'Reimbursement Dibayar',
+                'message' => "Pengajuan reimbursement {$amount} ({$this->reimbursement->title}) telah dibayarkan.",
+                'type' => 'reimbursement',
+                'action' => 'paid',
+                'reimbursement_id' => $this->reimbursement->id,
+            ],
             'rejected' => [
                 'title' => 'Reimbursement Ditolak',
                 'message' => "Pengajuan reimbursement {$amount} ditolak. Alasan: " . ($this->reimbursement->admin_note ?? '-'),
                 'type' => 'reimbursement',
                 'action' => 'rejected',
+                'reimbursement_id' => $this->reimbursement->id,
+            ],
+            default => [
+                'title' => 'Update Reimbursement',
+                'message' => "Status reimbursement {$amount} ({$this->reimbursement->title}) diperbarui.",
+                'type' => 'reimbursement',
+                'action' => $this->action,
                 'reimbursement_id' => $this->reimbursement->id,
             ],
         };

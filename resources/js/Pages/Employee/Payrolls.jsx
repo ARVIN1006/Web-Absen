@@ -10,6 +10,16 @@ export default function Payrolls({ payrolls }) {
         "Januari", "Februari", "Maret", "April", "Mei", "Juni",
         "Juli", "Agustus", "September", "Oktober", "November", "Desember"
     ];
+    const statusText = {
+        draft: "Draft",
+        reviewed: "Direview",
+        paid: "Lunas",
+    };
+    const statusClass = {
+        draft: "bg-yellow-500/10 text-yellow-500",
+        reviewed: "bg-blue-500/10 text-blue-500",
+        paid: "bg-green-500/10 text-green-500",
+    };
 
     return (
         <AuthenticatedLayout>
@@ -37,17 +47,15 @@ export default function Payrolls({ payrolls }) {
                                             {monthNames[payroll.month - 1]} {payroll.year}
                                         </div>
                                         <div className="text-sm text-[var(--text-muted)]">
-                                            {payroll.status === "paid" ? "Lunas" : "Draft"}
+                                            {statusText[payroll.status] || payroll.status}
                                         </div>
                                     </div>
                                     <span
                                         className={`px-3 py-1 rounded-lg text-xs font-bold ${
-                                            payroll.status === "paid"
-                                                ? "bg-green-500/10 text-green-500"
-                                                : "bg-yellow-500/10 text-yellow-500"
+                                            statusClass[payroll.status] || "bg-slate-500/10 text-slate-500"
                                         }`}
                                     >
-                                        {payroll.status === "paid" ? "LUNAS" : "DRAFT"}
+                                        {(statusText[payroll.status] || payroll.status).toUpperCase()}
                                     </span>
                                 </div>
 

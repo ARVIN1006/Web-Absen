@@ -16,7 +16,7 @@ return new class extends Migration
             $table->decimal('amount', 15, 2);
             $table->string('type'); // medical, travel, entertainment, etc.
             $table->string('attachment_path')->nullable();
-            $table->enum('status', ['pending', 'approved', 'rejected'])->default('pending');
+            $table->string('status', 30)->default('pending');
             $table->text('admin_note')->nullable();
             $table->timestamps();
         });

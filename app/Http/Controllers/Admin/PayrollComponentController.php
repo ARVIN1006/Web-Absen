@@ -23,6 +23,7 @@ class PayrollComponentController extends Controller
             'code' => ['required', 'string', 'max:50', 'unique:payroll_components,code'],
             'type' => ['required', 'in:earning,deduction'],
             'calculation_method' => ['required', 'in:manual,auto'],
+            'default_amount' => ['nullable', 'numeric', 'min:0'],
             'is_taxable' => ['required', 'boolean'],
             'is_active' => ['required', 'boolean'],
         ]);
@@ -39,6 +40,7 @@ class PayrollComponentController extends Controller
             'code' => ['required', 'string', 'max:50', 'unique:payroll_components,code,' . $payrollComponent->id],
             'type' => ['required', 'in:earning,deduction'],
             'calculation_method' => ['required', 'in:manual,auto'],
+            'default_amount' => ['nullable', 'numeric', 'min:0'],
             'is_taxable' => ['required', 'boolean'],
             'is_active' => ['required', 'boolean'],
         ]);

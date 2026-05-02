@@ -1,5 +1,5 @@
 import AuthenticatedLayout from "@/Layouts/AuthenticatedLayout";
-import { Head } from "@inertiajs/react";
+import { Head, Link } from "@inertiajs/react";
 
 export default function PerformanceHeatmap({ heatData }) {
     const getStatusStyles = (avg) => {
@@ -33,8 +33,15 @@ export default function PerformanceHeatmap({ heatData }) {
             <div className="max-w-[1200px] mx-auto p-6">
                 {/* Header */}
                 <div className="glass rounded-3xl p-6 mb-6 border border-[var(--border-glass)] backdrop-blur-xl">
-                    <h1 className="text-2xl font-bold text-[var(--text-main)]">Performance Heatmap</h1>
-                    <p className="text-[var(--text-muted)] mt-1">Visualisasi performa karyawan per departemen</p>
+                    <div className="flex flex-col gap-4 md:flex-row md:items-center md:justify-between">
+                        <div>
+                            <h1 className="text-2xl font-bold text-[var(--text-main)]">Performance Heatmap</h1>
+                            <p className="text-[var(--text-muted)] mt-1">Visualisasi performa karyawan per departemen</p>
+                        </div>
+                        <Link href={route("admin.reports.labor-cost")} className="ui-button-secondary">
+                            Labor Cost
+                        </Link>
+                    </div>
                 </div>
 
                 {/* Legend */}
@@ -101,4 +108,3 @@ export default function PerformanceHeatmap({ heatData }) {
         </AuthenticatedLayout>
     );
 }
-
