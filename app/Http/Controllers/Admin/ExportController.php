@@ -30,11 +30,14 @@ class ExportController extends Controller
             fputcsv($file, $columns);
             $count = 1;
             foreach ($attendances as $row) {
+                $position = $row->user?->position;
+                $positionName = is_object($position) ? ($position->name ?? '-') : ($position ?: '-');
+
                 fputcsv($file, array(
                     $count++,
-                    $row->user->name,
-                    $row->user->email,
-                    $row->user->position ?? '-',
+                    $row->user?->name ?? '-',
+                    $row->user?->email ?? '-',
+                    $positionName,
                     $row->type == 'in' ? 'Masuk' : 'Pulang',
                     $row->created_at->format('Y-m-d'),
                     $row->created_at->format('H:i:s'),
@@ -62,7 +65,7 @@ class ExportController extends Controller
 
     private function getFilteredData(Request $request)
     {
-        $query = Attendance::with('user')->orderBy('created_at', 'asc');
+        $query = Attendance::with('user.position')->orderBy('created_at', 'asc');
 
         if ($request->filled('start_date')) {
             $query->whereDate('created_at', '>=', $request->start_date);

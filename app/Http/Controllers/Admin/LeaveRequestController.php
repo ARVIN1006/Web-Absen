@@ -28,6 +28,10 @@ class LeaveRequestController extends Controller
             'admin_note' => 'nullable|string',
         ]);
 
+        if ($leaveRequest->status !== 'pending') {
+            return redirect()->route('admin.leave-requests.index')->with('error', 'Pengajuan cuti ini sudah diproses.');
+        }
+
         $leaveRequest->update([
             'status' => 'approved',
             'admin_note' => $request->admin_note,
@@ -62,9 +66,11 @@ class LeaveRequestController extends Controller
             );
 
             $used = (float) $balance->used_days + (float) $leaveRequest->total_days;
+            $reserved = max(0, (float) $balance->reserved_days - (float) $leaveRequest->total_days);
             $balance->update([
                 'used_days' => $used,
-                'remaining_days' => max(0, (float) $balance->allocated_days - $used - (float) $balance->reserved_days),
+                'reserved_days' => $reserved,
+                'remaining_days' => max(0, (float) $balance->allocated_days - $used - $reserved),
             ]);
         }
 
@@ -79,6 +85,10 @@ class LeaveRequestController extends Controller
         $request->validate([
             'admin_note' => 'required|string',
         ]);
+
+        if ($leaveRequest->status !== 'pending') {
+            return redirect()->route('admin.leave-requests.index')->with('error', 'Pengajuan cuti ini sudah diproses.');
+        }
 
         $leaveRequest->update([
             'status' => 'rejected',
@@ -97,6 +107,21 @@ class LeaveRequestController extends Controller
                 'admin_note' => $request->admin_note,
             ]
         );
+
+        if ($leaveRequest->leaveType?->requires_balance) {
+            $balance = LeaveBalance::where('user_id', $leaveRequest->user_id)
+                ->where('leave_type_id', $leaveRequest->leave_type_id)
+                ->where('year', (int) $leaveRequest->start_date->format('Y'))
+                ->first();
+
+            if ($balance) {
+                $reserved = max(0, (float) $balance->reserved_days - (float) $leaveRequest->total_days);
+                $balance->update([
+                    'reserved_days' => $reserved,
+                    'remaining_days' => max(0, (float) $balance->allocated_days - (float) $balance->used_days - $reserved),
+                ]);
+            }
+        }
 
         // Notify the employee
         $leaveRequest->user->notify(new LeaveRequestNotification($leaveRequest, 'rejected'));

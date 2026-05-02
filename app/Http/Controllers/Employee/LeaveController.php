@@ -4,6 +4,7 @@ namespace App\Http\Controllers\Employee;
 
 use App\Http\Controllers\Controller;
 use App\Models\Holiday;
+use App\Models\LeaveBalance;
 use App\Models\LeaveRequest;
 use App\Models\LeaveType;
 use App\Models\User;
@@ -38,7 +39,7 @@ class LeaveController extends Controller
     {
         $request->validate([
             'leave_type_id' => 'required|exists:leave_types,id',
-            'start_date' => 'required|date|after_or_equal:today',
+            'start_date' => 'required|date',
             'end_date' => 'required|date|after_or_equal:start_date',
             'reason' => 'required|string',
             'attachment' => 'nullable|file|mimes:jpg,jpeg,png,pdf|max:2048',
@@ -87,15 +88,35 @@ class LeaveController extends Controller
             ])->withInput();
         }
 
-        // Check quota
-        $usedDays = LeaveRequest::where('user_id', auth()->id())
-            ->where('leave_type_id', $leaveType->id)
-            ->where('status', 'approved')
-            ->whereYear('created_at', now()->year)
-            ->sum('total_days');
+        $balance = null;
+        if ($leaveType->requires_balance) {
+            $balance = LeaveBalance::firstOrCreate(
+                [
+                    'user_id' => auth()->id(),
+                    'leave_type_id' => $leaveType->id,
+                    'year' => (int) $startDate->format('Y'),
+                ],
+                [
+                    'allocated_days' => $leaveType->max_days_per_year ?? 0,
+                    'used_days' => 0,
+                    'reserved_days' => 0,
+                    'remaining_days' => $leaveType->max_days_per_year ?? 0,
+                ]
+            );
 
-        if (($usedDays + $totalDays) > $leaveType->max_days_per_year) {
-            return back()->withErrors(['start_date' => 'Kuota cuti tidak mencukupi. Sisa: ' . ($leaveType->max_days_per_year - $usedDays) . ' hari.'])->withInput();
+            if ((float) $balance->remaining_days < $totalDays) {
+                return back()->withErrors(['start_date' => 'Kuota cuti tidak mencukupi. Sisa: ' . number_format((float) $balance->remaining_days, 2, ',', '.') . ' hari.'])->withInput();
+            }
+        } elseif ($leaveType->max_days_per_year) {
+            $usedDays = LeaveRequest::where('user_id', auth()->id())
+                ->where('leave_type_id', $leaveType->id)
+                ->where('status', 'approved')
+                ->whereYear('start_date', (int) $startDate->format('Y'))
+                ->sum('total_days');
+
+            if (($usedDays + $totalDays) > $leaveType->max_days_per_year) {
+                return back()->withErrors(['start_date' => 'Kuota cuti tidak mencukupi. Sisa: ' . ($leaveType->max_days_per_year - $usedDays) . ' hari.'])->withInput();
+            }
         }
 
         $attachmentPath = null;
@@ -113,6 +134,13 @@ class LeaveController extends Controller
             'reason' => $request->reason,
             'attachment_path' => $attachmentPath,
         ]);
+
+        if ($balance) {
+            $balance->update([
+                'reserved_days' => (float) $balance->reserved_days + $totalDays,
+                'remaining_days' => max(0, (float) $balance->remaining_days - $totalDays),
+            ]);
+        }
 
         // Notify all admins
         $admins = User::where('role', 'admin')->get();

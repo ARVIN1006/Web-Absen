@@ -12,8 +12,9 @@ class PayrollNotification extends Notification
 
     public function __construct(
         protected Payroll $payroll,
-        protected string $action // 'generated', 'paid'
-    ) {}
+        protected string $action
+    ) {
+    }
 
     public function via($notifiable): array
     {
@@ -34,7 +35,7 @@ class PayrollNotification extends Notification
                 'payroll_id' => $this->payroll->id,
             ],
             'paid' => [
-                'title' => 'Gaji Telah Dibayarkan 💰',
+                'title' => 'Gaji Telah Dibayarkan',
                 'message' => "Gaji periode {$period} sebesar {$netSalary} telah dibayarkan.",
                 'type' => 'payroll',
                 'action' => 'paid',

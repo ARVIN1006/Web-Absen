@@ -12,8 +12,9 @@ class ReimbursementNotification extends Notification
 
     public function __construct(
         protected Reimbursement $reimbursement,
-        protected string $action // 'submitted', 'approved', 'rejected'
-    ) {}
+        protected string $action
+    ) {
+    }
 
     public function via($notifiable): array
     {
@@ -34,14 +35,14 @@ class ReimbursementNotification extends Notification
                 'reimbursement_id' => $this->reimbursement->id,
             ],
             'approved' => [
-                'title' => 'Reimbursement Disetujui ✅',
+                'title' => 'Reimbursement Disetujui',
                 'message' => "Pengajuan reimbursement {$amount} ({$this->reimbursement->title}) telah disetujui.",
                 'type' => 'reimbursement',
                 'action' => 'approved',
                 'reimbursement_id' => $this->reimbursement->id,
             ],
             'rejected' => [
-                'title' => 'Reimbursement Ditolak ❌',
+                'title' => 'Reimbursement Ditolak',
                 'message' => "Pengajuan reimbursement {$amount} ditolak. Alasan: " . ($this->reimbursement->admin_note ?? '-'),
                 'type' => 'reimbursement',
                 'action' => 'rejected',

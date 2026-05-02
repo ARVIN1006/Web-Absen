@@ -1,0 +1,28 @@
+plugins = []
+headers = []
+redirects = []
+
+[functions]
+
+[functions."*"]
+
+[build]
+publish = "C:\\Project\\website_absensi_wajah\\dist"
+publishOrigin = "config"
+commandOrigin = "config"
+command = "npm ci && npm run build"
+base = "C:\\Project\\website_absensi_wajah\\demo-static"
+
+[build.environment]
+
+[build.processing]
+
+[build.processing.css]
+
+[build.processing.html]
+
+[build.processing.images]
+
+[build.processing.js]
+
+[build.services]

@@ -7,7 +7,11 @@ use App\Models\Attendance;
 use Illuminate\Support\Facades\Route;
 
 Route::get('/', function () {
-    return redirect()->route('login');
+    if (auth()->check()) {
+        return redirect()->route(auth()->user()->isAdmin() ? 'admin.dashboard' : 'dashboard');
+    }
+
+    return \Inertia\Inertia::render('Auth/Login');
 });
 
 Route::get('/panduan', function () {
@@ -159,7 +163,8 @@ Route::middleware(['auth'])->group(function () {
     
     // Employee Self-Service
     Route::get('/profile', [\App\Http\Controllers\Employee\ProfileController::class, 'index'])->name('profile.index');
-    Route::put('/profile', [\App\Http\Controllers\Employee\ProfileController::class, 'update'])->name('profile.update');
+    Route::match(['put', 'patch'], '/profile', [\App\Http\Controllers\Employee\ProfileController::class, 'update'])->name('profile.update');
+    Route::delete('/profile', [\App\Http\Controllers\Employee\ProfileController::class, 'destroy'])->name('profile.destroy');
 
     Route::get('/my-reimbursements', [\App\Http\Controllers\Employee\ReimbursementController::class, 'index'])->name('reimbursements.index');
     Route::post('/my-reimbursements', [\App\Http\Controllers\Employee\ReimbursementController::class, 'store'])->name('reimbursements.store');

@@ -3,6 +3,7 @@
 namespace App\Http\Controllers\Admin;
 
 use App\Http\Controllers\Controller;
+use App\Models\Attendance;
 use App\Models\AttendanceCorrection;
 use App\Notifications\AttendanceCorrectionNotification;
 use Illuminate\Http\Request;
@@ -22,6 +23,8 @@ class AttendanceCorrectionController extends Controller
         $validated = $request->validate([
             'admin_note' => ['nullable', 'string'],
         ]);
+
+        $this->applyCorrectionToAttendance($attendanceCorrection);
 
         $attendanceCorrection->update([
             'status' => 'approved',
@@ -74,5 +77,54 @@ class AttendanceCorrectionController extends Controller
         $attendanceCorrection->user?->notify(new AttendanceCorrectionNotification($attendanceCorrection->load('user'), 'rejected'));
 
         return redirect()->route('admin.attendance-corrections.index')->with('success', 'Koreksi absensi berhasil ditolak.');
+    }
+
+    private function applyCorrectionToAttendance(AttendanceCorrection $correction): void
+    {
+        if ($correction->requested_check_in_at) {
+            $attendance = $this->findOrCreateAttendance($correction, 'in');
+            $attendance->update([
+                'attendance_date' => $correction->attendance_date,
+                'check_in_at' => $correction->requested_check_in_at,
+                'status' => 'corrected',
+                'notes' => trim(($attendance->notes ? $attendance->notes . "\n" : '') . 'Koreksi disetujui: ' . $correction->reason),
+            ]);
+        }
+
+        if ($correction->requested_check_out_at) {
+            $attendance = $this->findOrCreateAttendance($correction, 'out');
+            $attendance->update([
+                'attendance_date' => $correction->attendance_date,
+                'check_out_at' => $correction->requested_check_out_at,
+                'status' => 'corrected',
+                'notes' => trim(($attendance->notes ? $attendance->notes . "\n" : '') . 'Koreksi disetujui: ' . $correction->reason),
+            ]);
+        }
+    }
+
+    private function findOrCreateAttendance(AttendanceCorrection $correction, string $type): Attendance
+    {
+        if ($correction->attendance && $correction->attendance->type === $type) {
+            return $correction->attendance;
+        }
+
+        return Attendance::firstOrCreate(
+            [
+                'user_id' => $correction->user_id,
+                'attendance_date' => $correction->attendance_date,
+                'type' => $type,
+            ],
+            [
+                'image_path' => 'manual-correction',
+                'latitude' => 0,
+                'longitude' => 0,
+                'status' => 'corrected',
+                'face_verified' => false,
+                'face_match_score' => 0,
+                'distance_meters' => 0,
+                'late_status' => $type === 'in' ? 'corrected' : null,
+                'notes' => 'Dibuat dari koreksi absensi yang disetujui.',
+            ]
+        );
     }
 }

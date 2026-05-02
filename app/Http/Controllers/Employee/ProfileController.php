@@ -8,6 +8,8 @@ use App\Models\LeaveBalance;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Hash;
+use Illuminate\Support\Facades\Redirect;
+use Illuminate\Validation\Rule;
 use Inertia\Inertia;
 
 class ProfileController extends Controller
@@ -46,6 +48,7 @@ class ProfileController extends Controller
         
         $validated = $request->validate([
             'name' => ['required', 'string', 'max:255'],
+            'email' => ['nullable', 'string', 'lowercase', 'email', 'max:255', Rule::unique('users')->ignore($user->id)],
             'phone_number' => ['nullable', 'string', 'max:30'],
             'address' => ['nullable', 'string', 'max:1000'],
             'gender' => ['nullable', 'in:male,female'],
@@ -66,17 +69,23 @@ class ProfileController extends Controller
 
         $userData = [
             'name' => $validated['name'],
+            'email' => $validated['email'] ?? $user->email,
             'phone_number' => $validated['phone_number'] ?? null,
             'address' => $validated['address'] ?? null,
             'gender' => $validated['gender'] ?? null,
             'birth_date' => $validated['birth_date'] ?? null,
         ];
 
+        if (array_key_exists('email', $validated) && $validated['email'] !== $user->email) {
+            $userData['email_verified_at'] = null;
+        }
+
         if (!empty($validated['password'])) {
             $userData['password'] = Hash::make($validated['password']);
         }
 
         $profileData = [
+            'employee_code' => $user->profile?->employee_code ?: sprintf('EMP-%05d', $user->id),
             'phone_number' => $validated['phone_number'] ?? null,
             'current_address' => $validated['current_address'] ?? ($validated['address'] ?? null),
             'gender' => $validated['gender'] ?? null,
@@ -96,6 +105,24 @@ class ProfileController extends Controller
         $user->update($userData);
         $user->profile()->updateOrCreate(['user_id' => $user->id], $profileData);
 
-        return redirect()->back()->with('success', 'Profil berhasil diperbarui.');
+        return redirect()->route('profile.index')->with('success', 'Profil berhasil diperbarui.');
+    }
+
+    public function destroy(Request $request)
+    {
+        $request->validateWithBag('userDeletion', [
+            'password' => ['required', 'current_password'],
+        ]);
+
+        $user = Auth::user();
+
+        Auth::logout();
+
+        $user->delete();
+
+        $request->session()->invalidate();
+        $request->session()->regenerateToken();
+
+        return Redirect::to('/');
     }
 }

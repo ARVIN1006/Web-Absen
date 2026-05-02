@@ -44,11 +44,11 @@ class RegisteredUserController extends Controller
         $request->validate([
             'name' => ['required', 'string', 'max:255'],
             'email' => ['required', 'string', 'lowercase', 'email', 'max:255', 'unique:'.User::class],
-            'position_id' => ['required', 'exists:positions,id'],
-            'department_id' => ['required', 'exists:departments,id'],
+            'position_id' => ['nullable', 'exists:positions,id'],
+            'department_id' => ['nullable', 'exists:departments,id'],
             'password' => ['required', 'confirmed', Rules\Password::defaults()],
-            'face_data' => ['required', 'string'], // base64 string
-            'face_descriptor' => ['required', 'array', 'size:128'],
+            'face_data' => ['nullable', 'string'], // base64 string
+            'face_descriptor' => ['nullable', 'array', 'size:128'],
             'face_descriptor.*' => ['numeric'],
         ]);
 
@@ -71,7 +71,7 @@ class RegisteredUserController extends Controller
             'work_shift_id' => WorkShift::where('is_default', true)->first()?->id,
             'password' => Hash::make($request->password),
             'face_reference_path' => $imagePath,
-            'face_descriptor' => $request->face_descriptor,
+            'face_descriptor' => $request->face_descriptor ?: null,
         ]);
 
         event(new Registered($user));

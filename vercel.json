@@ -1,0 +1,5 @@
+{
+  "buildCommand": "cd demo-static && npm ci && npm run build",
+  "outputDirectory": "demo-static/dist"
+}
+
